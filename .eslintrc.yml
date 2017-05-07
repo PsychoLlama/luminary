@@ -1,0 +1,30 @@
+---
+plugins:
+  - react
+  - react-native
+  - import
+
+extends:
+  - eslint:recommended
+  - plugin:react/recommended
+  - plugin:react-native/all
+  - plugin:import/errors
+  - plugin:import/warnings
+  - llama
+
+parserOptions:
+  sourceType: 'module'
+  ecmaFeatures:
+    jsx: true
+
+env:
+  browser: true
+  jest: true
+
+rules:
+  require-jsdoc: off
+  space-before-function-paren:
+    - error
+    - asyncArrow: always
+      anonymous: always
+      named: never
