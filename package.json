@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "enzyme": "^2.8.2",
     "eslint": "^3.19.0",
     "eslint-config-llama": "^3.0.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^7.0.0",
     "eslint-plugin-react-native": "^2.3.2",
     "jest-expo": "^0.4.0",
-    "react-native-scripts": "0.0.29",
-    "react-test-renderer": "16.0.0-alpha.6"
+    "jsdom": "^10.1.0",
+    "react-dom": "16.0.0-alpha.6",
+    "react-native-mock": "^0.3.1",
+    "react-native-scripts": "0.0.29"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "scripts": {
@@ -21,11 +24,17 @@
     "test": "node node_modules/jest/bin/jest.js --watch"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": [
+      "react-native-mock/mock",
+      "./test-setup/mock-browser.js"
+    ]
   },
   "dependencies": {
     "expo": "^16.0.0",
     "react": "16.0.0-alpha.6",
+    "react-addons-test-utils": "16.0.0-alpha.3",
+    "react-apollo": "^1.2.0",
     "react-native": "^0.43.4"
   }
 }
