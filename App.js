@@ -7,6 +7,7 @@ import {
 } from 'react-apollo';
 
 import Groups from './src/components/Groups';
+import styles from './App.style';
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
@@ -18,7 +19,7 @@ export default class App extends React.Component {
   render() {
     return (
       <ApolloProvider client={client}>
-        <View>
+        <View style={styles.container}>
           <StatusBar hidden />
           <Groups />
         </View>

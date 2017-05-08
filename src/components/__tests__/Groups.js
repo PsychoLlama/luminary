@@ -7,8 +7,8 @@ import Group from '../Group';
 const createGroup = (fields = {}) => ({
   state: { on: false },
   name: 'Living room',
+  type: 'Room',
   id: 2,
-
 
   ...fields,
 });
@@ -42,9 +42,23 @@ describe('<Groups>', () => {
     expect(groups.length).toBe(0);
   });
 
-  it('shows the group name', () => {
-    const group = setup().find(Group).first();
+  it('passes the group to the group component', () => {
+    const groups = setup().find(Group).first();
 
-    expect(group.prop('children')).toContain(props.data.groups[0].name);
+    expect(groups.prop('group')).toEqual(props.data.groups[0]);
+  });
+
+  it('puts a middle divider on every second component', () => {
+    const groups = setup().find(Group);
+
+    expect(groups.at(0).prop('divide')).toBe(true);
+    expect(groups.at(1).prop('divide')).toBe(false);
+  });
+
+  it('only shows room types', () => {
+    props.data.groups.push(createGroup({ type: 'LightGroup' }));
+    const groups = setup().find(Group);
+
+    expect(groups.length).toBe(props.data.groups.length - 1);
   });
 });
