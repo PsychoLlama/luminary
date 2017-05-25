@@ -13,22 +13,35 @@ export class Groups extends Component {
     data: PropTypes.shape({
       groups: PropTypes.arrayOf(PropTypes.object),
       loading: PropTypes.bool.isRequired,
+      error: PropTypes.shape({
+        message: PropTypes.string,
+      }),
     }),
   }
 
   render() {
-    const {loading, groups} = this.props.data;
-
     return (
-      <View style={styles.container}>
-      {
-        loading ? (
-          <Text style={styles.loading}>Loading...</Text>
-        ) : (
-          groups.filter(isRoom).map(this.createGroup)
-        )
-      }
-      </View>
+      <View style={styles.container}>{this.renderContent()}</View>
+    );
+  }
+
+  renderContent() {
+    const {loading, groups, error} = this.props.data;
+
+    if (error) {
+      return this.renderError(error);
+    }
+
+    if (loading) {
+      return <Text style={styles.loading}>Loading...</Text>;
+    }
+
+    return groups.filter(isRoom).map(this.createGroup);
+  }
+
+  renderError(error) {
+    return (
+      <Text style={styles.error}>{error.message}</Text>
     );
   }
 
@@ -40,7 +53,7 @@ export class Groups extends Component {
 const query = gql`query GetAllGroups {
   groups {
     name id type state {
-      any_on
+      anyOn
     }
   }
 }`;

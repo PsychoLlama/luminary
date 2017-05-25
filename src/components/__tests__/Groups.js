@@ -61,4 +61,16 @@ describe('<Groups>', () => {
 
     expect(groups.length).toBe(props.data.groups.length - 1);
   });
+
+  it('shows errors', () => {
+    props.data.groups = undefined;
+    props.data.error = {
+      message: 'Fire bad.',
+      networkError: {},
+    };
+
+    const message = setup().find('Text').prop('children');
+
+    expect(message).toContain(props.data.error.message);
+  });
 });
