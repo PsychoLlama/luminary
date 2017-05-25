@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { shallow } from 'enzyme';
 import React from 'react';
 
@@ -12,12 +11,13 @@ describe('<Group>', () => {
 
   beforeEach(() => {
     props = {
+      mutate: jest.fn(),
       divide: false,
       group: {
         name: 'Hall',
         id: 3,
         state: {
-          any_on: true,
+          anyOn: true,
         },
       },
     };
@@ -36,7 +36,7 @@ describe('<Group>', () => {
   });
 
   it('shows when the group is offline', () => {
-    props.group.state.any_on = false;
+    props.group.state.anyOn = false;
     const status = setup().find({ style: [styles.status, styles.off] });
 
     expect(status.length).toBe(1);
@@ -54,5 +54,16 @@ describe('<Group>', () => {
     const group = setup().find({ style: [styles.title, styles.divide] });
 
     expect(group.length).toBe(0);
+  });
+
+  it('toggles the group when tapped', () => {
+    setup().simulate('press');
+
+    expect(props.mutate).toHaveBeenCalledWith({
+      variables: {
+        id: props.group.id,
+        on: !props.group.state.anyOn,
+      },
+    });
   });
 });

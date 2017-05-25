@@ -11,7 +11,7 @@ import styles from './App.style';
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
-    uri: 'http://hactar/',
+    uri: 'http://192.168.0.3/',
   }),
 });
 

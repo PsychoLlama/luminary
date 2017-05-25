@@ -1,25 +1,30 @@
-/* eslint-disable camelcase */
-import { View, Text } from 'react-native';
+import { graphql, gql } from 'react-apollo';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  TouchableWithoutFeedback,
+  Text,
+  View,
+} from 'react-native';
 
 import styles from './Group.style';
 
 export class Group extends Component {
   static propTypes = {
+    mutate: PropTypes.func.isRequired,
     divide: PropTypes.bool,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
       id: PropTypes.number.isRequired,
       state: PropTypes.shape({
-        any_on: PropTypes.bool,
+        anyOn: PropTypes.bool,
       }).isRequired,
     }).isRequired,
   }
 
   render() {
     const { group, divide } = this.props;
-    const online = group.state.any_on ? styles.on : styles.off;
+    const online = group.state.anyOn ? styles.on : styles.off;
     const style = [styles.title];
 
     if (divide) {
@@ -27,15 +32,34 @@ export class Group extends Component {
     }
 
     return (
-      <View style={styles.container}>
-        <Text style={style}>
-          {this.props.group.name}
-        </Text>
+      <TouchableWithoutFeedback onPress={this.toggleLights}>
+        <View style={styles.container}>
+          <Text style={style}>
+            {this.props.group.name}
+          </Text>
 
-        <View style={[styles.status, online]} />
-      </View>
+          <View style={[styles.status, online]} />
+        </View>
+      </TouchableWithoutFeedback>
     );
+  }
+
+  toggleLights = () => {
+    const { group, mutate } = this.props;
+
+    mutate({
+      variables: {
+        id: group.id,
+        on: !group.state.anyOn,
+      },
+    });
   }
 }
 
-export default Group;
+const mutation = gql`
+mutation ToggleGroupLights($id: ID!, $on: Boolean!) {
+  group(id: $id, on: $on)
+}
+`;
+
+export default graphql(mutation)(Group);
