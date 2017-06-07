@@ -1,5 +1,8 @@
 {
   "expo": {
-    "sdkVersion": "16.0.0"
+    "sdkVersion": "16.0.0",
+    "android": {
+      "package": "com.psychollama.luminary"
+    }
   }
 }
