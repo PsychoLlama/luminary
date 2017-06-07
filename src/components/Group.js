@@ -46,11 +46,23 @@ export class Group extends Component {
 
   toggleLights = () => {
     const { group, mutate } = this.props;
+    const toggledState = !group.state.anyOn;
 
     mutate({
       variables: {
         id: group.id,
-        on: !group.state.anyOn,
+        on: toggledState,
+      },
+      optimisticResponse: {
+        __typename: 'Mutation',
+        group: {
+          __typename: 'Group',
+          id: group.id,
+          state: {
+            __typename: 'GroupState',
+            anyOn: toggledState,
+          },
+        },
       },
     });
   }
@@ -58,7 +70,7 @@ export class Group extends Component {
 
 const mutation = gql`
 mutation ToggleGroupLights($id: ID!, $on: Boolean!) {
-  group(id: $id, on: $on)
+  group(id: $id, on: $on) { id state { anyOn } }
 }
 `;
 

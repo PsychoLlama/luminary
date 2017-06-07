@@ -64,6 +64,7 @@ describe('<Group>', () => {
         id: props.group.id,
         on: !props.group.state.anyOn,
       },
+      optimisticResponse: expect.anything(),
     });
   });
 });
