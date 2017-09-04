@@ -11,7 +11,13 @@ const isRoom = (group) => group.type === 'Room';
 export class Groups extends Component {
   static propTypes = {
     data: PropTypes.shape({
-      groups: PropTypes.arrayOf(PropTypes.object),
+      hue: PropTypes.shape({
+        groups: PropTypes.arrayOf(PropTypes.shape({
+          name: PropTypes.string,
+          anyOn: PropTypes.bool,
+          id: PropTypes.string,
+        })),
+      }),
       loading: PropTypes.bool.isRequired,
       error: PropTypes.shape({
         message: PropTypes.string,
@@ -26,7 +32,7 @@ export class Groups extends Component {
   }
 
   renderContent() {
-    const {loading, groups, error} = this.props.data;
+    const {loading, hue, error} = this.props.data;
 
     if (error) {
       return this.renderError(error);
@@ -36,7 +42,7 @@ export class Groups extends Component {
       return <Text style={styles.loading}>Loading...</Text>;
     }
 
-    return groups.filter(isRoom).map(this.createGroup);
+    return hue.groups.filter(isRoom).map(this.createGroup);
   }
 
   renderError(error) {
@@ -51,9 +57,9 @@ export class Groups extends Component {
 }
 
 const query = gql`query GetAllGroups {
-  groups {
-    name id type state {
-      anyOn
+  hue {
+    groups {
+      name id type anyOn
     }
   }
 }`;

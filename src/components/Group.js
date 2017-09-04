@@ -15,16 +15,14 @@ export class Group extends Component {
     divide: PropTypes.bool,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
-      id: PropTypes.number.isRequired,
-      state: PropTypes.shape({
-        anyOn: PropTypes.bool,
-      }).isRequired,
+      id: PropTypes.string.isRequired,
+      anyOn: PropTypes.bool,
     }).isRequired,
   }
 
   render() {
     const { group, divide } = this.props;
-    const online = group.state.anyOn ? styles.on : styles.off;
+    const online = group.anyOn ? styles.on : styles.off;
     const style = [styles.title];
 
     if (divide) {
@@ -46,7 +44,7 @@ export class Group extends Component {
 
   toggleLights = () => {
     const { group, mutate } = this.props;
-    const toggledState = !group.state.anyOn;
+    const toggledState = !group.anyOn;
 
     mutate({
       variables: {
@@ -55,11 +53,11 @@ export class Group extends Component {
       },
       optimisticResponse: {
         __typename: 'Mutation',
-        group: {
-          __typename: 'Group',
-          id: group.id,
-          state: {
-            __typename: 'GroupState',
+        hue: {
+          __typename: 'HueMutations',
+          setGroupState: {
+            __typename: 'Group',
+            id: group.id,
             anyOn: toggledState,
           },
         },
@@ -70,7 +68,9 @@ export class Group extends Component {
 
 const mutation = gql`
 mutation ToggleGroupLights($id: ID!, $on: Boolean!) {
-  group(id: $id, on: $on) { id state { anyOn } }
+  hue {
+    setGroupState(id: $id, state: { on: $on }) { id anyOn }
+  }
 }
 `;
 
