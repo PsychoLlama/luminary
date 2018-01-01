@@ -8,10 +8,13 @@ import {
   View,
 } from 'react-native';
 
+import * as actions from '../actions/hue-groups';
 import styles from './Group.style';
 
 export class Group extends Component {
   static propTypes = {
+    toggleLights: PropTypes.func.isRequired,
+    serverUrl: PropTypes.string.isRequired,
     divide: PropTypes.bool,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -41,10 +44,24 @@ export class Group extends Component {
       </TouchableWithoutFeedback>
     );
   }
+
+  toggleLights = () => {
+    const { serverUrl, group } = this.props;
+
+    this.props.toggleLights(serverUrl, {
+      on: !group.anyOn,
+      id: group.id,
+    });
+  };
 }
 
 export const mapStateToProps = (state, props) => ({
   group: R.path(['groups', props.id], state),
+  serverUrl: state.filamentServerUrl,
 });
 
-export default connect(mapStateToProps)(Group);
+const mapDispatchToProps = {
+  toggleLights: actions.toggleLights,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Group);

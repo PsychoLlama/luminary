@@ -14,7 +14,7 @@ const createGroup = (fields = {}) => ({
   ...fields,
 });
 
-describe('<Groups>', () => {
+describe('Groups', () => {
   const setup = merge => {
     const props = {
       serverUrl: 'http://filament/',

@@ -6,64 +6,76 @@ import { Group, mapStateToProps } from '../Group';
 
 import styles from '../Group.style';
 
-describe('<Group>', () => {
-  let props;
-  const setup = () => shallow(<Group {...props} />);
-
-  beforeEach(() => {
-    props = {
-      mutate: jest.fn(),
+describe('Group', () => {
+  const setup = merge => {
+    const props = {
+      serverUrl: 'http://filament/',
+      toggleLights: jest.fn(),
       divide: false,
       group: {
         name: 'Hall',
-        id: '3',
         anyOn: true,
+        id: '3',
       },
+
+      ...merge,
     };
-  });
+
+    return {
+      output: shallow(<Group {...props} />),
+      props,
+    };
+  };
 
   it('shows the group name', () => {
-    const name = setup().find('Text').prop('children');
+    const { output, props } = setup();
+    const name = output.find('Text').prop('children');
 
     expect(name).toContain(props.group.name);
   });
 
   it('shows when the group is online', () => {
-    const status = setup().find({ style: [styles.status, styles.on] });
+    const { output } = setup();
+    const status = output.find({ style: [styles.status, styles.on] });
 
     expect(status.length).toBe(1);
   });
 
   it('shows when the group is offline', () => {
-    props.group.anyOn = false;
-    const status = setup().find({ style: [styles.status, styles.off] });
+    const { output } = setup({
+      group: {
+        anyOn: false,
+        name: 'Hall',
+        id: '3',
+      },
+    });
+
+    const status = output.find({ style: [styles.status, styles.off] });
 
     expect(status.length).toBe(1);
   });
 
   it('shows the divider if set', () => {
-    props.divide = true;
-    const group = setup().find({ style: [styles.title, styles.divide] });
+    const { output } = setup({ divide: true });
+    const group = output.find({ style: [styles.title, styles.divide] });
 
     expect(group.length).toBe(1);
   });
 
   it('does not show the divider if not set', () => {
-    props.divide = false;
-    const group = setup().find({ style: [styles.title, styles.divide] });
+    const { output } = setup({ divide: false });
+    const group = output.find({ style: [styles.title, styles.divide] });
 
     expect(group.length).toBe(0);
   });
 
-  it.skip('toggles the group when tapped', () => {
-    setup().simulate('press');
+  it('toggles the group when tapped', () => {
+    const { output, props } = setup();
+    output.simulate('press');
 
-    expect(props.mutate).toHaveBeenCalledWith({
-      variables: {
-        id: props.group.id,
-        on: !props.group.anyOn,
-      },
-      optimisticResponse: expect.anything(),
+    expect(props.toggleLights).toHaveBeenCalledWith(props.serverUrl, {
+      on: !props.group.anyOn,
+      id: props.group.id,
     });
   });
 
@@ -100,6 +112,12 @@ describe('<Group>', () => {
       const { props, state, ownProps } = select();
 
       expect(props.group).toBe(state.groups[ownProps.id]);
+    });
+
+    it('pulls the server URL from redux', () => {
+      const { props, state } = select();
+
+      expect(props.serverUrl).toBe(state.filamentServerUrl);
     });
   });
 });

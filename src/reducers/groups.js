@@ -11,4 +11,14 @@ export default handleActions({
 
     return action.payload.groups.reduce(indexById, {});
   },
+
+  [actions.toggleLights]: (state, action) => {
+    const { id, on } = action.payload;
+
+    return update(state, {
+      [id]: {
+        anyOn: { $set: on },
+      },
+    });
+  },
 }, {});

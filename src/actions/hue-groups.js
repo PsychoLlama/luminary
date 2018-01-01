@@ -9,3 +9,20 @@ query fetchAllGroups {
   }
 }
 `);
+
+export const toggleLights = createAction(
+  'TOGGLE_GROUP_LIGHTS',
+  (server, vars) => {
+    const api = graphql`
+      mutation changeGroupOnOffState($id: ID!, $on: Boolean!) {
+        setGroupState(id: $id, state: { on: $on }) {
+          id anyOn
+        }
+      }
+    `;
+
+    api(server, vars);
+
+    return vars;
+  }
+);
