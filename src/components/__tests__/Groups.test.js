@@ -17,10 +17,9 @@ const createGroup = (fields = {}) => ({
 describe('<Groups>', () => {
   const setup = merge => {
     const props = {
-      data: {
-        groups: ['1', '2'],
-      },
-
+      serverUrl: 'http://filament/',
+      fetchAllGroups: jest.fn(),
+      groups: ['1', '2'],
       ...merge,
     };
 
@@ -30,18 +29,25 @@ describe('<Groups>', () => {
     };
   };
 
+  it('fetches groups on mount', () => {
+    const { output, props } = setup({ groups: [] });
+
+    output.instance().componentDidMount();
+    expect(props.fetchAllGroups).toHaveBeenCalledWith(props.serverUrl);
+  });
+
   it('shows all the groups', () => {
     const { output, props } = setup();
     const groups = output.find(Group);
 
-    expect(groups.length).toBe(props.data.groups.length);
+    expect(groups.length).toBe(props.groups.length);
   });
 
   it('passes the group to the group component', () => {
     const { output, props } = setup();
     const groups = output.find(Group).first();
 
-    expect(groups.prop('id')).toEqual(props.data.groups[0]);
+    expect(groups.prop('id')).toEqual(props.groups[0]);
   });
 
   it('puts a middle divider on every second component', () => {
@@ -54,22 +60,21 @@ describe('<Groups>', () => {
 
   it('shows errors', () => {
     const { output, props } = setup({
-      data: {
-        error: {
-          message: 'Fire bad.',
-          networkError: {},
-        },
+      error: {
+        message: 'Fire bad.',
+        networkError: {},
       },
     });
 
     const message = output.find('Text').prop('children');
 
-    expect(message).toContain(props.data.error.message);
+    expect(message).toContain(props.error.message);
   });
 
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
+        filamentServerUrl: 'http://filament/',
         groups: {
           1: createGroup({ name: 'One', id: '1' }),
           2: createGroup({ name: 'Two', id: '2' }),
@@ -108,6 +113,12 @@ describe('<Groups>', () => {
       });
 
       expect(props.groups).toEqual(['1', '2']);
+    });
+
+    it('grabs the filament server address', () => {
+      const { props, state } = select();
+
+      expect(props.serverUrl).toBe(state.filamentServerUrl);
     });
   });
 });

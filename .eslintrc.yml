@@ -27,6 +27,13 @@ env:
 rules:
   require-jsdoc: off
   import/no-named-as-default: off
+  id-length:
+    - error
+    - min: 2
+      exceptions:
+      # Lodash gets a single character, why not Ramda?
+      - R
+
   space-before-function-paren:
     - error
     - asyncArrow: always

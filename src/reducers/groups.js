@@ -9,6 +9,6 @@ export default handleActions({
       [group.id]: { $set: group },
     });
 
-    return action.payload.reduce(indexById, {});
+    return action.payload.groups.reduce(indexById, {});
   },
 }, {});

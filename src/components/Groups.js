@@ -4,19 +4,24 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import Group from './Group';
+import * as actions from '../actions/hue-groups';
 import styles from './Groups.style';
+import Group from './Group';
 
 const isRoom = (group) => group.type === 'Room';
 
 export class Groups extends Component {
   static propTypes = {
-    data: PropTypes.shape({
-      groups: PropTypes.arrayOf(PropTypes.string),
-      error: PropTypes.shape({
-        message: PropTypes.string,
-      }),
+    groups: PropTypes.arrayOf(PropTypes.string),
+    fetchAllGroups: PropTypes.func.isRequired,
+    serverUrl: PropTypes.string.isRequired,
+    error: PropTypes.shape({
+      message: PropTypes.string,
     }),
+  }
+
+  componentDidMount() {
+    this.props.fetchAllGroups(this.props.serverUrl);
   }
 
   render() {
@@ -26,7 +31,7 @@ export class Groups extends Component {
   }
 
   renderContent() {
-    const {groups, error} = this.props.data;
+    const {groups, error} = this.props;
 
     if (error) {
       return this.renderError(error);
@@ -56,7 +61,12 @@ const getGroupIds = createSelector(
 );
 
 export const mapStateToProps = (state) => ({
+  serverUrl: state.filamentServerUrl,
   groups: getGroupIds(state.groups),
 });
 
-export default connect(mapStateToProps)(Groups);
+const mapDispatchToProps = {
+  fetchAllGroups: actions.fetchAllGroups,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Groups);
