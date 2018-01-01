@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import R from 'ramda';
 import {
   TouchableWithoutFeedback,
   Text,
@@ -41,4 +43,8 @@ export class Group extends Component {
   }
 }
 
-export default Group;
+export const mapStateToProps = (state, props) => ({
+  group: R.path(['groups', props.id], state),
+});
+
+export default connect(mapStateToProps)(Group);

@@ -9,13 +9,6 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
-  loading: {
-    textAlign: 'center',
-    color: '#B6C1CD',
-    width: '100%',
-    fontSize: 25,
-  },
-
   error: {
     textAlign: 'center',
     width: '100%',

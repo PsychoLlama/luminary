@@ -12,12 +12,7 @@ const isRoom = (group) => group.type === 'Room';
 export class Groups extends Component {
   static propTypes = {
     data: PropTypes.shape({
-      groups: PropTypes.arrayOf(PropTypes.shape({
-        name: PropTypes.string,
-        anyOn: PropTypes.bool,
-        id: PropTypes.string,
-      })),
-      loading: PropTypes.bool.isRequired,
+      groups: PropTypes.arrayOf(PropTypes.string),
       error: PropTypes.shape({
         message: PropTypes.string,
       }),
@@ -31,17 +26,13 @@ export class Groups extends Component {
   }
 
   renderContent() {
-    const {loading, groups, error} = this.props.data;
+    const {groups, error} = this.props.data;
 
     if (error) {
       return this.renderError(error);
     }
 
-    if (loading) {
-      return <Text style={styles.loading}>Loading...</Text>;
-    }
-
-    return groups.filter(isRoom).map(this.createGroup);
+    return groups.map(this.createGroup);
   }
 
   renderError(error) {
@@ -50,8 +41,8 @@ export class Groups extends Component {
     );
   }
 
-  createGroup = (group, index) => (
-    <Group key={group.id} group={group} divide={index % 2 === 0} />
+  createGroup = (groupId, index) => (
+    <Group key={groupId} id={groupId} divide={index % 2 === 0} />
   );
 }
 

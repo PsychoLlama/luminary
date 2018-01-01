@@ -1,7 +1,8 @@
+import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { Group } from '../Group';
+import { Group, mapStateToProps } from '../Group';
 
 import styles from '../Group.style';
 
@@ -63,6 +64,42 @@ describe('<Group>', () => {
         on: !props.group.anyOn,
       },
       optimisticResponse: expect.anything(),
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    const select = (updates = {}, props = { id: 1 }) => {
+      const defaultState = {
+        groups: {
+          1: {
+            name: 'Group One',
+            type: 'Room',
+            id: '1',
+          },
+        },
+      };
+
+      const state = update(defaultState, updates);
+
+      return {
+        props: mapStateToProps(state, props),
+        ownProps: props,
+        state,
+      };
+    };
+
+    it('works when nothing is defined', () => {
+      const { props } = select({
+        groups: { $set: undefined },
+      });
+
+      expect(props).toEqual(expect.any(Object));
+    });
+
+    it('extracts the group from state', () => {
+      const { props, state, ownProps } = select();
+
+      expect(props.group).toBe(state.groups[ownProps.id]);
     });
   });
 });

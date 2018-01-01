@@ -15,62 +15,54 @@ const createGroup = (fields = {}) => ({
 });
 
 describe('<Groups>', () => {
-  let props;
-  const setup = () => shallow(<Groups {...props} />);
-
-  beforeEach(() => {
-    props = {
+  const setup = merge => {
+    const props = {
       data: {
-        loading: false,
-        groups: [
-          createGroup({ id: '1' }),
-          createGroup({ id: '2' }),
-        ],
+        groups: ['1', '2'],
       },
+
+      ...merge,
     };
-  });
+
+    return {
+      output: shallow(<Groups {...props} />),
+      props,
+    };
+  };
 
   it('shows all the groups', () => {
-    const groups = setup().find(Group);
+    const { output, props } = setup();
+    const groups = output.find(Group);
 
     expect(groups.length).toBe(props.data.groups.length);
   });
 
-  it('does not show groups if they are still loading', () => {
-    props.data.loading = true;
-    const groups = setup().find(Group);
-
-    expect(groups.length).toBe(0);
-  });
-
   it('passes the group to the group component', () => {
-    const groups = setup().find(Group).first();
+    const { output, props } = setup();
+    const groups = output.find(Group).first();
 
-    expect(groups.prop('group')).toEqual(props.data.groups[0]);
+    expect(groups.prop('id')).toEqual(props.data.groups[0]);
   });
 
   it('puts a middle divider on every second component', () => {
-    const groups = setup().find(Group);
+    const { output } = setup();
+    const groups = output.find(Group);
 
     expect(groups.at(0).prop('divide')).toBe(true);
     expect(groups.at(1).prop('divide')).toBe(false);
   });
 
-  it('only shows room types', () => {
-    props.data.groups.push(createGroup({ type: 'LightGroup' }));
-    const groups = setup().find(Group);
-
-    expect(groups.length).toBe(props.data.groups.length - 1);
-  });
-
   it('shows errors', () => {
-    props.data.groups = undefined;
-    props.data.error = {
-      message: 'Fire bad.',
-      networkError: {},
-    };
+    const { output, props } = setup({
+      data: {
+        error: {
+          message: 'Fire bad.',
+          networkError: {},
+        },
+      },
+    });
 
-    const message = setup().find('Text').prop('children');
+    const message = output.find('Text').prop('children');
 
     expect(message).toContain(props.data.error.message);
   });
@@ -81,7 +73,7 @@ describe('<Groups>', () => {
         groups: {
           1: createGroup({ name: 'One', id: '1' }),
           2: createGroup({ name: 'Two', id: '2' }),
-          3: createGroup({ name: 'Two', id: '3' }),
+          3: createGroup({ name: 'Three', id: '3' }),
         },
       };
 
