@@ -22,6 +22,7 @@ parserOptions:
 env:
   browser: true
   jest: true
+  es6: true
 
 rules:
   require-jsdoc: off

@@ -33,8 +33,13 @@
     ]
   },
   "dependencies": {
+    "axios": "^0.17.1",
     "expo": "^24.0.2",
     "react": "16.2.0",
-    "react-native": "^0.51.0"
+    "react-native": "^0.51.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-actions": "^2.2.1",
+    "redux-promise": "^0.5.3"
   }
 }
