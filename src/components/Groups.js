@@ -1,5 +1,7 @@
+import { createSelector } from 'reselect';
 import { View, Text } from 'react-native';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import Group from './Group';
@@ -53,4 +55,17 @@ export class Groups extends Component {
   );
 }
 
-export default Groups;
+const getGroupIds = createSelector(
+  groups => groups,
+  groups => Object
+    .keys(groups)
+    .map(key => groups[key])
+    .filter(isRoom)
+    .map(group => group.id)
+);
+
+export const mapStateToProps = (state) => ({
+  groups: getGroupIds(state.groups),
+});
+
+export default connect(mapStateToProps)(Groups);

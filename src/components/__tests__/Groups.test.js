@@ -1,19 +1,20 @@
+import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { Groups } from '../Groups';
+import { Groups, mapStateToProps } from '../Groups';
 import Group from '../Group';
 
 const createGroup = (fields = {}) => ({
-  state: { on: false },
   name: 'Living room',
+  anyOn: false,
   type: 'Room',
   id: '2',
 
   ...fields,
 });
 
-describe.only('<Groups>', () => {
+describe('<Groups>', () => {
   let props;
   const setup = () => shallow(<Groups {...props} />);
 
@@ -72,5 +73,49 @@ describe.only('<Groups>', () => {
     const message = setup().find('Text').prop('children');
 
     expect(message).toContain(props.data.error.message);
+  });
+
+  describe('mapStateToProps', () => {
+    const select = (updates = {}) => {
+      const defaultState = {
+        groups: {
+          1: createGroup({ name: 'One', id: '1' }),
+          2: createGroup({ name: 'Two', id: '2' }),
+          3: createGroup({ name: 'Two', id: '3' }),
+        },
+      };
+
+      const state = update(defaultState, updates);
+
+      return {
+        props: mapStateToProps(state),
+        state,
+      };
+    };
+
+    it('works', () => {
+      const { props } = select();
+
+      expect(props).toEqual(expect.any(Object));
+    });
+
+    it('extracts a list of group IDs', () => {
+      const { props } = select();
+
+      expect(props.groups).toEqual(['1', '2', '3']);
+    });
+
+    // Excludes arbitrary light groupings made by 3rd-party apps.
+    it('only includes Room types', () => {
+      const { props } = select({
+        groups: {
+          3: {
+            type: { $set: 'LightGroup' },
+          },
+        },
+      });
+
+      expect(props.groups).toEqual(['1', '2']);
+    });
   });
 });
