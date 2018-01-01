@@ -1,4 +1,3 @@
-import { graphql, gql } from 'react-apollo';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -11,7 +10,6 @@ import styles from './Group.style';
 
 export class Group extends Component {
   static propTypes = {
-    mutate: PropTypes.func.isRequired,
     divide: PropTypes.bool,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -41,32 +39,6 @@ export class Group extends Component {
       </TouchableWithoutFeedback>
     );
   }
-
-  toggleLights = () => {
-    const { group, mutate } = this.props;
-    const toggledState = !group.anyOn;
-
-    mutate({
-      variables: {
-        id: group.id,
-        on: toggledState,
-      },
-      optimisticResponse: {
-        __typename: 'Mutation',
-        setGroupState: {
-          __typename: 'Group',
-          id: group.id,
-          anyOn: toggledState,
-        },
-      },
-    });
-  }
 }
 
-const mutation = gql`
-mutation ToggleGroupLights($id: ID!, $on: Boolean!) {
-  setGroupState(id: $id, state: { on: $on }) { id anyOn }
-}
-`;
-
-export default graphql(mutation)(Group);
+export default Group;

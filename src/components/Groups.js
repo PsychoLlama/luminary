@@ -1,4 +1,3 @@
-import { gql, graphql } from 'react-apollo';
 import { View, Text } from 'react-native';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -54,10 +53,4 @@ export class Groups extends Component {
   );
 }
 
-const query = gql`query GetAllGroups {
-  groups {
-    name id type anyOn
-  }
-}`;
-
-export default graphql(query)(Groups);
+export default Groups;
