@@ -1,6 +1,9 @@
 {
   "expo": {
-    "sdkVersion": "16.0.0",
+    "name": "Luminary",
+    "description": "Front end for Filament, a server for Philips Hue",
+    "sdkVersion": "24.0.0",
+    "githubUrl": "https://github.com/PsychoLlama/luminary",
     "android": {
       "package": "com.psychollama.luminary"
     }

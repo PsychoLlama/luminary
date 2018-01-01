@@ -53,13 +53,10 @@ export class Group extends Component {
       },
       optimisticResponse: {
         __typename: 'Mutation',
-        hue: {
-          __typename: 'HueMutations',
-          setGroupState: {
-            __typename: 'Group',
-            id: group.id,
-            anyOn: toggledState,
-          },
+        setGroupState: {
+          __typename: 'Group',
+          id: group.id,
+          anyOn: toggledState,
         },
       },
     });
@@ -68,9 +65,7 @@ export class Group extends Component {
 
 const mutation = gql`
 mutation ToggleGroupLights($id: ID!, $on: Boolean!) {
-  hue {
-    setGroupState(id: $id, state: { on: $on }) { id anyOn }
-  }
+  setGroupState(id: $id, state: { on: $on }) { id anyOn }
 }
 `;
 
