@@ -35,6 +35,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "expo": "^24.0.2",
+    "immutability-helper": "^2.6.2",
     "minimalistic-assert": "^1.0.0",
     "react": "16.2.0",
     "react-native": "^0.51.0",

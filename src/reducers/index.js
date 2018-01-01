@@ -1,5 +1,7 @@
-import { handleActions } from 'redux-actions';
+import { combineReducers } from 'redux';
 
-export default handleActions({
+import groups from './groups';
 
-}, {});
+export default combineReducers({
+  groups,
+});
