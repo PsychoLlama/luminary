@@ -15,10 +15,8 @@ describe('<Group>', () => {
       divide: false,
       group: {
         name: 'Hall',
-        id: 3,
-        state: {
-          anyOn: true,
-        },
+        id: '3',
+        anyOn: true,
       },
     };
   });
@@ -36,7 +34,7 @@ describe('<Group>', () => {
   });
 
   it('shows when the group is offline', () => {
-    props.group.state.anyOn = false;
+    props.group.anyOn = false;
     const status = setup().find({ style: [styles.status, styles.off] });
 
     expect(status.length).toBe(1);
@@ -62,7 +60,7 @@ describe('<Group>', () => {
     expect(props.mutate).toHaveBeenCalledWith({
       variables: {
         id: props.group.id,
-        on: !props.group.state.anyOn,
+        on: !props.group.anyOn,
       },
       optimisticResponse: expect.anything(),
     });

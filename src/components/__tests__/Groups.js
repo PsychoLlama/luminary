@@ -8,12 +8,12 @@ const createGroup = (fields = {}) => ({
   state: { on: false },
   name: 'Living room',
   type: 'Room',
-  id: 2,
+  id: '2',
 
   ...fields,
 });
 
-describe('<Groups>', () => {
+describe.only('<Groups>', () => {
   let props;
   const setup = () => shallow(<Groups {...props} />);
 
@@ -22,8 +22,8 @@ describe('<Groups>', () => {
       data: {
         loading: false,
         groups: [
-          createGroup({ id: 1 }),
-          createGroup({ id: 2 }),
+          createGroup({ id: '1' }),
+          createGroup({ id: '2' }),
         ],
       },
     };

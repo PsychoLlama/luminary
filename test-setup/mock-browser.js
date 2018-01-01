@@ -1,5 +1,11 @@
-/* global global */
+/* eslint-env node */
+import Adapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
+import enzyme from 'enzyme';
+
+enzyme.configure({
+  adapter: new Adapter(),
+});
 
 if (!global.requestAnimationFrame) {
   global.requestAnimationFrame = (fn) => setTimeout(fn, 1);
