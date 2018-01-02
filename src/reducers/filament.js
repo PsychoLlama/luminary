@@ -16,6 +16,12 @@ const defaultState = {
   url: null,
 };
 
+// Indicate if the server was reachable.
+const setPingFinishedState = error => state => update(state, {
+  testingConnection: { $set: false },
+  pingSuccessful: { $set: !error },
+});
+
 export default handleActions({
   [actions.getServerUrl.optimistic]: state => update(state, {
     state: { $set: STATES.LOADING },
@@ -35,5 +41,14 @@ export default handleActions({
       urlLooksValid: { $set: urlLooksValid },
       url: { $set: action.payload },
     });
+  },
+
+  [actions.pingServer.optimistic]: state => update(state, {
+    testingConnection: { $set: true },
+  }),
+
+  [actions.pingServer]: {
+    throw: setPingFinishedState(true),
+    next: setPingFinishedState(false),
   },
 }, defaultState);

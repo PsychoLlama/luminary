@@ -14,6 +14,8 @@ export class ServerLink extends React.Component {
     updateServerUrl: PropTypes.func.isRequired,
     getServerUrl: PropTypes.func.isRequired,
     pingServer: PropTypes.func.isRequired,
+    testingConnection: PropTypes.bool,
+    pingSuccessful: PropTypes.bool,
     urlLooksValid: PropTypes.bool,
     serverUrl: PropTypes.string,
   };
@@ -23,7 +25,7 @@ export class ServerLink extends React.Component {
   }
 
   render() {
-    const { lookupState, urlLooksValid } = this.props;
+    const { lookupState, urlLooksValid, testingConnection } = this.props;
 
     if (lookupState === STATES.LOADING) {
       return null;
@@ -32,6 +34,8 @@ export class ServerLink extends React.Component {
     if (lookupState === STATES.FOUND) {
       return <Groups />;
     }
+
+    const disabled = Boolean(!urlLooksValid || testingConnection);
 
     return (
       <View>
@@ -45,7 +49,7 @@ export class ServerLink extends React.Component {
 
         <Button
           title="Connect"
-          disabled={!urlLooksValid}
+          disabled={disabled}
           onPress={this.pingServer}
         />
       </View>
@@ -53,19 +57,25 @@ export class ServerLink extends React.Component {
   }
 
   pingServer = () => {
-    const { serverUrl, urlLooksValid } = this.props;
+    const { serverUrl, testingConnection, urlLooksValid } = this.props;
 
-    if (urlLooksValid) {
+    if (urlLooksValid && !testingConnection) {
       this.props.pingServer(serverUrl);
     }
   };
 }
 
-export const mapStateToProps = state => ({
-  urlLooksValid: R.path(['server', 'urlLooksValid'], state),
-  lookupState: R.path(['server', 'state'], state),
-  serverUrl: R.path(['server', 'url'], state),
-});
+export const mapStateToProps = state => {
+  const server = R.path(['server'], state);
+
+  return {
+    testingConnection: R.path(['testingConnection'], server),
+    pingSuccessful: R.path(['pingSuccessful'], server),
+    urlLooksValid: R.path(['urlLooksValid'], server),
+    lookupState: R.path(['state'], server),
+    serverUrl: R.path(['url'], server),
+  };
+};
 
 const mapDispatchToProps = {
   updateServerUrl: actions.updateServerUrl,

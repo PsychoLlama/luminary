@@ -76,4 +76,28 @@ describe('server', () => {
       expect(state.urlLooksValid).toBe(true);
     });
   });
+
+  describe('pingServer', () => {
+    it('optimistically sets a "ping in progress" flag', () => {
+      const action = { type: String(actions.pingServer.optimistic) };
+      const state = reducer(undefined, action);
+
+      expect(state.testingConnection).toBe(true);
+    });
+
+    it('unsets the ping flag when finished', () => {
+      const action = { type: String(actions.pingServer) };
+      const state = reducer(undefined, action);
+
+      expect(state.testingConnection).toBe(false);
+      expect(state.pingSuccessful).toBe(true);
+    });
+
+    it('indicates if the ping failed', () => {
+      const action = { type: String(actions.pingServer), error: true };
+      const state = reducer(undefined, action);
+
+      expect(state.pingSuccessful).toBe(false);
+    });
+  });
 });

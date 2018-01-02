@@ -11,6 +11,7 @@ describe('ServerLink', () => {
   const setup = merge => {
     const props = {
       lookupState: STATES.NOT_FOUND,
+      serverUrl: 'http://filament/',
       updateServerUrl: jest.fn(),
       getServerUrl: jest.fn(),
       pingServer: jest.fn(),
@@ -98,11 +99,22 @@ describe('ServerLink', () => {
     expect(props.pingServer).not.toHaveBeenCalled();
   });
 
+  it('disables submit while pinging', () => {
+    const { output, props } = setup({ testingConnection: true });
+    output.find(TextInput).simulate('submitEditing');
+    const button = output.find(Button);
+
+    expect(props.pingServer).not.toHaveBeenCalled();
+    expect(button.prop('disabled')).toBe(true);
+  });
+
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
         server: {
           url: 'http://some-url.tld',
+          testingConnection: true,
+          pingSuccessful: false,
           state: STATES.LOADING,
           urlLooksValid: true,
         },
@@ -138,6 +150,18 @@ describe('ServerLink', () => {
       const { props, state } = select();
 
       expect(props.urlLooksValid).toBe(state.server.urlLooksValid);
+    });
+
+    it('indicates if the server is being pinged', () => {
+      const { props, state } = select();
+
+      expect(props.testingConnection).toBe(state.server.testingConnection);
+    });
+
+    it('shows the ping success state', () => {
+      const { props, state } = select();
+
+      expect(props.pingSuccessful).toBe(state.server.pingSuccessful);
     });
   });
 });
