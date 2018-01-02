@@ -1,13 +1,32 @@
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
 import * as actions from '../actions/filament';
+import * as colors from '../constants/colors';
 import { STATES } from '../reducers/filament';
-import { error } from '../constants/colors';
 import Groups from './Groups';
+
+const styles = StyleSheet.create({
+  container: {
+    padding: '20%',
+  },
+  urlInput: {
+    color: colors.text,
+    marginBottom: 8,
+    padding: 8,
+    paddingLeft: 4,
+    paddingRight: 4,
+    textAlign: 'center',
+  },
+  header: {
+    color: colors.text,
+    textAlign: 'center',
+    fontSize: 16,
+  },
+});
 
 export class ServerLink extends React.Component {
   static propTypes = {
@@ -40,17 +59,23 @@ export class ServerLink extends React.Component {
     }
 
     return (
-      <View>
+      <View style={styles.container}>
+        <Text style={styles.header}>
+          {'What\'s your Filament URL?'}
+        </Text>
+
         <TextInput
           onChangeText={this.props.updateServerUrl}
           onSubmitEditing={this.pingServer}
+          placeholder="http://..."
+          style={styles.urlInput}
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="go"
         />
 
         <Button
-          color={pingSuccessful === false ? error : undefined}
+          color={pingSuccessful === false ? colors.error : undefined}
           disabled={this.isDisabled()}
           title={this.getButtonText()}
           onPress={this.pingServer}
