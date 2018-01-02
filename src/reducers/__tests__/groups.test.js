@@ -1,4 +1,4 @@
-import * as actions from '../../actions/hue-groups';
+import * as actions from '../../actions/groups';
 import reducer from '../groups';
 
 describe('groups', () => {

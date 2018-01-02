@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import * as actions from '../hue-groups';
+import * as actions from '../groups';
 
 jest.mock('axios');
 

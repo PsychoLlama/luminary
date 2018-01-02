@@ -4,6 +4,7 @@
     "description": "Front end for Filament, a server for Philips Hue",
     "sdkVersion": "24.0.0",
     "githubUrl": "https://github.com/PsychoLlama/luminary",
+    "orientation": "portrait",
     "android": {
       "package": "com.psychollama.luminary"
     }

@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import * as actions from '../actions/hue-groups';
+import * as actions from '../actions/groups';
 import styles from './Group.style';
 
 export class Group extends Component {

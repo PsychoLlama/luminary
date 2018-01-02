@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import * as actions from '../actions/hue-groups';
+import * as actions from '../actions/groups';
 import styles from './Groups.style';
 import Group from './Group';
 

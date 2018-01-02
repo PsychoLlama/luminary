@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import update from 'immutability-helper';
 
-import * as actions from '../actions/hue-groups';
+import * as actions from '../actions/groups';
 
 export default handleActions({
   [actions.fetchAllGroups]: (state, action) => {
