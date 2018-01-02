@@ -8,6 +8,7 @@ jest.mock('react-native');
 jest.mock('axios');
 
 jest.spyOn(AsyncStorage, 'getItem');
+jest.spyOn(AsyncStorage, 'setItem');
 const SERVER = 'http://server-url.tld';
 
 describe('Filament', () => {
@@ -16,6 +17,7 @@ describe('Filament', () => {
 
     const value = Promise.resolve(SERVER);
     AsyncStorage.getItem.mockReturnValue(value);
+    AsyncStorage.setItem.mockReturnValue(Promise.resolve());
 
     axios.get.mockReturnValue(Promise.resolve());
   });
@@ -54,6 +56,19 @@ describe('Filament', () => {
       const action = actions.pingServer('http://filament/')(dispatch);
 
       expect(action.payload).toEqual(expect.any(Promise));
+    });
+
+    it('saves the URL on success', async () => {
+      expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+
+      const url = 'http://filament/';
+      const action = actions.pingServer(url)(dispatch);
+      await action.payload;
+
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        expect.any(String),
+        url
+      );
     });
   });
 });

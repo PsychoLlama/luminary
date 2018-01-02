@@ -36,6 +36,7 @@ export class ServerLink extends React.Component {
     }
 
     const disabled = Boolean(!urlLooksValid || testingConnection);
+    const title = testingConnection ? 'Testing connection...' : 'Connect';
 
     return (
       <View>
@@ -48,7 +49,7 @@ export class ServerLink extends React.Component {
         />
 
         <Button
-          title="Connect"
+          title={title}
           disabled={disabled}
           onPress={this.pingServer}
         />

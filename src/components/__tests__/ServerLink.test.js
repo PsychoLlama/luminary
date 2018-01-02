@@ -106,6 +106,7 @@ describe('ServerLink', () => {
 
     expect(props.pingServer).not.toHaveBeenCalled();
     expect(button.prop('disabled')).toBe(true);
+    expect(button.prop('title')).toMatch(/testing/i);
   });
 
   describe('mapStateToProps', () => {

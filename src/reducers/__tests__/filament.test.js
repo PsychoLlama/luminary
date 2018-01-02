@@ -6,7 +6,6 @@ describe('server', () => {
     const state = reducer(undefined, { type: 'who knows' });
 
     expect(state).toEqual({
-      isValid: false,
       state: null,
       url: null,
     });
@@ -19,14 +18,6 @@ describe('server', () => {
       const state = reducer(undefined, action);
 
       expect(state.url).toBe(url);
-    });
-
-    it('indicates the URL is valid', () => {
-      const payload = 'http://server.url';
-      const action = { payload, type: String(actions.getServerUrl) };
-      const state = reducer(undefined, action);
-
-      expect(state.isValid).toBe(true);
     });
 
     it('shows when the url was found', () => {
@@ -98,6 +89,13 @@ describe('server', () => {
       const state = reducer(undefined, action);
 
       expect(state.pingSuccessful).toBe(false);
+    });
+
+    it('updates the server state', () => {
+      const action = { type: String(actions.pingServer) };
+      const state = reducer(undefined, action);
+
+      expect(state.state).toBe(STATES.FOUND);
     });
   });
 });

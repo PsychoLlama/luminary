@@ -1,6 +1,7 @@
 import { handleActions } from 'redux-actions';
 import update from 'immutability-helper';
 import url from 'url';
+import R from 'ramda';
 
 import * as actions from '../actions/filament';
 
@@ -11,16 +12,15 @@ export const STATES = {
 };
 
 const defaultState = {
-  isValid: false,
   state: null,
   url: null,
 };
 
 // Indicate if the server was reachable.
-const setPingFinishedState = error => state => update(state, {
+const setPingFinishedState = R.curry((error, state) => update(state, {
   testingConnection: { $set: false },
   pingSuccessful: { $set: !error },
-});
+}));
 
 export default handleActions({
   [actions.getServerUrl.optimistic]: state => update(state, {
@@ -49,6 +49,12 @@ export default handleActions({
 
   [actions.pingServer]: {
     throw: setPingFinishedState(true),
-    next: setPingFinishedState(false),
+    next: state => {
+      const patched = setPingFinishedState(false, state);
+
+      return update(patched, {
+        state: { $set: STATES.FOUND },
+      });
+    },
   },
 }, defaultState);
