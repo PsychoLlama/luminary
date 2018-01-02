@@ -82,6 +82,7 @@ describe('Group', () => {
   describe('mapStateToProps', () => {
     const select = (updates = {}, props = { id: 1 }) => {
       const defaultState = {
+        server: { url: 'http://filament/' },
         groups: {
           1: {
             name: 'Group One',
@@ -117,7 +118,7 @@ describe('Group', () => {
     it('pulls the server URL from redux', () => {
       const { props, state } = select();
 
-      expect(props.serverUrl).toBe(state.filamentServerUrl);
+      expect(props.serverUrl).toBe(state.server.url);
     });
   });
 });

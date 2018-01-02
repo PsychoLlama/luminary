@@ -9,7 +9,9 @@ const SERVER_URL = 'http://192.168.0.27/';
 
 const middleware = applyMiddleware(promiseMiddleware);
 const initialState = {
-  filamentServerUrl: SERVER_URL,
+  server: {
+    url: SERVER_URL,
+  },
   groups: {},
 };
 

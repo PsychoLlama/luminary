@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+import R from 'ramda';
 
 export class ServerLink extends React.Component {
   static propTypes = {
@@ -19,7 +20,7 @@ export class ServerLink extends React.Component {
 }
 
 export const mapStateToProps = state => ({
-  serverUrl: state.filamentServerUrl,
+  serverUrl: R.path(['server', 'url'], state),
 });
 
 export default connect(mapStateToProps)(ServerLink);

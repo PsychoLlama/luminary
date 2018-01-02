@@ -41,7 +41,7 @@ describe('ServerLink', () => {
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
-        filamentServerUrl: 'http://some-url.tld',
+        server: { url: 'http://some-url.tld' },
       };
 
       const state = update(defaultState, updates);
@@ -61,7 +61,7 @@ describe('ServerLink', () => {
     it('retrieves the server URL', () => {
       const { props, state } = select();
 
-      expect(props.serverUrl).toBe(state.filamentServerUrl);
+      expect(props.serverUrl).toBe(state.server.url);
     });
   });
 });

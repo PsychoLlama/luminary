@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
 
+import filament from './filament';
 import groups from './groups';
 
 export default combineReducers({
-  filamentServerUrl: (url = '') => url,
+  server: filament,
   groups,
 });

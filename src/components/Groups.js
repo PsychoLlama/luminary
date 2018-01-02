@@ -7,8 +7,7 @@ import PropTypes from 'prop-types';
 import * as actions from '../actions/groups';
 import styles from './Groups.style';
 import Group from './Group';
-
-const isRoom = (group) => group.type === 'Room';
+import R from 'ramda';
 
 export class Groups extends Component {
   static propTypes = {
@@ -51,6 +50,7 @@ export class Groups extends Component {
   );
 }
 
+const isRoom = R.compose(R.equals('Room'), R.prop('type'));
 const getGroupIds = createSelector(
   groups => groups,
   groups => Object
@@ -61,7 +61,7 @@ const getGroupIds = createSelector(
 );
 
 export const mapStateToProps = (state) => ({
-  serverUrl: state.filamentServerUrl,
+  serverUrl: R.path(['server', 'url'], state),
   groups: getGroupIds(state.groups),
 });
 

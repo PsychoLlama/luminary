@@ -56,8 +56,8 @@ export class Group extends Component {
 }
 
 export const mapStateToProps = (state, props) => ({
+  serverUrl: R.path(['server', 'url'], state),
   group: R.path(['groups', props.id], state),
-  serverUrl: state.filamentServerUrl,
 });
 
 const mapDispatchToProps = {
