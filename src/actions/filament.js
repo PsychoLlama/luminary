@@ -1,3 +1,4 @@
+import { createAction } from 'redux-actions';
 import { AsyncStorage } from 'react-native';
 
 import { optimistic } from '../utils/actions';
@@ -5,3 +6,5 @@ import { optimistic } from '../utils/actions';
 export const getServerUrl = optimistic('GET_SERVER_URL', () => (
   AsyncStorage.getItem('filament_server_url')
 ));
+
+export const updateServerUrl = createAction('UPDATE_SERVER_URL');

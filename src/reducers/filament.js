@@ -25,4 +25,8 @@ export default handleActions({
     url: { $set: action.payload },
     isValid: { $set: true },
   }),
+
+  [actions.updateServerUrl]: (state, action) => update(state, {
+    url: { $set: action.payload },
+  }),
 }, defaultState);

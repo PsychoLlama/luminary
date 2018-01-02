@@ -1,3 +1,4 @@
+import { TextInput } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
@@ -10,6 +11,7 @@ describe('ServerLink', () => {
   const setup = merge => {
     const props = {
       lookupState: STATES.NOT_FOUND,
+      updateServerUrl: jest.fn(),
       getServerUrl: jest.fn(),
       ...merge,
     };
@@ -41,6 +43,21 @@ describe('ServerLink', () => {
     const { output } = setup({ lookupState: STATES.FOUND });
 
     expect(output.find(Groups).exists()).toBe(true);
+  });
+
+  it('shows an input element', () => {
+    const { output } = setup();
+    const text = output.find(TextInput);
+
+    expect(text.exists()).toBe(true);
+  });
+
+  it('updates the server URL on input', () => {
+    const { output, props } = setup();
+    const url = 'http://';
+    output.find(TextInput).simulate('changeText', url);
+
+    expect(props.updateServerUrl).toHaveBeenCalledWith(url);
   });
 
   describe('mapStateToProps', () => {

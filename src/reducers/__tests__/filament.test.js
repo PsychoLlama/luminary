@@ -52,4 +52,14 @@ describe('server', () => {
       expect(state.state).toBe(STATES.LOADING);
     });
   });
+
+  describe('updateServerUrl', () => {
+    it('sets the server URL', () => {
+      const url = 'https://bacon.yolo';
+      const action = actions.updateServerUrl(url);
+      const state = reducer(undefined, action);
+
+      expect(state).toMatchObject({ url });
+    });
+  });
 });
