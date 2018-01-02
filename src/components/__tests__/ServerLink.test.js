@@ -1,4 +1,4 @@
-import { TextInput } from 'react-native';
+import { TextInput, Button } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
@@ -13,6 +13,8 @@ describe('ServerLink', () => {
       lookupState: STATES.NOT_FOUND,
       updateServerUrl: jest.fn(),
       getServerUrl: jest.fn(),
+      pingServer: jest.fn(),
+      urlLooksValid: true,
       ...merge,
     };
 
@@ -60,12 +62,49 @@ describe('ServerLink', () => {
     expect(props.updateServerUrl).toHaveBeenCalledWith(url);
   });
 
+  it('shows a button', () => {
+    const { output } = setup();
+    const button = output.find(Button);
+
+    expect(button.exists()).toBe(true);
+    expect(button.prop('disabled')).toBe(false);
+  });
+
+  it('disables the button if the URL looks invalid', () => {
+    const { output } = setup({ urlLooksValid: false });
+    const button = output.find(Button);
+
+    expect(button.prop('disabled')).toBe(true);
+  });
+
+  it('pings the server when submitting', () => {
+    const { output, props } = setup();
+    output.find(Button).simulate('press');
+
+    expect(props.pingServer).toHaveBeenCalledWith(props.serverUrl);
+  });
+
+  it('pings the server when the submit button is pressed', () => {
+    const { output, props } = setup();
+    output.find(TextInput).simulate('submitEditing');
+
+    expect(props.pingServer).toHaveBeenCalledWith(props.serverUrl);
+  });
+
+  it('does not ping the server if the url is invalid', () => {
+    const { output, props } = setup({ urlLooksValid: false });
+    output.find(TextInput).simulate('submitEditing');
+
+    expect(props.pingServer).not.toHaveBeenCalled();
+  });
+
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
         server: {
           url: 'http://some-url.tld',
           state: STATES.LOADING,
+          urlLooksValid: true,
         },
       };
 
@@ -93,6 +132,12 @@ describe('ServerLink', () => {
       const { props, state } = select();
 
       expect(props.lookupState).toBe(state.server.state);
+    });
+
+    it('indicates whether the url looks valid', () => {
+      const { props, state } = select();
+
+      expect(props.urlLooksValid).toBe(state.server.urlLooksValid);
     });
   });
 });

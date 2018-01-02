@@ -61,5 +61,19 @@ describe('server', () => {
 
       expect(state).toMatchObject({ url });
     });
+
+    it('indicates if the URL looks invalid', () => {
+      const action = actions.updateServerUrl('invalid');
+      const state = reducer(undefined, action);
+
+      expect(state.urlLooksValid).toBe(false);
+    });
+
+    it('indicates if the URL looks valid', () => {
+      const action = actions.updateServerUrl('http://server/');
+      const state = reducer(undefined, action);
+
+      expect(state.urlLooksValid).toBe(true);
+    });
   });
 });

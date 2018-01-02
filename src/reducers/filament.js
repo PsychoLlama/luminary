@@ -1,5 +1,6 @@
 import { handleActions } from 'redux-actions';
 import update from 'immutability-helper';
+import url from 'url';
 
 import * as actions from '../actions/filament';
 
@@ -26,7 +27,13 @@ export default handleActions({
     isValid: { $set: true },
   }),
 
-  [actions.updateServerUrl]: (state, action) => update(state, {
-    url: { $set: action.payload },
-  }),
+  [actions.updateServerUrl]: (state, action) => {
+    const parsed = url.parse(action.payload);
+    const urlLooksValid = Boolean(parsed.protocol && parsed.host);
+
+    return update(state, {
+      urlLooksValid: { $set: urlLooksValid },
+      url: { $set: action.payload },
+    });
+  },
 }, defaultState);
