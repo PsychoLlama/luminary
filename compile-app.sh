@@ -27,7 +27,7 @@ yarn exp build:android
 IN_PROGRESS=true
 while [[ -n "$IN_PROGRESS" ]]; do
   sleep 20
-  BUILD_STATUS="$(yarn --silent exp build:status)"
+  BUILD_STATUS="$(yarn --silent exp build:status 2> /dev/null)"
   IN_PROGRESS="$(echo "$BUILD_STATUS" | grep 'Build in progress')"
 
   if [[ -n "$IN_PROGRESS" ]]; then
@@ -35,4 +35,12 @@ while [[ -n "$IN_PROGRESS" ]]; do
   fi
 done
 
-yarn --silent exp build:status
+APK_URL="$(echo "$BUILD_STATUS" | awk '/APK/ { print $3 }')"
+
+echo "Compiled APK: $APK_URL"
+
+curl \
+  -X POST \
+  -H 'Content-type: application/json' \
+  --data "{\"text\":\"New Luminary APK available: $APK_URL\"}" \
+  "$SLACK_MSG_URL"
