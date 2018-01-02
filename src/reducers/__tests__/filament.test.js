@@ -1,5 +1,5 @@
 import * as actions from '../../actions/filament';
-import reducer, { STATES } from '../filament';
+import reducer, { STATES, defaultState } from '../filament';
 
 describe('server', () => {
   it('returns state when the action type is unknown', () => {
@@ -65,6 +65,14 @@ describe('server', () => {
       const state = reducer(undefined, action);
 
       expect(state.urlLooksValid).toBe(true);
+    });
+
+    it('resets the ping success state', () => {
+      const initial = { ...defaultState, pingSuccessful: false };
+      const action = actions.updateServerUrl('http://different/');
+      const state = reducer(initial, action);
+
+      expect(state.pingSuccessful).toBeUndefined();
     });
   });
 

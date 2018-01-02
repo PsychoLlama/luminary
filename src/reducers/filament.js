@@ -11,7 +11,7 @@ export const STATES = {
   FOUND: 'found',
 };
 
-const defaultState = {
+export const defaultState = {
   state: null,
   url: null,
 };
@@ -40,6 +40,7 @@ export default handleActions({
     return update(state, {
       urlLooksValid: { $set: urlLooksValid },
       url: { $set: action.payload },
+      $unset: ['pingSuccessful'],
     });
   },
 

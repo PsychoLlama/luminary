@@ -1,4 +1,4 @@
-import { View, TextInput, Button } from 'react-native';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,6 +6,7 @@ import R from 'ramda';
 
 import * as actions from '../actions/filament';
 import { STATES } from '../reducers/filament';
+import { error } from '../constants/colors';
 import Groups from './Groups';
 
 export class ServerLink extends React.Component {
@@ -25,7 +26,10 @@ export class ServerLink extends React.Component {
   }
 
   render() {
-    const { lookupState, urlLooksValid, testingConnection } = this.props;
+    const {
+      pingSuccessful,
+      lookupState,
+    } = this.props;
 
     if (lookupState === STATES.LOADING) {
       return null;
@@ -34,9 +38,6 @@ export class ServerLink extends React.Component {
     if (lookupState === STATES.FOUND) {
       return <Groups />;
     }
-
-    const disabled = Boolean(!urlLooksValid || testingConnection);
-    const title = testingConnection ? 'Testing connection...' : 'Connect';
 
     return (
       <View>
@@ -49,18 +50,42 @@ export class ServerLink extends React.Component {
         />
 
         <Button
-          title={title}
-          disabled={disabled}
+          color={pingSuccessful === false ? error : undefined}
+          disabled={this.isDisabled()}
+          title={this.getButtonText()}
           onPress={this.pingServer}
         />
       </View>
     );
   }
 
-  pingServer = () => {
-    const { serverUrl, testingConnection, urlLooksValid } = this.props;
+  isDisabled() {
+    const { testingConnection, urlLooksValid } = this.props;
 
-    if (urlLooksValid && !testingConnection) {
+    return Boolean(
+      testingConnection ||
+      !urlLooksValid
+    );
+  }
+
+  getButtonText() {
+    const { testingConnection, pingSuccessful } = this.props;
+
+    if (testingConnection) {
+      return 'Testing connection...';
+    }
+
+    if (pingSuccessful === false) {
+      return 'Ping failed. Retry?';
+    }
+
+    return 'Connect';
+  }
+
+  pingServer = () => {
+    const { serverUrl } = this.props;
+
+    if (!this.isDisabled()) {
       this.props.pingServer(serverUrl);
     }
   };

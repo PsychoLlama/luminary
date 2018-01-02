@@ -5,6 +5,7 @@ import React from 'react';
 
 import { ServerLink, mapStateToProps } from '../ServerLink';
 import { STATES } from '../../reducers/filament';
+import { error } from '../../constants/colors';
 import Groups from '../Groups';
 
 describe('ServerLink', () => {
@@ -107,6 +108,21 @@ describe('ServerLink', () => {
     expect(props.pingServer).not.toHaveBeenCalled();
     expect(button.prop('disabled')).toBe(true);
     expect(button.prop('title')).toMatch(/testing/i);
+  });
+
+  it('indicates if the last request failed', () => {
+    const { output } = setup({ pingSuccessful: false });
+    const button = output.find(Button);
+
+    expect(button.prop('color')).toBe(error);
+    expect(button.prop('title')).toMatch(/failed/i);
+  });
+
+  it('does not show an error state when no request has been sent', () => {
+    const { output } = setup();
+    const button = output.find(Button);
+
+    expect(button.prop('color')).not.toBe(error);
   });
 
   describe('mapStateToProps', () => {
