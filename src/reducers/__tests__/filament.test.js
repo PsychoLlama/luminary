@@ -1,5 +1,5 @@
 import * as actions from '../../actions/filament';
-import reducer from '../filament';
+import reducer, { STATES } from '../filament';
 
 describe('server', () => {
   it('returns state when the action type is unknown', () => {
@@ -7,6 +7,7 @@ describe('server', () => {
 
     expect(state).toEqual({
       isValid: false,
+      state: null,
       url: null,
     });
   });
@@ -26,6 +27,29 @@ describe('server', () => {
       const state = reducer(undefined, action);
 
       expect(state.isValid).toBe(true);
+    });
+
+    it('shows when the url was found', () => {
+      const payload = 'http://server.url';
+      const action = { payload, type: String(actions.getServerUrl) };
+      const state = reducer(undefined, action);
+
+      expect(state.state).toBe(STATES.FOUND);
+    });
+
+    it('shows when the url could not be found', () => {
+      const payload = null;
+      const action = { payload, type: String(actions.getServerUrl) };
+      const state = reducer(undefined, action);
+
+      expect(state.state).toBe(STATES.NOT_FOUND);
+    });
+
+    it('indicates when fetching from storage', () => {
+      const action = { type: String(actions.getServerUrl.optimistic) };
+      const state = reducer(undefined, action);
+
+      expect(state.state).toBe(STATES.LOADING);
     });
   });
 });
