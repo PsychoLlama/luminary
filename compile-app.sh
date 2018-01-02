@@ -10,6 +10,11 @@ if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
   exit 1
 fi
 
+if [[ -z "$EXP_USERNAME" ]]; then
+  echo "Expo authentication not provided."
+  exit 1
+fi
+
 echo "Compiling app (Android)..."
 
 yarn --silent exp login \
