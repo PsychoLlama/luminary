@@ -5,7 +5,7 @@ import url from 'url';
 
 import { optimistic } from '../utils/actions';
 
-const SERVER_URL_STORAGE_KEY = 'filament_server_url';
+export const SERVER_URL_STORAGE_KEY = 'filament_server_url';
 export const getServerUrl = optimistic('GET_SERVER_URL', () => (
   AsyncStorage.getItem(SERVER_URL_STORAGE_KEY)
 ));
@@ -16,7 +16,7 @@ export const pingServer = optimistic('PING_SERVER', async server => {
   const pingUrl = url.format(parsed);
 
   await axios.get(pingUrl);
-  await AsyncStorage.setItem(SERVER_URL_STORAGE_KEY, server);
+  await AsyncStorage.setItem(SERVER_URL_STORAGE_KEY, parsed.href);
 });
 
 export const updateServerUrl = createAction('UPDATE_SERVER_URL');

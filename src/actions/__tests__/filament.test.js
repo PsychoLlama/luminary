@@ -61,13 +61,13 @@ describe('Filament', () => {
     it('saves the URL on success', async () => {
       expect(AsyncStorage.setItem).not.toHaveBeenCalled();
 
-      const url = 'http://filament/';
+      const url = '   http://filament/   ';
       const action = actions.pingServer(url)(dispatch);
       await action.payload;
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        expect.any(String),
-        url
+        actions.SERVER_URL_STORAGE_KEY,
+        R.trim(url)
       );
     });
   });
