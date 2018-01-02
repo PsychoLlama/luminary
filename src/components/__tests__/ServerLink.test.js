@@ -3,10 +3,13 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import { ServerLink, mapStateToProps } from '../ServerLink';
+import { STATES } from '../../reducers/filament';
+import Groups from '../Groups';
 
 describe('ServerLink', () => {
   const setup = merge => {
     const props = {
+      lookupState: STATES.NOT_FOUND,
       getServerUrl: jest.fn(),
       ...merge,
     };
@@ -21,16 +24,6 @@ describe('ServerLink', () => {
     setup();
   });
 
-  it('shows nothing while checking local storage', () => {
-    const { output } = setup();
-
-    expect(output.equals(null)).toBe(true);
-    expect(output.state()).toMatchObject({
-      gotResponse: false,
-      address: null,
-    });
-  });
-
   it('fetches the address when mounting', async () => {
     const { output, props } = setup();
 
@@ -38,10 +31,25 @@ describe('ServerLink', () => {
     expect(props.getServerUrl).toHaveBeenCalled();
   });
 
+  it('shows nothing while loading', () => {
+    const { output } = setup({ lookupState: STATES.LOADING });
+
+    expect(output.equals(null)).toBe(true);
+  });
+
+  it('shows the groups if the server URL was found', () => {
+    const { output } = setup({ lookupState: STATES.FOUND });
+
+    expect(output.find(Groups).exists()).toBe(true);
+  });
+
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
-        server: { url: 'http://some-url.tld' },
+        server: {
+          url: 'http://some-url.tld',
+          state: STATES.LOADING,
+        },
       };
 
       const state = update(defaultState, updates);
@@ -62,6 +70,12 @@ describe('ServerLink', () => {
       const { props, state } = select();
 
       expect(props.serverUrl).toBe(state.server.url);
+    });
+
+    it('fetches the server URL lookup state', () => {
+      const { props, state } = select();
+
+      expect(props.lookupState).toBe(state.server.state);
     });
   });
 });

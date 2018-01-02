@@ -12,6 +12,7 @@ const middleware = applyMiddleware(thunkMiddleware, promiseMiddleware);
 const initialState = {
   server: {
     url: SERVER_URL,
+    state: null,
   },
   groups: {},
 };
