@@ -19,7 +19,11 @@ describe('Filament', () => {
     AsyncStorage.getItem.mockReturnValue(value);
     AsyncStorage.setItem.mockReturnValue(Promise.resolve());
 
-    axios.get.mockReturnValue(Promise.resolve());
+    const response = Promise.resolve({
+      data: { app: 'filament' },
+    });
+
+    axios.get.mockReturnValue(response);
   });
 
   describe('getServerUrl', () => {
@@ -69,6 +73,18 @@ describe('Filament', () => {
         actions.SERVER_URL_STORAGE_KEY,
         R.trim(url)
       );
+    });
+
+    it('throws if the response is invalid', async () => {
+      const response = Promise.resolve({
+        data: {
+          app: 'not-filament',
+        },
+      });
+
+      axios.get.mockReturnValue(response);
+      const action = actions.pingServer('http://filament/')(dispatch);
+      await expect(action.payload).rejects.toEqual(expect.any(Error));
     });
   });
 });

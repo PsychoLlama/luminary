@@ -1,5 +1,6 @@
 import { createAction } from 'redux-actions';
 import { AsyncStorage } from 'react-native';
+import assert from 'minimalistic-assert';
 import axios from 'axios';
 import url from 'url';
 
@@ -15,7 +16,9 @@ export const pingServer = optimistic('PING_SERVER', async server => {
   parsed.pathname = '/status';
   const pingUrl = url.format(parsed);
 
-  await axios.get(pingUrl);
+  const { data } = await axios.get(pingUrl);
+  assert(data && data.app === 'filament', 'Ping failed, bad server response.');
+
   await AsyncStorage.setItem(SERVER_URL_STORAGE_KEY, parsed.href);
 });
 
