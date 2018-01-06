@@ -2,7 +2,8 @@ import { Dimensions } from 'react-native';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutManager } from '../LayoutManager';
+import { LayoutManager, OPTIONS_PER_ROW } from '../LayoutManager';
+import LayoutSelection from '../LayoutSelection';
 import LayoutOption from '../LayoutOption';
 
 jest.spyOn(Dimensions, 'get');
@@ -14,6 +15,7 @@ describe('LayoutManager', () => {
 
   const setup = merge => {
     const props = {
+      reserved: [],
       ...merge,
     };
 
@@ -36,9 +38,8 @@ describe('LayoutManager', () => {
     const { output, dimensions } = setup();
     const options = output.find(LayoutOption);
 
-    const optionsPerRow = 4;
-    const rows = dimensions.height / (dimensions.width / optionsPerRow);
-    const expected = Math.floor(rows * optionsPerRow);
+    const rows = dimensions.height / (dimensions.width / OPTIONS_PER_ROW);
+    const expected = Math.floor(rows * OPTIONS_PER_ROW);
 
     expect(options.length).toBe(expected);
   });
@@ -47,14 +48,14 @@ describe('LayoutManager', () => {
     const { output, dimensions } = setup();
     const option = output.find(LayoutOption).first();
 
-    expect(option.prop('width')).toBe(dimensions.width / 4);
-    expect(option.prop('height')).toBe(dimensions.width / 4);
+    expect(option.prop('width')).toBe(dimensions.width / OPTIONS_PER_ROW);
+    expect(option.prop('height')).toBe(dimensions.width / OPTIONS_PER_ROW);
   });
 
   it('sets the proper position', () => {
     const { output, dimensions } = setup();
 
-    const width = dimensions.width / 4;
+    const width = dimensions.width / OPTIONS_PER_ROW;
     // 4th from the top.
     const top = width * 3;
     // 3rd from the left.
@@ -64,5 +65,51 @@ describe('LayoutManager', () => {
 
     expect(option.prop('top')).toBe(top);
     expect(option.prop('left')).toBe(left);
+  });
+
+  it('shows reserved spaces', () => {
+    const { output } = setup({
+      reserved: [
+        {
+          group: '1',
+          height: 2,
+          width: 2,
+          x: 0,
+          y: 0,
+        },
+      ],
+    });
+
+    const selection = output.find(LayoutSelection);
+    const options = output.find(LayoutOption);
+
+    expect(selection.length).toBe(1);
+
+    // 28 minus 4 from the reserved slot.
+    expect(options.length).toBe(24);
+  });
+
+  it('calculates the correct reservation position', () => {
+    const reserved = {
+      group: '1',
+      height: 4,
+      width: 3,
+      x: 2,
+      y: 1,
+    };
+
+    const { output, dimensions } = setup({
+      reserved: [reserved],
+    });
+
+    const size = dimensions.width / OPTIONS_PER_ROW;
+    const selection = output.find(LayoutSelection);
+
+    expect(selection.props()).toMatchObject({
+      height: reserved.height * size,
+      width: reserved.width * size,
+      left: reserved.x * size,
+      top: reserved.y * size,
+    });
   });
 });
