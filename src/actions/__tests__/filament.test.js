@@ -52,7 +52,7 @@ describe('Filament', () => {
       actions.pingServer('http://filament/?auth=potatoes')(dispatch);
 
       expect(axios.get).toHaveBeenCalledWith(
-        'http://filament/status?auth=potatoes'
+        'http://filament/status?auth=potatoes',
       );
     });
 
@@ -71,7 +71,7 @@ describe('Filament', () => {
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         actions.SERVER_URL_STORAGE_KEY,
-        R.trim(url)
+        R.trim(url),
       );
     });
 

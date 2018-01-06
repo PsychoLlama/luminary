@@ -23,20 +23,18 @@ export class Groups extends Component {
     groups: PropTypes.arrayOf(PropTypes.string),
     fetchAllGroups: PropTypes.func.isRequired,
     serverUrl: PropTypes.string.isRequired,
-  }
+  };
 
   componentDidMount() {
     this.props.fetchAllGroups(this.props.serverUrl);
   }
 
   render() {
-    return (
-      <View style={styles.container}>{this.renderContent()}</View>
-    );
+    return <View style={styles.container}>{this.renderContent()}</View>;
   }
 
   renderContent() {
-    const {groups} = this.props;
+    const { groups } = this.props;
 
     return groups.map(this.createGroup);
   }
@@ -49,14 +47,14 @@ export class Groups extends Component {
 const isRoom = R.compose(R.equals('Room'), R.prop('type'));
 const getGroupIds = createSelector(
   groups => groups,
-  groups => Object
-    .keys(groups)
-    .map(key => groups[key])
-    .filter(isRoom)
-    .map(group => group.id)
+  groups =>
+    Object.keys(groups)
+      .map(key => groups[key])
+      .filter(isRoom)
+      .map(group => group.id),
 );
 
-export const mapStateToProps = (state) => ({
+export const mapStateToProps = state => ({
   serverUrl: R.path(['server', 'url'], state),
   groups: getGroupIds(state.groups),
 });

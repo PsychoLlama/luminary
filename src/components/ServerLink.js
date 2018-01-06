@@ -45,10 +45,7 @@ export class ServerLink extends React.Component {
   }
 
   render() {
-    const {
-      pingSuccessful,
-      lookupState,
-    } = this.props;
+    const { pingSuccessful, lookupState } = this.props;
 
     if (lookupState === STATES.LOADING) {
       return null;
@@ -60,9 +57,7 @@ export class ServerLink extends React.Component {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>
-          {'What\'s your Filament URL?'}
-        </Text>
+        <Text style={styles.header}>{"What's your Filament URL?"}</Text>
 
         <TextInput
           onChangeText={this.props.updateServerUrl}
@@ -87,10 +82,7 @@ export class ServerLink extends React.Component {
   isDisabled() {
     const { testingConnection, urlLooksValid } = this.props;
 
-    return Boolean(
-      testingConnection ||
-      !urlLooksValid
-    );
+    return Boolean(testingConnection || !urlLooksValid);
   }
 
   getButtonText() {

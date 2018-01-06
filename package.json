@@ -8,23 +8,35 @@
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.14.0",
     "eslint-config-llama": "^3.0.0",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-react": "^7.5.1",
     "eslint-plugin-react-native": "^3.2.0",
+    "husky": "^0.14.3",
     "jest-expo": "^24.0.0",
     "jsdom": "^11.5.1",
+    "lint-staged": "^6.0.0",
+    "prettier": "^1.9.2",
     "react-dom": "16.2.0",
     "react-native-scripts": "1.8.1",
     "react-test-renderer": "^16.2.0"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "scripts": {
+    "precommit": "lint-staged",
     "start": "react-native-scripts start",
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
     "test": "jest",
     "lint": "eslint src/ App.js App.style.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint",
+      "git add"
+    ]
   },
   "jest": {
     "preset": "jest-expo",

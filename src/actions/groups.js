@@ -2,13 +2,19 @@ import { createAction } from 'redux-actions';
 
 import graphql from '../utils/graphql';
 
-export const fetchAllGroups = createAction('FETCH_ALL_GROUPS', graphql`
-query fetchAllGroups {
-  groups {
-    name id type anyOn
-  }
-}
-`);
+export const fetchAllGroups = createAction(
+  'FETCH_ALL_GROUPS',
+  graphql`
+    query fetchAllGroups {
+      groups {
+        name
+        id
+        type
+        anyOn
+      }
+    }
+  `,
+);
 
 export const toggleLights = createAction(
   'TOGGLE_GROUP_LIGHTS',
@@ -16,7 +22,8 @@ export const toggleLights = createAction(
     const api = graphql`
       mutation changeGroupOnOffState($id: ID!, $on: Boolean!) {
         setGroupState(id: $id, state: { on: $on }) {
-          id anyOn
+          id
+          anyOn
         }
       }
     `;
@@ -24,5 +31,5 @@ export const toggleLights = createAction(
     api(server, vars);
 
     return vars;
-  }
+  },
 );

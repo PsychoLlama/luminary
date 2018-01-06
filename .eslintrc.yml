@@ -13,6 +13,7 @@ extends:
   - plugin:import/errors
   - plugin:import/warnings
   - llama
+  - prettier
 
 parserOptions:
   sourceType: 'module'

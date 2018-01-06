@@ -9,7 +9,7 @@ import axios from 'axios';
  */
 export default parts => {
   assert(parts, 'graphql(..) expects a query.');
-  assert(parts.length === 1, 'Don\'t interpolate values in GraphQL queries.');
+  assert(parts.length === 1, "Don't interpolate values in GraphQL queries.");
   const [query] = parts;
 
   return async (address, variables) => {

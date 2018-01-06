@@ -17,45 +17,53 @@ export const defaultState = {
 };
 
 // Indicate if the server was reachable.
-const setPingFinishedState = R.curry((error, state) => update(state, {
-  testingConnection: { $set: false },
-  pingSuccessful: { $set: !error },
-}));
-
-export default handleActions({
-  [actions.getServerUrl.optimistic]: state => update(state, {
-    state: { $set: STATES.LOADING },
+const setPingFinishedState = R.curry((error, state) =>
+  update(state, {
+    testingConnection: { $set: false },
+    pingSuccessful: { $set: !error },
   }),
+);
 
-  [actions.getServerUrl]: (state, action) => update(state, {
-    state: { $set: action.payload ? STATES.FOUND : STATES.NOT_FOUND },
-    url: { $set: action.payload },
-    isValid: { $set: true },
-  }),
+export default handleActions(
+  {
+    [actions.getServerUrl.optimistic]: state =>
+      update(state, {
+        state: { $set: STATES.LOADING },
+      }),
 
-  [actions.updateServerUrl]: (state, action) => {
-    const parsed = url.parse(action.payload);
-    const urlLooksValid = Boolean(parsed.protocol && parsed.host);
+    [actions.getServerUrl]: (state, action) =>
+      update(state, {
+        state: { $set: action.payload ? STATES.FOUND : STATES.NOT_FOUND },
+        url: { $set: action.payload },
+        isValid: { $set: true },
+      }),
 
-    return update(state, {
-      urlLooksValid: { $set: urlLooksValid },
-      url: { $set: action.payload },
-      $unset: ['pingSuccessful'],
-    });
-  },
+    [actions.updateServerUrl]: (state, action) => {
+      const parsed = url.parse(action.payload);
+      const urlLooksValid = Boolean(parsed.protocol && parsed.host);
 
-  [actions.pingServer.optimistic]: state => update(state, {
-    testingConnection: { $set: true },
-  }),
-
-  [actions.pingServer]: {
-    throw: setPingFinishedState(true),
-    next: state => {
-      const patched = setPingFinishedState(false, state);
-
-      return update(patched, {
-        state: { $set: STATES.FOUND },
+      return update(state, {
+        urlLooksValid: { $set: urlLooksValid },
+        url: { $set: action.payload },
+        $unset: ['pingSuccessful'],
       });
     },
+
+    [actions.pingServer.optimistic]: state =>
+      update(state, {
+        testingConnection: { $set: true },
+      }),
+
+    [actions.pingServer]: {
+      throw: setPingFinishedState(true),
+      next: state => {
+        const patched = setPingFinishedState(false, state);
+
+        return update(patched, {
+          state: { $set: STATES.FOUND },
+        });
+      },
+    },
   },
-}, defaultState);
+  defaultState,
+);

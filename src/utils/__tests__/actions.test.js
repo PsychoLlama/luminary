@@ -65,9 +65,11 @@ describe('Action util', () => {
       const action = optimistic('stuff', api);
       const result = action()(dispatch);
 
-      expect(result).toEqual(expect.objectContaining({
-        payload: retVal,
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          payload: retVal,
+        }),
+      );
     });
   });
 });

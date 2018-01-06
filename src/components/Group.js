@@ -2,12 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import R from 'ramda';
-import {
-  TouchableWithoutFeedback,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { TouchableWithoutFeedback, StyleSheet, Text, View } from 'react-native';
 
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
@@ -50,7 +45,7 @@ export class Group extends Component {
       id: PropTypes.string.isRequired,
       anyOn: PropTypes.bool,
     }).isRequired,
-  }
+  };
 
   render() {
     const { group, divide } = this.props;
@@ -64,9 +59,7 @@ export class Group extends Component {
     return (
       <TouchableWithoutFeedback onPress={this.toggleLights}>
         <View style={styles.container}>
-          <Text style={style}>
-            {this.props.group.name}
-          </Text>
+          <Text style={style}>{this.props.group.name}</Text>
 
           <View style={[styles.status, online]} />
         </View>
