@@ -1,4 +1,5 @@
 import { View, Dimensions, PanResponder } from 'react-native';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
@@ -7,11 +8,12 @@ import LayoutSelection from './LayoutSelection';
 import LayoutOption from './LayoutOption';
 
 export const OPTIONS_PER_ROW = 4;
-const fmtIndex = (x, y) => `${x}:${y}`;
+export const fmtIndex = (x, y) => `${x}:${y}`;
 const extractDimensions = R.pick(['top', 'left', 'width', 'height']);
 
 export class LayoutManager extends React.Component {
   static propTypes = {
+    setDragActiveState: PropTypes.func.isRequired,
     reserved: PropTypes.arrayOf(
       PropTypes.shape({
         height: PropTypes.number.isRequired,
@@ -26,6 +28,7 @@ export class LayoutManager extends React.Component {
     reserved: [],
   };
 
+  layouts = {};
   pan = PanResponder.create({
     onStartShouldSetPanResponder: R.T,
     onStartShouldSetPanResponderCapture: R.T,
@@ -51,8 +54,10 @@ export class LayoutManager extends React.Component {
   }
 
   // Placeholders.
-  onPanResponderMove = R.always(null);
   onPanResponderTerminate = R.always(null);
+  onPanResponderMove = () => {
+    this.props.setDragActiveState({ index: '0:0', active: true });
+  };
 
   /**
    * Find layouts not occupied by reserved cells.
@@ -149,16 +154,32 @@ export class LayoutManager extends React.Component {
   renderOption(layout) {
     const values = extractDimensions(layout);
     const index = fmtIndex(layout.col, layout.row);
+    const setLayout = layout => (this.layouts[index] = layout);
 
-    return <LayoutOption key={index} {...values} />;
+    return (
+      <LayoutOption onLayout={setLayout} key={index} id={index} {...values} />
+    );
   }
 
   renderReservation({ reservation, layout }) {
     const values = extractDimensions(layout);
     const index = fmtIndex(reservation.x, reservation.y);
+    const setLayout = layout => (this.layouts[index] = layout);
 
-    return <LayoutSelection key={index} {...values} />;
+    return (
+      <LayoutSelection
+        onLayout={setLayout}
+        key={index}
+        id={index}
+        {...values}
+      />
+    );
   }
 }
 
-export default LayoutManager;
+const mapStateToProps = () => ({});
+const mapDispatchToProps = {
+  setDragActiveState: R.always(undefined),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LayoutManager);

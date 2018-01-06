@@ -2,7 +2,7 @@ import { Dimensions } from 'react-native';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutManager, OPTIONS_PER_ROW } from '../LayoutManager';
+import { LayoutManager, fmtIndex, OPTIONS_PER_ROW } from '../LayoutManager';
 import LayoutSelection from '../LayoutSelection';
 import LayoutOption from '../LayoutOption';
 
@@ -15,6 +15,7 @@ describe('LayoutManager', () => {
 
   const setup = merge => {
     const props = {
+      setDragActiveState: jest.fn(),
       reserved: [],
       ...merge,
     };
@@ -110,6 +111,39 @@ describe('LayoutManager', () => {
       width: reserved.width * size,
       left: reserved.x * size,
       top: reserved.y * size,
+    });
+  });
+
+  describe('gesture', () => {
+    const gesture = merge => {
+      const result = setup(merge);
+
+      const invokeLayout = element => {
+        const layout = {
+          height: element.prop('height'),
+          width: element.prop('width'),
+          left: element.prop('left'),
+          top: element.prop('top'),
+        };
+
+        element.simulate('layout', layout);
+      };
+
+      result.output.find(LayoutOption).forEach(invokeLayout);
+      result.output.find(LayoutSelection).forEach(invokeLayout);
+
+      return result;
+    };
+
+    it('marks cells as active when dragging immediately over them', () => {
+      const { output, props } = gesture();
+
+      const state = { x0: 1, y0: 1, dx: 4, dy: 4 };
+      output.instance().onPanResponderMove(null, state);
+
+      const index = fmtIndex(0, 0);
+      const payload = { active: true, index };
+      expect(props.setDragActiveState).toHaveBeenCalledWith(payload);
     });
   });
 });
