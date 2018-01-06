@@ -4,12 +4,41 @@ import PropTypes from 'prop-types';
 import R from 'ramda';
 import {
   TouchableWithoutFeedback,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
+import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
-import styles from './Group.style';
+
+export const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.groups.bg,
+    width: '50%',
+  },
+
+  title: {
+    color: colors.text,
+    fontSize: 20,
+    padding: 30,
+    width: '100%',
+    textAlign: 'center',
+  },
+
+  divide: {
+    borderRightWidth: 2,
+    borderColor: colors.groups.divider,
+  },
+
+  status: {
+    height: 2,
+    width: '100%',
+  },
+
+  off: { backgroundColor: colors.groups.status.off },
+  on: { backgroundColor: colors.groups.status.on },
+});
 
 export class Group extends Component {
   static propTypes = {

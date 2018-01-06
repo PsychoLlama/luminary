@@ -58,19 +58,6 @@ describe('Groups', () => {
     expect(groups.at(1).prop('divide')).toBe(false);
   });
 
-  it('shows errors', () => {
-    const { output, props } = setup({
-      error: {
-        message: 'Fire bad.',
-        networkError: {},
-      },
-    });
-
-    const message = output.find('Text').prop('children');
-
-    expect(message).toContain(props.error.message);
-  });
-
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {

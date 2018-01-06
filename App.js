@@ -1,10 +1,17 @@
-import { View, StatusBar } from 'react-native';
+import { View, StatusBar, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import React from 'react';
 
 import ServerLink from './src/components/ServerLink';
+import * as colors from './src/constants/colors';
 import store from './src/redux-store';
-import styles from './App.style';
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.appBackground,
+    height: '100%',
+  },
+});
 
 export default class App extends React.Component {
   render() {

@@ -2,9 +2,7 @@ import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { Group, mapStateToProps } from '../Group';
-
-import styles from '../Group.style';
+import { Group, styles, mapStateToProps } from '../Group';
 
 describe('Group', () => {
   const setup = merge => {
