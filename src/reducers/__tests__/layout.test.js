@@ -56,7 +56,7 @@ describe('Layout', () => {
       const state = reducer(undefined, action);
 
       expect(state.newCellGroup).toEqual({
-        active,
+        selected: active,
       });
     });
   });

@@ -28,7 +28,7 @@ export default handleActions(
         active: { $set: {} },
         newCellGroup: {
           $set: {
-            active: payload,
+            selected: payload,
           },
         },
       }),
