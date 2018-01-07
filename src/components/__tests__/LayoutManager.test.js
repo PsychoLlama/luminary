@@ -1,10 +1,16 @@
 import { Dimensions } from 'react-native';
+import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutManager, fmtIndex, OPTIONS_PER_ROW } from '../LayoutManager';
 import LayoutSelection from '../LayoutSelection';
 import LayoutOption from '../LayoutOption';
+import {
+  fmtIndex,
+  LayoutManager,
+  mapStateToProps,
+  OPTIONS_PER_ROW,
+} from '../LayoutManager';
 
 jest.spyOn(Dimensions, 'get');
 
@@ -17,6 +23,7 @@ describe('LayoutManager', () => {
     const props = {
       setDragActiveState: jest.fn(),
       reserved: [],
+      active: {},
       ...merge,
     };
 
@@ -66,6 +73,18 @@ describe('LayoutManager', () => {
 
     expect(option.prop('top')).toBe(top);
     expect(option.prop('left')).toBe(left);
+  });
+
+  it('indicates whether cells are drag active', () => {
+    const { output } = setup({
+      active: { '2:1': true },
+    });
+
+    const first = output.find(LayoutOption).at(0);
+    const second = output.find(LayoutOption).at(1);
+
+    expect(first.prop('active')).toBe(false);
+    expect(second.prop('active')).toBe(true);
   });
 
   it('shows reserved spaces', () => {
@@ -144,6 +163,33 @@ describe('LayoutManager', () => {
       const index = fmtIndex(0, 0);
       const payload = { active: true, index };
       expect(props.setDragActiveState).toHaveBeenCalledWith(payload);
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    const select = (updates = {}) => {
+      const defaultState = {
+        layout: {
+          active: {
+            '1:1': true,
+            '2:1': true,
+            '3:1': true,
+          },
+        },
+      };
+
+      const state = update(defaultState, updates);
+
+      return {
+        props: mapStateToProps(state),
+        state,
+      };
+    };
+
+    it('gets the set of active cells', () => {
+      const { props, state } = select();
+
+      expect(props.active).toEqual(state.layout.active);
     });
   });
 });

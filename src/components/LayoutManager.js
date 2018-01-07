@@ -5,6 +5,7 @@ import React from 'react';
 import R from 'ramda';
 
 import LayoutSelection from './LayoutSelection';
+import * as actions from '../actions/layout';
 import LayoutOption from './LayoutOption';
 
 export const OPTIONS_PER_ROW = 4;
@@ -14,6 +15,7 @@ const extractDimensions = R.pick(['top', 'left', 'width', 'height']);
 export class LayoutManager extends React.Component {
   static propTypes = {
     setDragActiveState: PropTypes.func.isRequired,
+    active: PropTypes.object.isRequired,
     reserved: PropTypes.arrayOf(
       PropTypes.shape({
         height: PropTypes.number.isRequired,
@@ -155,9 +157,16 @@ export class LayoutManager extends React.Component {
     const values = extractDimensions(layout);
     const index = fmtIndex(layout.col, layout.row);
     const setLayout = layout => (this.layouts[index] = layout);
+    const active = this.props.active.hasOwnProperty(index);
 
     return (
-      <LayoutOption onLayout={setLayout} key={index} id={index} {...values} />
+      <LayoutOption
+        onLayout={setLayout}
+        active={active}
+        key={index}
+        id={index}
+        {...values}
+      />
     );
   }
 
@@ -177,9 +186,12 @@ export class LayoutManager extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({});
+export const mapStateToProps = state => ({
+  active: R.path(['layout', 'active'], state),
+});
+
 const mapDispatchToProps = {
-  setDragActiveState: R.always(undefined),
+  setDragActiveState: actions.setDragActiveState,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutManager);

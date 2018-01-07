@@ -1,5 +1,7 @@
-import { optimistic } from '../actions';
+import { createAction } from 'redux-actions';
 import R from 'ramda';
+
+import { optimistic, prefixActions } from '../actions';
 
 describe('Action util', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -70,6 +72,42 @@ describe('Action util', () => {
           payload: retVal,
         }),
       );
+    });
+  });
+
+  describe('prefixActions', () => {
+    it('returns an action creator', () => {
+      const creator = prefixActions('BACON', createAction);
+      const action = creator('CONSUME')(5);
+
+      expect(action).toEqual({
+        type: 'BACON___CONSUME',
+        payload: 5,
+      });
+    });
+
+    it('passes all args to the creator factory', () => {
+      const mock = jest.fn();
+      const factory = prefixActions('SKYDIVE', mock);
+      factory('JUMP', 1, 2, 3);
+
+      expect(mock).toHaveBeenCalledWith(expect.any(String), 1, 2, 3);
+    });
+
+    it('throws if the prefix is omitted', () => {
+      const fail = () => prefixActions(undefined, jest.fn());
+
+      expect(fail).toThrow(/prefix/i);
+    });
+
+    it('defaults to using createAction', () => {
+      const creator = prefixActions('HYPNO_DRONES');
+      const action = creator('RELEASE')(Infinity);
+
+      expect(action).toEqual({
+        type: 'HYPNO_DRONES___RELEASE',
+        payload: Infinity,
+      });
     });
   });
 });
