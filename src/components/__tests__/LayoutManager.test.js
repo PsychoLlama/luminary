@@ -2,6 +2,7 @@ import { Dimensions } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
+import R from 'ramda';
 
 import LayoutSelection from '../LayoutSelection';
 import LayoutOption from '../LayoutOption';
@@ -22,6 +23,7 @@ describe('LayoutManager', () => {
   const setup = merge => {
     const props = {
       setDragActiveState: jest.fn(),
+      createCellGroup: jest.fn(),
       reserved: [],
       active: {},
       ...merge,
@@ -211,6 +213,15 @@ describe('LayoutManager', () => {
         [fmtIndex(1, 1)]: true,
       });
     });
+
+    it('shows a setup page after selecting cells', () => {
+      const { output, props } = gesture({
+        active: { '1:1': true },
+      });
+
+      output.instance().onPanResponderRelease();
+      expect(props.createCellGroup).toHaveBeenCalledWith(props.active);
+    });
   });
 
   describe('mapStateToProps', () => {
@@ -221,6 +232,15 @@ describe('LayoutManager', () => {
             '1:1': true,
             '2:1': true,
             '3:1': true,
+          },
+          reserved: {
+            '0:1': {
+              group: '12',
+              height: 2,
+              width: 2,
+              x: 0,
+              y: 1,
+            },
           },
         },
       };
@@ -237,6 +257,25 @@ describe('LayoutManager', () => {
       const { props, state } = select();
 
       expect(props.active).toEqual(state.layout.active);
+    });
+
+    it('retrieves every reserved slot', () => {
+      const { props, state } = select();
+
+      const expected = R.values(state.layout.reserved);
+      expect(props.reserved).toEqual(expected);
+    });
+
+    it('keeps the same reservation list between selects', () => {
+      const reserved = { '1:1': { x: 1, y: 1 } };
+      const updates = {
+        layout: {
+          reserved: { $set: reserved },
+        },
+      };
+
+      const { props } = select(updates);
+      expect(props.reserved).toBe(select(updates).props.reserved);
     });
   });
 });

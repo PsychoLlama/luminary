@@ -1,4 +1,5 @@
 import { View, Dimensions, PanResponder } from 'react-native';
+import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -15,6 +16,7 @@ const extractDimensions = R.pick(['top', 'left', 'width', 'height']);
 export class LayoutManager extends React.Component {
   static propTypes = {
     setDragActiveState: PropTypes.func.isRequired,
+    createCellGroup: PropTypes.func.isRequired,
     active: PropTypes.object.isRequired,
     reserved: PropTypes.arrayOf(
       PropTypes.shape({
@@ -26,12 +28,11 @@ export class LayoutManager extends React.Component {
     ),
   };
 
-  static defaultProps = {
-    reserved: [],
+  layouts = {};
+  onPanResponderRelease = () => {
+    this.props.createCellGroup(this.props.active);
   };
 
-  layouts = {};
-  onPanResponderTerminate = R.always(null);
   onPanResponderMove = (event, { x0, y0, dx, dy }) => {
     dx = x0 + dx;
     dy = y0 + dy;
@@ -73,8 +74,7 @@ export class LayoutManager extends React.Component {
     onMoveShouldSetPanResponderCapture: R.T,
 
     onPanResponderMove: this.onPanResponderMove,
-    onPanResponderTerminate: this.onPanResponderTerminate,
-    onPanResponderGrant: R.T,
+    onPanResponderRelease: this.onPanResponderRelease,
   });
 
   render() {
@@ -216,12 +216,15 @@ export class LayoutManager extends React.Component {
   }
 }
 
+const getReservationList = createSelector(R.identity, R.values);
 export const mapStateToProps = state => ({
+  reserved: getReservationList(R.path(['layout', 'reserved'], state)),
   active: R.path(['layout', 'active'], state),
 });
 
 const mapDispatchToProps = {
   setDragActiveState: actions.setDragActiveState,
+  createCellGroup: actions.createCellGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutManager);

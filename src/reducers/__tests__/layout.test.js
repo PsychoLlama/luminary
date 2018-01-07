@@ -39,4 +39,25 @@ describe('Layout', () => {
       expect(state.active).toEqual({ '1:1': true, '1:3': true });
     });
   });
+
+  describe('createCellGroup', () => {
+    it('removes all active cells', () => {
+      const active = { '1:1': true, '1:2': true };
+      const initial = { ...defaultState, active };
+      const action = actions.createCellGroup(active);
+      const state = reducer(initial, action);
+
+      expect(state.active).toEqual({});
+    });
+
+    it('sets a flag', () => {
+      const active = { '1:1': true, '2:1': true };
+      const action = actions.createCellGroup(active);
+      const state = reducer(undefined, action);
+
+      expect(state.newCellGroup).toEqual({
+        active,
+      });
+    });
+  });
 });
