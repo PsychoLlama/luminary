@@ -33,15 +33,30 @@ describe('LayoutManager', () => {
     const dimensions = { height: 630, width: 360 };
     Dimensions.get.mockReturnValue(dimensions);
 
+    const output = shallow(<LayoutManager {...props} />);
+    const event = {
+      nativeEvent: { layout: dimensions },
+    };
+
+    output.simulate('layout', event);
+
     return {
-      output: shallow(<LayoutManager {...props} />),
       dimensions,
+      output,
       props,
     };
   };
 
   it('renders', () => {
     setup();
+  });
+
+  it('shows no options if layout is unset', () => {
+    const { output } = setup();
+    output.setState({ layout: null });
+    const options = output.find(LayoutOption);
+
+    expect(options.length).toBe(0);
   });
 
   it('shows a screen of options', () => {
@@ -154,14 +169,23 @@ describe('LayoutManager', () => {
       result.output.find(LayoutOption).forEach(invokeLayout);
       result.output.find(LayoutSelection).forEach(invokeLayout);
 
-      return result;
+      const {
+        onPanResponderMove,
+        onPanResponderRelease,
+      } = result.output.instance();
+
+      return {
+        ...result,
+        onMove: onPanResponderMove,
+        onRelease: onPanResponderRelease,
+      };
     };
 
     it('marks cells as active when dragging immediately over them', () => {
-      const { output, props } = gesture();
+      const { props, onMove } = gesture();
 
       const event = { x0: 1, y0: 1, dx: 4, dy: 4 };
-      output.instance().onPanResponderMove(null, event);
+      onMove(null, event);
 
       const index = fmtIndex(1, 1);
       const payload = { [index]: true };
@@ -169,18 +193,18 @@ describe('LayoutManager', () => {
     });
 
     it('does not mark cells as active while already active', () => {
-      const { output, props } = gesture({
+      const { props, onMove } = gesture({
         active: { [fmtIndex(1, 1)]: true },
       });
 
       const event = { x0: 1, y0: 1, dx: 1, dy: 1 };
-      output.instance().onPanResponderMove(null, event);
+      onMove(null, event);
 
       expect(props.setDragActiveState).not.toHaveBeenCalled();
     });
 
     it('marks cells as selected if intersection exists', () => {
-      const { output, props, dimensions } = gesture();
+      const { props, dimensions, onMove } = gesture();
 
       // The whole top row.
       const event = {
@@ -190,7 +214,7 @@ describe('LayoutManager', () => {
         dx: -dimensions.width + 1,
       };
 
-      output.instance().onPanResponderMove(null, event);
+      onMove(null, event);
 
       expect(props.setDragActiveState).toHaveBeenCalledWith({
         [fmtIndex(1, 1)]: true,
@@ -201,12 +225,12 @@ describe('LayoutManager', () => {
     });
 
     it('marks cells inactive when drawn away', () => {
-      const { output, props } = gesture({
+      const { props, onMove } = gesture({
         active: { '4:1': true },
       });
 
       const event = { y0: 1, dy: 1, x0: 1, dx: 1 };
-      output.instance().onPanResponderMove(null, event);
+      onMove(null, event);
 
       expect(props.setDragActiveState).toHaveBeenCalledWith({
         [fmtIndex(4, 1)]: false,
@@ -215,11 +239,11 @@ describe('LayoutManager', () => {
     });
 
     it('shows a setup page after selecting cells', () => {
-      const { output, props } = gesture({
+      const { props, onRelease } = gesture({
         active: { '1:1': true },
       });
 
-      output.instance().onPanResponderRelease();
+      onRelease();
       expect(props.createCellGroup).toHaveBeenCalledWith(props.active);
     });
   });

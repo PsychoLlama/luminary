@@ -16,6 +16,11 @@ export const groups = {
   selected: '#161C23',
 };
 
+export const navbar = {
+  text: '#AEB9C4',
+  bg: '#101319',
+};
+
 groups.status = {
   off: groups.divider,
   on: palette.yellow,

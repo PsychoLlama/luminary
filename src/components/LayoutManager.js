@@ -1,4 +1,4 @@
-import { View, Dimensions, PanResponder } from 'react-native';
+import { View, PanResponder, StyleSheet, Dimensions } from 'react-native';
 import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -12,6 +12,12 @@ import LayoutOption from './LayoutOption';
 export const OPTIONS_PER_ROW = 4;
 export const fmtIndex = (x, y) => `${x}:${y}`;
 const extractDimensions = R.pick(['top', 'left', 'width', 'height']);
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+  },
+});
 
 export class LayoutManager extends React.Component {
   static propTypes = {
@@ -28,12 +34,19 @@ export class LayoutManager extends React.Component {
     ),
   };
 
+  static navigationOptions = {
+    title: 'Change layout',
+  };
+
   layouts = {};
+  state = { layout: null, NAVBAR_Y_OFFSET: 0 };
   onPanResponderRelease = () => {
     this.props.createCellGroup(this.props.active);
   };
 
   onPanResponderMove = (event, { x0, y0, dx, dy }) => {
+    y0 -= this.state.NAVBAR_Y_OFFSET;
+
     dx = x0 + dx;
     dy = y0 + dy;
 
@@ -79,17 +92,35 @@ export class LayoutManager extends React.Component {
 
   render() {
     const dimensions = this.getDimensions();
+    const props = {
+      ...this.pan.panHandlers,
+      onLayout: this.setDimensions,
+      style: styles.container,
+    };
 
-    const options = this.findOpenCells(dimensions).map(this.renderOption, this);
-    const reservations = this.findReservedCells(dimensions).map(
-      this.renderReservation,
-      this,
-    );
+    if (dimensions) {
+      const options = this.findOpenCells(dimensions).map(
+        this.renderOption,
+        this,
+      );
 
-    const cells = options.concat(reservations);
+      const reservations = this.findReservedCells(dimensions).map(
+        this.renderReservation,
+        this,
+      );
 
-    return <View {...this.pan.panHandlers}>{cells}</View>;
+      props.children = options.concat(reservations);
+    }
+
+    return <View {...props} />;
   }
+
+  setDimensions = ({ nativeEvent: { layout } }) => {
+    const { height } = Dimensions.get('window');
+    const NAVBAR_Y_OFFSET = height - layout.height;
+
+    this.setState({ layout, NAVBAR_Y_OFFSET });
+  };
 
   /**
    * Find layouts not occupied by reserved cells.
@@ -151,8 +182,11 @@ export class LayoutManager extends React.Component {
    * expected rows.
    */
   getDimensions() {
-    const { width, height } = Dimensions.get('window');
+    if (!this.state.layout) {
+      return null;
+    }
 
+    const { width, height } = this.state.layout;
     const size = width / OPTIONS_PER_ROW;
 
     const rows = Math.floor(height / size);
