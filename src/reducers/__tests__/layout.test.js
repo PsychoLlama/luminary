@@ -11,7 +11,7 @@ describe('Layout', () => {
 
   describe('setDragActiveState', () => {
     it('can mark indexes as active', () => {
-      const action = actions.setDragActiveState({ index: '0:1', active: true });
+      const action = actions.setDragActiveState({ '0:1': true });
       const state = reducer(undefined, action);
 
       expect(state.active).toEqual({ '0:1': true });
@@ -24,10 +24,19 @@ describe('Layout', () => {
         active: { [index]: true },
       };
 
-      const action = actions.setDragActiveState({ index, active: false });
+      const action = actions.setDragActiveState({ [index]: false });
       const state = reducer(initial, action);
 
       expect(state.active).toEqual({});
+    });
+
+    it('can update many indexes simulaneously', () => {
+      const initial = { ...defaultState, active: { '1:2': true } };
+      const payload = { '1:1': true, '1:2': false, '1:3': true };
+      const action = actions.setDragActiveState(payload);
+      const state = reducer(initial, action);
+
+      expect(state.active).toEqual({ '1:1': true, '1:3': true });
     });
   });
 });

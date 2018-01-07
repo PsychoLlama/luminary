@@ -13,6 +13,7 @@ export const appBackground = palette.darkgray;
 export const groups = {
   divider: '#15181F',
   bg: '#1B2129',
+  selected: '#161C23',
 };
 
 groups.status = {

@@ -1,11 +1,13 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutOption } from '../LayoutOption';
+import { LayoutOption, styles } from '../LayoutOption';
 
 describe('LayoutOption', () => {
   const setup = merge => {
     const props = {
+      onLayout: jest.fn(),
+      active: false,
       height: 95,
       width: 90,
       left: 180,
@@ -30,5 +32,17 @@ describe('LayoutOption', () => {
     // This test assumes the last style value is inline.
     const [inline] = output.prop('style').slice(-1);
     expect(inline).toMatchObject({ height, width, left, top });
+  });
+
+  it('applies the active class when active', () => {
+    const { output } = setup({ active: true });
+
+    expect(output.prop('style')).toContain(styles.selected);
+  });
+
+  it('passes through onLayout', () => {
+    const { output, props } = setup();
+
+    expect(output.prop('onLayout')).toBe(props.onLayout);
   });
 });

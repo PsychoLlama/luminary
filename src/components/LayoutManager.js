@@ -31,6 +31,41 @@ export class LayoutManager extends React.Component {
   };
 
   layouts = {};
+  onPanResponderTerminate = R.always(null);
+  onPanResponderMove = (event, { x0, y0, dx, dy }) => {
+    dx = x0 + dx;
+    dy = y0 + dy;
+
+    const left = Math.min(x0, dx);
+    const right = Math.max(x0, dx);
+    const top = Math.min(y0, dy);
+    const bottom = Math.max(y0, dy);
+
+    // Locate which cells intersect with the selection area.
+    const patches = R.toPairs(this.layouts).reduce(
+      (patches, [index, layout]) => {
+        const active = this.props.active.hasOwnProperty(index);
+
+        const xbounded = layout.x + layout.width >= left && layout.x <= right;
+        const ybounded = layout.y + layout.height > top && layout.y <= bottom;
+        const bounded = xbounded && ybounded;
+
+        if (bounded && !active) {
+          patches[index] = true;
+        } else if (!bounded && active) {
+          patches[index] = false;
+        }
+
+        return patches;
+      },
+      {},
+    );
+
+    if (R.keys(patches).length) {
+      this.props.setDragActiveState(patches);
+    }
+  };
+
   pan = PanResponder.create({
     onStartShouldSetPanResponder: R.T,
     onStartShouldSetPanResponderCapture: R.T,
@@ -39,6 +74,7 @@ export class LayoutManager extends React.Component {
 
     onPanResponderMove: this.onPanResponderMove,
     onPanResponderTerminate: this.onPanResponderTerminate,
+    onPanResponderGrant: R.T,
   });
 
   render() {
@@ -54,12 +90,6 @@ export class LayoutManager extends React.Component {
 
     return <View {...this.pan.panHandlers}>{cells}</View>;
   }
-
-  // Placeholders.
-  onPanResponderTerminate = R.always(null);
-  onPanResponderMove = () => {
-    this.props.setDragActiveState({ index: '0:0', active: true });
-  };
 
   /**
    * Find layouts not occupied by reserved cells.
@@ -156,7 +186,7 @@ export class LayoutManager extends React.Component {
   renderOption(layout) {
     const values = extractDimensions(layout);
     const index = fmtIndex(layout.col, layout.row);
-    const setLayout = layout => (this.layouts[index] = layout);
+    const setLayout = event => (this.layouts[index] = event.nativeEvent.layout);
     const active = this.props.active.hasOwnProperty(index);
 
     return (
@@ -173,7 +203,7 @@ export class LayoutManager extends React.Component {
   renderReservation({ reservation, layout }) {
     const values = extractDimensions(layout);
     const index = fmtIndex(reservation.x, reservation.y);
-    const setLayout = layout => (this.layouts[index] = layout);
+    const setLayout = event => (this.layouts[index] = event.nativeEvent.layout);
 
     return (
       <LayoutSelection

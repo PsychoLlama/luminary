@@ -141,11 +141,12 @@ describe('LayoutManager', () => {
         const layout = {
           height: element.prop('height'),
           width: element.prop('width'),
-          left: element.prop('left'),
-          top: element.prop('top'),
+          x: element.prop('left'),
+          y: element.prop('top'),
         };
 
-        element.simulate('layout', layout);
+        const event = { nativeEvent: { layout } };
+        element.simulate('layout', event);
       };
 
       result.output.find(LayoutOption).forEach(invokeLayout);
@@ -157,12 +158,58 @@ describe('LayoutManager', () => {
     it('marks cells as active when dragging immediately over them', () => {
       const { output, props } = gesture();
 
-      const state = { x0: 1, y0: 1, dx: 4, dy: 4 };
-      output.instance().onPanResponderMove(null, state);
+      const event = { x0: 1, y0: 1, dx: 4, dy: 4 };
+      output.instance().onPanResponderMove(null, event);
 
-      const index = fmtIndex(0, 0);
-      const payload = { active: true, index };
+      const index = fmtIndex(1, 1);
+      const payload = { [index]: true };
       expect(props.setDragActiveState).toHaveBeenCalledWith(payload);
+    });
+
+    it('does not mark cells as active while already active', () => {
+      const { output, props } = gesture({
+        active: { [fmtIndex(1, 1)]: true },
+      });
+
+      const event = { x0: 1, y0: 1, dx: 1, dy: 1 };
+      output.instance().onPanResponderMove(null, event);
+
+      expect(props.setDragActiveState).not.toHaveBeenCalled();
+    });
+
+    it('marks cells as selected if intersection exists', () => {
+      const { output, props, dimensions } = gesture();
+
+      // The whole top row.
+      const event = {
+        y0: 1,
+        dy: 1,
+        x0: dimensions.width - 1,
+        dx: -dimensions.width + 1,
+      };
+
+      output.instance().onPanResponderMove(null, event);
+
+      expect(props.setDragActiveState).toHaveBeenCalledWith({
+        [fmtIndex(1, 1)]: true,
+        [fmtIndex(2, 1)]: true,
+        [fmtIndex(3, 1)]: true,
+        [fmtIndex(4, 1)]: true,
+      });
+    });
+
+    it('marks cells inactive when drawn away', () => {
+      const { output, props } = gesture({
+        active: { '4:1': true },
+      });
+
+      const event = { y0: 1, dy: 1, x0: 1, dx: 1 };
+      output.instance().onPanResponderMove(null, event);
+
+      expect(props.setDragActiveState).toHaveBeenCalledWith({
+        [fmtIndex(4, 1)]: false,
+        [fmtIndex(1, 1)]: true,
+      });
     });
   });
 

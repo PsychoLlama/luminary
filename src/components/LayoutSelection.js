@@ -9,12 +9,13 @@ export class LayoutSelection extends React.Component {
     width: PropTypes.number.isRequired,
     left: PropTypes.number.isRequired,
     top: PropTypes.number.isRequired,
+    onLayout: PropTypes.func,
   };
 
   render() {
     const inline = R.pick(['height', 'width', 'left', 'top'], this.props);
 
-    return <View style={[inline]} />;
+    return <View style={[inline]} onLayout={this.props.onLayout} />;
   }
 }
 
