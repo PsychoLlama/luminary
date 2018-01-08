@@ -58,6 +58,35 @@ describe('Groups', () => {
     expect(groups.at(1).prop('divide')).toBe(false);
   });
 
+  describe('edit button', () => {
+    const setup = merge => {
+      const props = {
+        navigation: {
+          navigate: jest.fn(),
+        },
+        ...merge,
+      };
+
+      const options = Groups.navigationOptions(props);
+
+      return {
+        node: options.headerRight,
+        props,
+      };
+    };
+
+    it('renders', () => {
+      setup();
+    });
+
+    it('navigates on press', () => {
+      const { node, props } = setup();
+      node.props.onPress();
+
+      expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutManager');
+    });
+  });
+
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {

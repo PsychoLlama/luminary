@@ -1,10 +1,11 @@
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { createSelector } from 'reselect';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import R from 'ramda';
 
+import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
 import Group from './Group';
 
@@ -16,6 +17,15 @@ export const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+
+  editButtonContainer: {
+    marginRight: 16,
+  },
+
+  editButton: {
+    color: colors.navbar.text,
+    fontSize: 18,
+  },
 });
 
 export class Groups extends Component {
@@ -25,9 +35,19 @@ export class Groups extends Component {
     serverUrl: PropTypes.string.isRequired,
   };
 
-  static navigationOptions = {
+  static navigationOptions = props => ({
     title: 'Groups',
-  };
+    headerRight: (
+      <TouchableOpacity
+        title="Edit"
+        onPress={() => props.navigation.navigate('LayoutManager')}
+      >
+        <View style={styles.editButtonContainer}>
+          <Text style={styles.editButton}>Edit</Text>
+        </View>
+      </TouchableOpacity>
+    ),
+  });
 
   componentDidMount() {
     this.props.fetchAllGroups(this.props.serverUrl);
