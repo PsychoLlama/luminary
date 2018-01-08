@@ -42,8 +42,12 @@ export class LayoutManager extends React.Component {
   layouts = {};
   state = { layout: null, NAVBAR_Y_OFFSET: 0 };
   onPanResponderRelease = () => {
-    this.props.createCellGroup(this.props.active);
-    this.props.navigation.navigate('LayoutConfig');
+    const { active } = this.props;
+
+    if (!R.isEmpty(active)) {
+      this.props.createCellGroup(this.props.active);
+      this.props.navigation.navigate('LayoutConfig');
+    }
   };
 
   onPanResponderMove = (event, { x0, y0, dx, dy }) => {
@@ -77,7 +81,7 @@ export class LayoutManager extends React.Component {
       {},
     );
 
-    if (R.keys(patches).length) {
+    if (!R.isEmpty(patches)) {
       this.props.setDragActiveState(patches);
     }
   };
@@ -149,7 +153,7 @@ export class LayoutManager extends React.Component {
       .fill()
       .reduce((cells, value, id) => {
         const layout = this.getOptionLayout(dimensions, id);
-        const index = fmtIndex(layout.col - 1, layout.row - 1);
+        const index = fmtIndex(layout.row - 1, layout.col - 1);
 
         // Don't render a cell on this X/Y coordinate if it's occupied.
         if (reservationIndex.hasOwnProperty(index)) return cells;
@@ -221,7 +225,7 @@ export class LayoutManager extends React.Component {
 
   renderOption(layout) {
     const values = extractDimensions(layout);
-    const index = fmtIndex(layout.col, layout.row);
+    const index = fmtIndex(layout.row, layout.col);
     const setLayout = event => (this.layouts[index] = event.nativeEvent.layout);
     const active = this.props.active.hasOwnProperty(index);
 
@@ -238,7 +242,7 @@ export class LayoutManager extends React.Component {
 
   renderReservation({ reservation, layout }) {
     const values = extractDimensions(layout);
-    const index = fmtIndex(reservation.x, reservation.y);
+    const index = fmtIndex(reservation.x + 1, reservation.y + 1);
     const setLayout = event => (this.layouts[index] = event.nativeEvent.layout);
 
     return (

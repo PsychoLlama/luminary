@@ -97,7 +97,7 @@ describe('LayoutManager', () => {
 
   it('indicates whether cells are drag active', () => {
     const { output } = setup({
-      active: { '2:1': true },
+      active: { '1:2': true },
     });
 
     const first = output.find(LayoutOption).at(0);
@@ -221,9 +221,9 @@ describe('LayoutManager', () => {
 
       expect(props.setDragActiveState).toHaveBeenCalledWith({
         [fmtIndex(1, 1)]: true,
-        [fmtIndex(2, 1)]: true,
-        [fmtIndex(3, 1)]: true,
-        [fmtIndex(4, 1)]: true,
+        [fmtIndex(1, 2)]: true,
+        [fmtIndex(1, 3)]: true,
+        [fmtIndex(1, 4)]: true,
       });
     });
 
@@ -249,6 +249,17 @@ describe('LayoutManager', () => {
       onRelease();
       expect(props.createCellGroup).toHaveBeenCalledWith(props.active);
       expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutConfig');
+    });
+
+    it('does not trigger a config if nothing is selected', () => {
+      const { props, onRelease } = gesture({
+        active: {},
+      });
+
+      onRelease();
+
+      expect(props.createCellGroup).not.toHaveBeenCalled();
+      expect(props.navigation.navigate).not.toHaveBeenCalled();
     });
   });
 
