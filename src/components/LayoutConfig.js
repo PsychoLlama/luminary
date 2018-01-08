@@ -1,3 +1,4 @@
+import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -159,13 +160,14 @@ export class GroupOption extends React.Component {
   select = () => this.props.onSelect(this.props.id);
 }
 
+const getGroupList = createSelector(
+  R.identity,
+  R.compose(R.filter(R.compose(R.equals('Room'), R.prop('type'))), R.values),
+);
+
 export const mapStateToProps = state => ({
   selected: R.path(['layout', 'newCellGroup', 'groupId'], state),
-  groups: [
-    { id: '1', name: 'Hall' },
-    { id: '2', name: 'Kitchen' },
-    { id: '3', name: 'Living Room' },
-  ],
+  groups: getGroupList(R.path(['groups'], state)),
 });
 
 const mapDispatchToProps = {

@@ -130,6 +130,13 @@ describe('LayoutConfig', () => {
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
+        groups: {
+          1: { id: '1', name: 'Hall', type: 'Room' },
+          2: { id: '2', name: 'Kitchen', type: 'Room' },
+          3: { id: '3', name: 'Living Room', type: 'Room' },
+          4: { id: '4', name: 'Custom group for $lights', type: 'LightGroup' },
+        },
+
         layout: {
           newCellGroup: {
             groupId: '18',
@@ -160,6 +167,21 @@ describe('LayoutConfig', () => {
       expect(props.selected).toBe(state.layout.newCellGroup.groupId);
     });
 
-    it('gets the list of groups');
+    it('gets the list of groups', () => {
+      const { props, state } = select();
+
+      expect(props.groups).toEqual([
+        state.groups[1],
+        state.groups[2],
+        state.groups[3],
+      ]);
+    });
+
+    it('does not change the group reference between renders', () => {
+      const { state } = select();
+      const updates = { $set: state };
+
+      expect(select(updates).props.groups).toBe(select(updates).props.groups);
+    });
   });
 });
