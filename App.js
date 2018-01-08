@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import React from 'react';
 
 import LayoutManager from './src/components/LayoutManager';
+import LayoutConfig from './src/components/LayoutConfig';
 import ServerLink from './src/components/ServerLink';
 import * as colors from './src/constants/colors';
 import Groups from './src/components/Groups';
@@ -16,17 +17,15 @@ const styles = StyleSheet.create({
 });
 
 const navigationOptions = {
-  headerStyle: {
-    backgroundColor: colors.navbar.bg,
-  },
-  headerTitleStyle: {
-    color: colors.navbar.text,
-  },
+  headerStyle: { backgroundColor: colors.navbar.bg },
+  headerTitleStyle: { color: colors.navbar.text },
+  headerTintColor: colors.navbar.text,
 };
 
 const Routes = StackNavigator(
   {
     LayoutManager: { screen: LayoutManager, navigationOptions },
+    LayoutConfig: { screen: LayoutConfig, navigationOptions },
     ServerLink: { screen: ServerLink, navigationOptions },
     Groups: { screen: Groups, navigationOptions },
   },

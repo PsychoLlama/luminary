@@ -26,6 +26,9 @@ describe('LayoutManager', () => {
       createCellGroup: jest.fn(),
       reserved: [],
       active: {},
+      navigation: {
+        navigate: jest.fn(),
+      },
       ...merge,
     };
 
@@ -245,6 +248,7 @@ describe('LayoutManager', () => {
 
       onRelease();
       expect(props.createCellGroup).toHaveBeenCalledWith(props.active);
+      expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutConfig');
     });
   });
 

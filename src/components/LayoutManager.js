@@ -23,6 +23,7 @@ export class LayoutManager extends React.Component {
   static propTypes = {
     setDragActiveState: PropTypes.func.isRequired,
     createCellGroup: PropTypes.func.isRequired,
+    navigation: PropTypes.object.isRequired,
     active: PropTypes.object.isRequired,
     reserved: PropTypes.arrayOf(
       PropTypes.shape({
@@ -42,6 +43,7 @@ export class LayoutManager extends React.Component {
   state = { layout: null, NAVBAR_Y_OFFSET: 0 };
   onPanResponderRelease = () => {
     this.props.createCellGroup(this.props.active);
+    this.props.navigation.navigate('LayoutConfig');
   };
 
   onPanResponderMove = (event, { x0, y0, dx, dy }) => {

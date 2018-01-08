@@ -11,6 +11,7 @@ export const text = palette.lightgray;
 export const appBackground = palette.darkgray;
 
 export const groups = {
+  radio: palette.red,
   divider: '#15181F',
   bg: '#1B2129',
   selected: '#161C23',

@@ -55,8 +55,52 @@ describe('Layout', () => {
       const action = actions.createCellGroup(active);
       const state = reducer(undefined, action);
 
-      expect(state.newCellGroup).toEqual({
+      expect(state.newCellGroup).toMatchObject({
         selected: active,
+      });
+    });
+  });
+
+  describe('selectGroup', () => {
+    it('marks the group ID as selected', () => {
+      const id = '18';
+      const createCellGroup = actions.createCellGroup({});
+      const initial = reducer(undefined, createCellGroup);
+      const action = actions.selectGroup(id);
+      const state = reducer(initial, action);
+
+      expect(state.newCellGroup.groupId).toBe(id);
+    });
+  });
+
+  describe('createGrouping', () => {
+    it('removes intermediate grouping state', () => {
+      const selected = { '0:0': true };
+      const createCellGroup = actions.createCellGroup(selected);
+      const done = actions.createGrouping();
+
+      const cellGroupings = reducer(undefined, createCellGroup);
+      const state = reducer(cellGroupings, done);
+
+      expect(state.newCellGroup).toBe(null);
+    });
+
+    it('adds a reserved slot', () => {
+      const id = '8';
+      const selected = { '1:1': true, '1:2': true };
+      const create = actions.createCellGroup(selected);
+      const initial = reducer(undefined, create);
+      const identified = reducer(initial, actions.selectGroup(id));
+      const state = reducer(identified, actions.createGrouping());
+
+      expect(state.reserved).toEqual({
+        '0:0': {
+          group: id,
+          height: 2,
+          width: 1,
+          x: 0,
+          y: 0,
+        },
       });
     });
   });
