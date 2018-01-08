@@ -1,13 +1,19 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
+import {
+  Text,
+  View,
+  Button,
+  Keyboard,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
 
 import * as actions from '../actions/filament';
 import * as colors from '../constants/colors';
 import { STATES } from '../reducers/filament';
-import Groups from './Groups';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,17 +38,19 @@ export class ServerLink extends React.Component {
   static propTypes = {
     lookupState: PropTypes.oneOf(R.values(STATES)),
     updateServerUrl: PropTypes.func.isRequired,
-    getServerUrl: PropTypes.func.isRequired,
     pingServer: PropTypes.func.isRequired,
     testingConnection: PropTypes.bool,
     pingSuccessful: PropTypes.bool,
     urlLooksValid: PropTypes.bool,
     serverUrl: PropTypes.string,
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func.isRequired,
+    }).isRequired,
   };
 
-  componentDidMount() {
-    this.props.getServerUrl();
-  }
+  static navigationOptions = {
+    title: 'Connect to Filament',
+  };
 
   render() {
     const { pingSuccessful, lookupState } = this.props;
@@ -51,13 +59,9 @@ export class ServerLink extends React.Component {
       return null;
     }
 
-    if (lookupState === STATES.FOUND) {
-      return <Groups />;
-    }
-
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>{"What's your Filament URL?"}</Text>
+        <Text style={styles.header}>What&apos;s your Filament URL?</Text>
 
         <TextInput
           onChangeText={this.props.updateServerUrl}
@@ -99,11 +103,16 @@ export class ServerLink extends React.Component {
     return 'Connect';
   }
 
-  pingServer = () => {
+  pingServer = async () => {
     const { serverUrl } = this.props;
 
     if (!this.isDisabled()) {
-      this.props.pingServer(serverUrl);
+      const { payload } = await this.props.pingServer(serverUrl);
+
+      if (payload && payload.success) {
+        Keyboard.dismiss();
+        this.props.navigation.navigate('Groups');
+      }
     }
   };
 }
@@ -122,7 +131,6 @@ export const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   updateServerUrl: actions.updateServerUrl,
-  getServerUrl: actions.getServerUrl,
   pingServer: actions.pingServer,
 };
 

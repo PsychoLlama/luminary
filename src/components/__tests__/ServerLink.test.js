@@ -6,17 +6,18 @@ import React from 'react';
 import { ServerLink, mapStateToProps } from '../ServerLink';
 import { STATES } from '../../reducers/filament';
 import { error } from '../../constants/colors';
-import Groups from '../Groups';
 
 describe('ServerLink', () => {
   const setup = merge => {
     const props = {
+      pingServer: jest.fn(() => Promise.resolve()),
       lookupState: STATES.NOT_FOUND,
       serverUrl: 'http://filament/',
       updateServerUrl: jest.fn(),
-      getServerUrl: jest.fn(),
-      pingServer: jest.fn(),
       urlLooksValid: true,
+      navigation: {
+        navigate: jest.fn(),
+      },
       ...merge,
     };
 
@@ -30,23 +31,32 @@ describe('ServerLink', () => {
     setup();
   });
 
-  it('fetches the address when mounting', async () => {
-    const { output, props } = setup();
-
-    await output.instance().componentDidMount();
-    expect(props.getServerUrl).toHaveBeenCalled();
-  });
-
   it('shows nothing while loading', () => {
     const { output } = setup({ lookupState: STATES.LOADING });
 
     expect(output.equals(null)).toBe(true);
   });
 
-  it('shows the groups if the server URL was found', () => {
-    const { output } = setup({ lookupState: STATES.FOUND });
+  it('shows the groups if the ping was successful', async () => {
+    const { output, props } = setup({
+      pingServer: jest.fn(() =>
+        Promise.resolve({ payload: { success: true } }),
+      ),
+    });
 
-    expect(output.find(Groups).exists()).toBe(true);
+    await output.find(Button).prop('onPress')();
+
+    expect(props.navigation.navigate).toHaveBeenCalledWith('Groups');
+  });
+
+  it('does not redirect to groups if unsuccessful', async () => {
+    const { output, props } = setup({
+      pingServer: jest.fn(() => Promise.resolve({ payload: null })),
+    });
+
+    await output.find(Button).prop('onPress')();
+
+    expect(props.navigation.navigate).not.toHaveBeenCalled();
   });
 
   it('shows an input element', () => {

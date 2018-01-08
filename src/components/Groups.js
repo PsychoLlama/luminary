@@ -25,6 +25,10 @@ export class Groups extends Component {
     serverUrl: PropTypes.string.isRequired,
   };
 
+  static navigationOptions = {
+    title: 'Groups',
+  };
+
   componentDidMount() {
     this.props.fetchAllGroups(this.props.serverUrl);
   }

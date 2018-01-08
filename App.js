@@ -7,6 +7,7 @@ import LayoutManager from './src/components/LayoutManager';
 import LayoutConfig from './src/components/LayoutConfig';
 import ServerLink from './src/components/ServerLink';
 import * as colors from './src/constants/colors';
+import Loading from './src/components/Loading';
 import Groups from './src/components/Groups';
 import store from './src/redux-store';
 
@@ -27,10 +28,11 @@ const Routes = StackNavigator(
     LayoutManager: { screen: LayoutManager, navigationOptions },
     LayoutConfig: { screen: LayoutConfig, navigationOptions },
     ServerLink: { screen: ServerLink, navigationOptions },
+    Loading: { screen: Loading, navigationOptions },
     Groups: { screen: Groups, navigationOptions },
   },
   {
-    initialRouteName: 'LayoutManager',
+    initialRouteName: 'Loading',
     cardStyle: {
       backgroundColor: colors.appBackground,
     },
