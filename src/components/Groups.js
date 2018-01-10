@@ -68,14 +68,9 @@ export class Groups extends Component {
   );
 }
 
-const isRoom = R.compose(R.equals('Room'), R.prop('type'));
 const getGroupIds = createSelector(
-  groups => groups,
-  groups =>
-    Object.keys(groups)
-      .map(key => groups[key])
-      .filter(isRoom)
-      .map(group => group.id),
+  R.identity,
+  R.pipe(R.values, R.filter(R.propEq('type', 'Room')), R.map(R.prop('id'))),
 );
 
 export const mapStateToProps = state => ({

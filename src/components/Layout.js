@@ -1,13 +1,11 @@
-import { View, PanResponder, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
-import LayoutSelection from './LayoutSelection';
 import * as actions from '../actions/layout';
-import LayoutOption from './LayoutOption';
 
 export const OPTIONS_PER_ROW = 4;
 export const fmtIndex = (x, y) => `${x}:${y}`;
@@ -21,10 +19,13 @@ const styles = StyleSheet.create({
 
 export class Layout extends React.Component {
   static propTypes = {
+    renderReservedSpace: PropTypes.func.isRequired,
     setDragActiveState: PropTypes.func.isRequired,
+    renderEmptySpace: PropTypes.func.isRequired,
     createCellGroup: PropTypes.func.isRequired,
     navigation: PropTypes.object.isRequired,
     active: PropTypes.object.isRequired,
+    onCellLayout: PropTypes.func,
     container: PropTypes.shape({
       height: PropTypes.number.isRequired,
       width: PropTypes.number.isRequired,
@@ -39,72 +40,13 @@ export class Layout extends React.Component {
     ),
   };
 
-  static navigationOptions = {
-    title: 'Change layout',
+  static defaultProps = {
+    onCellLayout: R.always(undefined),
   };
-
-  layouts = {};
-  onPanResponderRelease = () => {
-    const { active } = this.props;
-
-    if (!R.isEmpty(active)) {
-      this.props.createCellGroup(this.props.active);
-      this.props.navigation.navigate('LayoutConfig');
-    }
-  };
-
-  onPanResponderMove = (event, { x0, y0, dx, dy }) => {
-    const layout = this.props.container;
-    const { height } = Dimensions.get('window');
-    y0 -= height - layout.height;
-
-    dx = x0 + dx;
-    dy = y0 + dy;
-
-    const left = Math.min(x0, dx);
-    const right = Math.max(x0, dx);
-    const top = Math.min(y0, dy);
-    const bottom = Math.max(y0, dy);
-
-    // Locate which cells intersect with the selection area.
-    const patches = R.toPairs(this.layouts).reduce(
-      (patches, [index, layout]) => {
-        const active = this.props.active.hasOwnProperty(index);
-
-        const xbounded = layout.x + layout.width >= left && layout.x <= right;
-        const ybounded = layout.y + layout.height > top && layout.y <= bottom;
-        const bounded = xbounded && ybounded;
-
-        if (bounded && !active) {
-          patches[index] = true;
-        } else if (!bounded && active) {
-          patches[index] = false;
-        }
-
-        return patches;
-      },
-      {},
-    );
-
-    if (!R.isEmpty(patches)) {
-      this.props.setDragActiveState(patches);
-    }
-  };
-
-  pan = PanResponder.create({
-    onStartShouldSetPanResponder: R.T,
-    onStartShouldSetPanResponderCapture: R.T,
-    onMoveShouldSetPanResponder: R.T,
-    onMoveShouldSetPanResponderCapture: R.T,
-
-    onPanResponderMove: this.onPanResponderMove,
-    onPanResponderRelease: this.onPanResponderRelease,
-  });
 
   render() {
     const dimensions = this.getDimensions();
     const props = {
-      ...this.pan.panHandlers,
       style: styles.container,
     };
 
@@ -220,14 +162,17 @@ export class Layout extends React.Component {
     };
   }
 
+  extractLayout = R.path(['nativeEvent', 'layout']);
   renderOption(layout) {
+    const EmptySpace = this.props.renderEmptySpace;
     const values = extractDimensions(layout);
     const index = fmtIndex(layout.row, layout.col);
-    const setLayout = event => (this.layouts[index] = event.nativeEvent.layout);
     const active = this.props.active.hasOwnProperty(index);
+    const setLayout = event =>
+      this.props.onCellLayout(index, this.extractLayout(event));
 
     return (
-      <LayoutOption
+      <EmptySpace
         onLayout={setLayout}
         active={active}
         key={index}
@@ -238,17 +183,14 @@ export class Layout extends React.Component {
   }
 
   renderReservation({ reservation, layout }) {
+    const Reservation = this.props.renderReservedSpace;
     const values = extractDimensions(layout);
     const index = fmtIndex(reservation.x + 1, reservation.y + 1);
-    const setLayout = event => (this.layouts[index] = event.nativeEvent.layout);
+    const setLayout = event =>
+      this.props.onCellLayout(index, this.extractLayout(event));
 
     return (
-      <LayoutSelection
-        onLayout={setLayout}
-        key={index}
-        id={index}
-        {...values}
-      />
+      <Reservation onLayout={setLayout} key={index} id={index} {...values} />
     );
   }
 }
