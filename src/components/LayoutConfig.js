@@ -14,6 +14,7 @@ import {
 
 import * as colors from '../constants/colors';
 import * as actions from '../actions/layout';
+import { selector } from '../utils/redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -160,14 +161,12 @@ export class GroupOption extends React.Component {
   select = () => this.props.onSelect(this.props.id);
 }
 
-const getGroupList = createSelector(
-  R.identity,
-  R.compose(R.filter(R.compose(R.equals('Room'), R.prop('type'))), R.values),
-);
-
-export const mapStateToProps = state => ({
-  selected: R.path(['layout', 'newCellGroup', 'groupId'], state),
-  groups: getGroupList(R.path(['groups'], state)),
+export const mapStateToProps = selector({
+  selected: R.path(['layout', 'newCellGroup', 'groupId']),
+  groups: createSelector(
+    R.prop('groups'),
+    R.pipe(R.values, R.filter(R.propEq('type', 'Room'))),
+  ),
 });
 
 const mapDispatchToProps = {

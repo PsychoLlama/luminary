@@ -6,6 +6,7 @@ import { TouchableWithoutFeedback, StyleSheet, Text, View } from 'react-native';
 
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
+import { selector } from '../utils/redux';
 
 export const styles = StyleSheet.create({
   container: {
@@ -77,9 +78,9 @@ export class Group extends Component {
   };
 }
 
-export const mapStateToProps = (state, props) => ({
-  serverUrl: R.path(['server', 'url'], state),
-  group: R.path(['groups', props.id], state),
+export const mapStateToProps = selector({
+  group: (state, props) => R.path(['groups', props.id], state),
+  serverUrl: R.path(['server', 'url']),
 });
 
 const mapDispatchToProps = {

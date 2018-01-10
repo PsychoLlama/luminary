@@ -6,6 +6,7 @@ import React from 'react';
 import R from 'ramda';
 
 import * as actions from '../actions/layout';
+import { selector } from '../utils/redux';
 
 export const OPTIONS_PER_ROW = 4;
 export const fmtIndex = (x, y) => `${x}:${y}`;
@@ -195,10 +196,9 @@ export class Layout extends React.Component {
   }
 }
 
-const getReservationList = createSelector(R.identity, R.values);
-export const mapStateToProps = state => ({
-  reserved: getReservationList(R.path(['layout', 'reserved'], state)),
-  active: R.path(['layout', 'active'], state),
+export const mapStateToProps = selector({
+  reserved: createSelector(R.path(['layout', 'reserved']), R.values),
+  active: R.path(['layout', 'active']),
 });
 
 const mapDispatchToProps = {

@@ -7,6 +7,7 @@ import R from 'ramda';
 import LayoutSelection from './LayoutSelection';
 import * as actions from '../actions/layout';
 import LayoutOption from './LayoutOption';
+import { selector } from '../utils/redux';
 import Layout from './Layout';
 
 const styles = StyleSheet.create({
@@ -114,8 +115,8 @@ export class LayoutManager extends React.Component {
   };
 }
 
-export const mapStateToProps = state => ({
-  active: R.path(['layout', 'active'], state),
+export const mapStateToProps = selector({
+  active: R.path(['layout', 'active']),
 });
 
 const mapDispatchToProps = {

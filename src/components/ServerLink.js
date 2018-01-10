@@ -14,6 +14,7 @@ import {
 import * as actions from '../actions/filament';
 import * as colors from '../constants/colors';
 import { STATES } from '../reducers/filament';
+import { selector } from '../utils/redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -117,17 +118,14 @@ export class ServerLink extends React.Component {
   };
 }
 
-export const mapStateToProps = state => {
-  const server = R.path(['server'], state);
-
-  return {
-    testingConnection: R.path(['testingConnection'], server),
-    pingSuccessful: R.path(['pingSuccessful'], server),
-    urlLooksValid: R.path(['urlLooksValid'], server),
-    lookupState: R.path(['state'], server),
-    serverUrl: R.path(['url'], server),
-  };
-};
+const withServerState = fn => R.pipe(R.prop('server'), fn);
+export const mapStateToProps = selector({
+  testingConnection: withServerState(R.prop('testingConnection')),
+  pingSuccessful: withServerState(R.prop('pingSuccessful')),
+  urlLooksValid: withServerState(R.prop('urlLooksValid')),
+  lookupState: withServerState(R.prop('state')),
+  serverUrl: withServerState(R.prop('url')),
+});
 
 const mapDispatchToProps = {
   updateServerUrl: actions.updateServerUrl,

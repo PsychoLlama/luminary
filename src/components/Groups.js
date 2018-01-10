@@ -7,6 +7,7 @@ import R from 'ramda';
 
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
+import { selector } from '../utils/redux';
 import Group from './Group';
 
 export const styles = StyleSheet.create({
@@ -68,14 +69,12 @@ export class Groups extends Component {
   );
 }
 
-const getGroupIds = createSelector(
-  R.identity,
-  R.pipe(R.values, R.filter(R.propEq('type', 'Room')), R.map(R.prop('id'))),
-);
-
-export const mapStateToProps = state => ({
-  serverUrl: R.path(['server', 'url'], state),
-  groups: getGroupIds(state.groups),
+export const mapStateToProps = selector({
+  serverUrl: R.path(['server', 'url']),
+  groups: createSelector(
+    R.prop('groups'),
+    R.pipe(R.values, R.filter(R.propEq('type', 'Room')), R.map(R.prop('id'))),
+  ),
 });
 
 const mapDispatchToProps = {
