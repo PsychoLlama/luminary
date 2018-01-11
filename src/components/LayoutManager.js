@@ -42,15 +42,15 @@ export class LayoutManager extends React.Component {
   onPanResponderMove = (event, { x0, y0, dx, dy }) => {
     const layout = this.state.dimensions;
     const { height } = Dimensions.get('window');
-    y0 -= height - layout.height;
+    const distanceFromTop = height - layout.height;
 
-    dx = x0 + dx;
-    dy = y0 + dy;
+    const start = { x: x0, y: y0 - distanceFromTop };
+    const end = { x: start.x + dx, y: start.y + dy };
 
-    const left = Math.min(x0, dx);
-    const right = Math.max(x0, dx);
-    const top = Math.min(y0, dy);
-    const bottom = Math.max(y0, dy);
+    const left = Math.min(start.x, end.x);
+    const right = Math.max(start.x, end.x);
+    const top = Math.min(start.y, end.y);
+    const bottom = Math.max(start.y, end.y);
 
     // Locate which cells intersect with the selection area.
     const patches = R.toPairs(this.layouts).reduce(

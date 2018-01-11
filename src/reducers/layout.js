@@ -50,7 +50,7 @@ export default handleActions(
       const selectedCells = R.keys(selected).map(parse);
 
       // Locate the top-left index.
-      const [col, row] = selectedCells.reduce((matching, pair) => {
+      const [x, y] = selectedCells.reduce((matching, pair) => {
         const [x, y] = pair;
         if (x <= matching[0] && y <= matching[1]) return pair;
 
@@ -59,8 +59,6 @@ export default handleActions(
 
       const xs = new Set(selectedCells.map(R.prop(0)));
       const ys = new Set(selectedCells.map(R.prop(1)));
-      const x = col - 1;
-      const y = row - 1;
 
       return update(state, {
         newCellGroup: { $set: null },

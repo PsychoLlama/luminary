@@ -94,12 +94,12 @@ describe('Layout', () => {
       const state = reducer(identified, actions.createGrouping());
 
       expect(state.reserved).toEqual({
-        '0:0': {
+        '1:1': {
           group: id,
           height: 2,
           width: 1,
-          x: 0,
-          y: 0,
+          x: 1,
+          y: 1,
         },
       });
     });
