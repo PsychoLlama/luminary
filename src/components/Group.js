@@ -12,17 +12,21 @@ export const styles = StyleSheet.create({
   container: {
     borderColor: colors.groups.divider,
     backgroundColor: colors.groups.bg,
+    justifyContent: 'center',
+    alignItems: 'center',
     position: 'absolute',
-    borderWidth: 1,
     borderBottomWidth: 2,
+    borderWidth: 1,
   },
 
   title: {
     color: colors.text,
     fontSize: 20,
-    padding: 30,
-    width: '100%',
-    textAlign: 'center',
+    padding: 2,
+  },
+
+  smallTitle: {
+    fontSize: 12,
   },
 
   off: { borderBottomColor: colors.groups.status.off },
@@ -33,6 +37,7 @@ const extractLayout = R.pick(['top', 'left', 'width', 'height']);
 export class Group extends Component {
   static propTypes = {
     toggleLights: PropTypes.func.isRequired,
+    blockWidth: PropTypes.number.isRequired,
     serverUrl: PropTypes.string.isRequired,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -42,9 +47,9 @@ export class Group extends Component {
   };
 
   render() {
-    const { group } = this.props;
+    const { group, blockWidth } = this.props;
     const online = group.anyOn ? styles.on : styles.off;
-    const style = [styles.title];
+    const style = [styles.title, blockWidth === 1 && styles.smallTitle];
 
     return (
       <TouchableWithoutFeedback onPress={this.toggleLights}>
@@ -65,10 +70,14 @@ export class Group extends Component {
   };
 }
 
+const withLayout = fn => (state, props) =>
+  R.pipe(R.path(['layout', 'reserved', props.id]), fn)(state);
+
 export const mapStateToProps = selector({
+  blockWidth: withLayout(R.prop('width')),
   serverUrl: R.path(['server', 'url']),
   group: (state, props) => {
-    const groupId = R.path(['layout', 'reserved', props.id, 'group'], state);
+    const groupId = withLayout(R.prop('group'))(state, props);
 
     return R.path(['groups', groupId], state);
   },
