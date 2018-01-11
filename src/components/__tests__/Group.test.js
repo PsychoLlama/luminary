@@ -1,15 +1,26 @@
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
+import R from 'ramda';
 
 import { Group, styles, mapStateToProps } from '../Group';
 
 describe('Group', () => {
+  const isContainer = element => {
+    const style = element.prop('style');
+    if (!R.is(Function, R.prop('some', style))) return false;
+
+    return style.some(R.equals(styles.container));
+  };
+
   const setup = merge => {
     const props = {
       serverUrl: 'http://filament/',
       toggleLights: jest.fn(),
-      divide: false,
+      height: 90,
+      width: 60,
+      left: 30,
+      top: 0,
       group: {
         name: 'Hall',
         anyOn: true,
@@ -34,9 +45,9 @@ describe('Group', () => {
 
   it('shows when the group is online', () => {
     const { output } = setup();
-    const status = output.find({ style: [styles.status, styles.on] });
+    const style = output.findWhere(isContainer).prop('style');
 
-    expect(status.length).toBe(1);
+    expect(style).toContain(styles.on);
   });
 
   it('shows when the group is offline', () => {
@@ -48,23 +59,9 @@ describe('Group', () => {
       },
     });
 
-    const status = output.find({ style: [styles.status, styles.off] });
+    const style = output.findWhere(isContainer).prop('style');
 
-    expect(status.length).toBe(1);
-  });
-
-  it('shows the divider if set', () => {
-    const { output } = setup({ divide: true });
-    const group = output.find({ style: [styles.title, styles.divide] });
-
-    expect(group.length).toBe(1);
-  });
-
-  it('does not show the divider if not set', () => {
-    const { output } = setup({ divide: false });
-    const group = output.find({ style: [styles.title, styles.divide] });
-
-    expect(group.length).toBe(0);
+    expect(style).toContain(styles.off);
   });
 
   it('toggles the group when tapped', () => {
@@ -77,12 +74,33 @@ describe('Group', () => {
     });
   });
 
+  it('shows inline styles', () => {
+    const { output, props } = setup();
+    const container = output.findWhere(isContainer);
+
+    const inline = R.last(container.prop('style'));
+
+    expect(inline).toMatchObject({
+      height: props.height,
+      width: props.width,
+      left: props.left,
+      top: props.top,
+    });
+  });
+
   describe('mapStateToProps', () => {
-    const select = (updates = {}, props = { id: 1 }) => {
+    const select = (updates = {}, props = { id: '1:1' }) => {
       const defaultState = {
         server: { url: 'http://filament/' },
+        layout: {
+          reserved: {
+            '1:1': {
+              group: '16',
+            },
+          },
+        },
         groups: {
-          1: {
+          16: {
             name: 'Group One',
             type: 'Room',
             id: '1',
@@ -91,10 +109,12 @@ describe('Group', () => {
       };
 
       const state = update(defaultState, updates);
+      const groupId = R.path(['layout', 'reserved', props.id, 'group'], state);
 
       return {
         props: mapStateToProps(state, props),
         ownProps: props,
+        groupId,
         state,
       };
     };
@@ -102,15 +122,16 @@ describe('Group', () => {
     it('works when nothing is defined', () => {
       const { props } = select({
         groups: { $set: undefined },
+        layout: { $set: undefined },
       });
 
       expect(props).toEqual(expect.any(Object));
     });
 
     it('extracts the group from state', () => {
-      const { props, state, ownProps } = select();
+      const { props, state, groupId } = select();
 
-      expect(props.group).toBe(state.groups[ownProps.id]);
+      expect(props.group).toBe(state.groups[groupId]);
     });
 
     it('pulls the server URL from redux', () => {

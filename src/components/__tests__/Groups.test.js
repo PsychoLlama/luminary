@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import { Groups, mapStateToProps } from '../Groups';
+import Layout from '../Layout';
 import Group from '../Group';
 
 const createGroup = (fields = {}) => ({
@@ -23,8 +24,14 @@ describe('Groups', () => {
       ...merge,
     };
 
+    const output = shallow(<Groups {...props} />);
+    const dimensions = { width: 360, height: 560 };
+    const event = { nativeEvent: { layout: dimensions } };
+    output.simulate('layout', event);
+
     return {
-      output: shallow(<Groups {...props} />),
+      dimensions,
+      output,
       props,
     };
   };
@@ -36,26 +43,20 @@ describe('Groups', () => {
     expect(props.fetchAllGroups).toHaveBeenCalledWith(props.serverUrl);
   });
 
-  it('shows all the groups', () => {
-    const { output, props } = setup();
-    const groups = output.find(Group);
-
-    expect(groups.length).toBe(props.groups.length);
-  });
-
-  it('passes the group to the group component', () => {
-    const { output, props } = setup();
-    const groups = output.find(Group).first();
-
-    expect(groups.prop('id')).toEqual(props.groups[0]);
-  });
-
-  it('puts a middle divider on every second component', () => {
+  it('renders a layout', () => {
     const { output } = setup();
-    const groups = output.find(Group);
+    const layout = output.find(Layout);
 
-    expect(groups.at(0).prop('divide')).toBe(true);
-    expect(groups.at(1).prop('divide')).toBe(false);
+    expect(layout.exists()).toBe(true);
+    expect(layout.prop('renderReservedSpace')).toBe(Group);
+    expect(layout.prop('renderEmptySpace')).toEqual(expect.any(Function));
+  });
+
+  it('passes the computed layout', () => {
+    const { output, dimensions } = setup();
+    const layout = output.find(Layout);
+
+    expect(layout.prop('container')).toBe(dimensions);
   });
 
   describe('edit button', () => {

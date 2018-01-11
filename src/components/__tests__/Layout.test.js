@@ -89,7 +89,7 @@ describe('Layout', () => {
 
   it('indicates whether cells are drag active', () => {
     const { output } = setup({
-      active: { '1:2': true },
+      active: { '1:0': true },
     });
 
     const first = output.find(LayoutOption).at(0);

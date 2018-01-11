@@ -8,15 +8,12 @@ import R from 'ramda';
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
 import { selector } from '../utils/redux';
+import Layout from './Layout';
 import Group from './Group';
 
 export const styles = StyleSheet.create({
   container: {
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
+    flex: 1,
   },
 
   editButtonContainer: {
@@ -28,6 +25,8 @@ export const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
+const renderEmptySpace = R.always(null);
 
 export class Groups extends Component {
   static propTypes = {
@@ -50,23 +49,28 @@ export class Groups extends Component {
     ),
   });
 
+  state = { layout: null };
+
   componentDidMount() {
     this.props.fetchAllGroups(this.props.serverUrl);
   }
 
   render() {
-    return <View style={styles.container}>{this.renderContent()}</View>;
+    return (
+      <View style={styles.container} onLayout={this.setDimensions}>
+        <Layout
+          renderEmptySpace={renderEmptySpace}
+          container={this.state.layout}
+          renderReservedSpace={Group}
+        />
+      </View>
+    );
   }
 
-  renderContent() {
-    const { groups } = this.props;
-
-    return groups.map(this.createGroup);
-  }
-
-  createGroup = (groupId, index) => (
-    <Group key={groupId} id={groupId} divide={index % 2 === 0} />
-  );
+  setDimensions = event => {
+    const { layout } = event.nativeEvent;
+    this.setState({ layout });
+  };
 }
 
 export const mapStateToProps = selector({

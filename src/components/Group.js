@@ -10,8 +10,11 @@ import { selector } from '../utils/redux';
 
 export const styles = StyleSheet.create({
   container: {
+    borderColor: colors.groups.divider,
     backgroundColor: colors.groups.bg,
-    width: '50%',
+    position: 'absolute',
+    borderWidth: 1,
+    borderBottomWidth: 2,
   },
 
   title: {
@@ -22,25 +25,15 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  divide: {
-    borderRightWidth: 2,
-    borderColor: colors.groups.divider,
-  },
-
-  status: {
-    height: 2,
-    width: '100%',
-  },
-
-  off: { backgroundColor: colors.groups.status.off },
-  on: { backgroundColor: colors.groups.status.on },
+  off: { borderBottomColor: colors.groups.status.off },
+  on: { borderBottomColor: colors.groups.status.on },
 });
 
+const extractLayout = R.pick(['top', 'left', 'width', 'height']);
 export class Group extends Component {
   static propTypes = {
     toggleLights: PropTypes.func.isRequired,
     serverUrl: PropTypes.string.isRequired,
-    divide: PropTypes.bool,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
@@ -49,20 +42,14 @@ export class Group extends Component {
   };
 
   render() {
-    const { group, divide } = this.props;
+    const { group } = this.props;
     const online = group.anyOn ? styles.on : styles.off;
     const style = [styles.title];
 
-    if (divide) {
-      style.push(styles.divide);
-    }
-
     return (
       <TouchableWithoutFeedback onPress={this.toggleLights}>
-        <View style={styles.container}>
+        <View style={[styles.container, online, extractLayout(this.props)]}>
           <Text style={style}>{this.props.group.name}</Text>
-
-          <View style={[styles.status, online]} />
         </View>
       </TouchableWithoutFeedback>
     );
@@ -79,8 +66,12 @@ export class Group extends Component {
 }
 
 export const mapStateToProps = selector({
-  group: (state, props) => R.path(['groups', props.id], state),
   serverUrl: R.path(['server', 'url']),
+  group: (state, props) => {
+    const groupId = R.path(['layout', 'reserved', props.id, 'group'], state);
+
+    return R.path(['groups', groupId], state);
+  },
 });
 
 const mapDispatchToProps = {

@@ -24,7 +24,6 @@ export class Layout extends React.Component {
     setDragActiveState: PropTypes.func.isRequired,
     renderEmptySpace: PropTypes.func.isRequired,
     createCellGroup: PropTypes.func.isRequired,
-    navigation: PropTypes.object.isRequired,
     active: PropTypes.object.isRequired,
     onCellLayout: PropTypes.func,
     container: PropTypes.shape({
@@ -93,7 +92,7 @@ export class Layout extends React.Component {
       .fill()
       .reduce((cells, value, id) => {
         const layout = this.getOptionLayout(dimensions, id);
-        const index = fmtIndex(layout.row - 1, layout.col - 1);
+        const index = fmtIndex(layout.col - 1, layout.row - 1);
 
         // Don't render a cell on this X/Y coordinate if it's occupied.
         if (reservationIndex.hasOwnProperty(index)) return cells;
@@ -167,7 +166,7 @@ export class Layout extends React.Component {
   renderOption(layout) {
     const EmptySpace = this.props.renderEmptySpace;
     const values = extractDimensions(layout);
-    const index = fmtIndex(layout.row, layout.col);
+    const index = fmtIndex(layout.col - 1, layout.row - 1);
     const active = this.props.active.hasOwnProperty(index);
     const setLayout = event =>
       this.props.onCellLayout(index, this.extractLayout(event));
@@ -186,7 +185,7 @@ export class Layout extends React.Component {
   renderReservation({ reservation, layout }) {
     const Reservation = this.props.renderReservedSpace;
     const values = extractDimensions(layout);
-    const index = fmtIndex(reservation.x + 1, reservation.y + 1);
+    const index = fmtIndex(reservation.x, reservation.y);
     const setLayout = event =>
       this.props.onCellLayout(index, this.extractLayout(event));
 
