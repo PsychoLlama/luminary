@@ -78,11 +78,7 @@ export class LayoutManager extends React.Component {
   };
 
   pan = PanResponder.create({
-    onStartShouldSetPanResponder: R.T,
-    onStartShouldSetPanResponderCapture: R.T,
     onMoveShouldSetPanResponder: R.T,
-    onMoveShouldSetPanResponderCapture: R.T,
-
     onPanResponderMove: this.onPanResponderMove,
     onPanResponderRelease: this.onPanResponderRelease,
   });
