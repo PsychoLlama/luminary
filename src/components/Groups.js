@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
 import { createSelector } from 'reselect';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -11,20 +12,18 @@ import { selector } from '../utils/redux';
 import Layout from './Layout';
 import Group from './Group';
 
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+const Container = styled.View`
+  flex: 1;
+`;
 
-  editButtonContainer: {
-    marginRight: 16,
-  },
+const EditButtonContainer = styled.View`
+  margin-right: 16px;
+`;
 
-  editButton: {
-    color: colors.navbar.text,
-    fontSize: 18,
-  },
-});
+const EditLayout = styled.Text`
+  color: ${colors.navbar.text};
+  font-size: 18px;
+`;
 
 const renderEmptySpace = R.always(null);
 
@@ -42,9 +41,9 @@ export class Groups extends Component {
         title="Edit"
         onPress={() => props.navigation.navigate('LayoutManager')}
       >
-        <View style={styles.editButtonContainer}>
-          <Text style={styles.editButton}>Edit</Text>
-        </View>
+        <EditButtonContainer>
+          <EditLayout>Edit</EditLayout>
+        </EditButtonContainer>
       </TouchableOpacity>
     ),
   });
@@ -57,13 +56,13 @@ export class Groups extends Component {
 
   render() {
     return (
-      <View style={styles.container} onLayout={this.setDimensions}>
+      <Container onLayout={this.setDimensions}>
         <Layout
           renderEmptySpace={renderEmptySpace}
           container={this.state.layout}
           renderReservedSpace={Group}
         />
-      </View>
+      </Container>
     );
   }
 
