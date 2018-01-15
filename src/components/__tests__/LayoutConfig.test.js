@@ -1,9 +1,13 @@
 import update from 'immutability-helper';
-import { Button } from 'react-native';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutConfig, GroupOption, mapStateToProps } from '../LayoutConfig';
+import {
+  mapStateToProps,
+  LayoutConfig,
+  GroupOption,
+  SaveButton,
+} from '../LayoutConfig';
 
 describe('LayoutConfig', () => {
   const setup = merge => {
@@ -61,7 +65,7 @@ describe('LayoutConfig', () => {
 
   it('disables the button by default', () => {
     const { output } = setup({ selected: null });
-    const button = output.find(Button);
+    const button = output.find(SaveButton);
 
     expect(button.prop('disabled')).toBe(true);
     expect(button.prop('title')).toMatch(/option/i);
@@ -69,7 +73,7 @@ describe('LayoutConfig', () => {
 
   it('enables the button once an option is selected', () => {
     const { output } = setup();
-    const button = output.find(Button);
+    const button = output.find(SaveButton);
 
     expect(button.prop('disabled')).toBe(false);
     expect(button.prop('title')).toMatch(/create/i);
@@ -95,7 +99,7 @@ describe('LayoutConfig', () => {
 
   it('reserves a slot when finished', () => {
     const { output, props } = setup();
-    output.find(Button).simulate('press');
+    output.find(SaveButton).simulate('press');
 
     expect(props.createGrouping).toHaveBeenCalled();
     expect(props.navigation.goBack).toHaveBeenCalled();
@@ -103,7 +107,7 @@ describe('LayoutConfig', () => {
 
   it('updates the group when in edit mode', () => {
     const { output, props } = setup({ isNewGroup: false });
-    output.find(Button).simulate('press');
+    output.find(SaveButton).simulate('press');
 
     expect(props.createGrouping).not.toHaveBeenCalled();
     expect(props.updateGrouping).toHaveBeenCalled();
