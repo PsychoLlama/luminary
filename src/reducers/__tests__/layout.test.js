@@ -125,7 +125,7 @@ describe('Layout', () => {
   });
 
   describe('deleteGrouping', () => {
-    it('does thigns', () => {
+    it('deletes the grouping', () => {
       const initial = {
         ...defaultState,
         cellGroup: { id: '1:1' },

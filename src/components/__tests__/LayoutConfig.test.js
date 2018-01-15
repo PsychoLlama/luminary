@@ -16,6 +16,7 @@ describe('LayoutConfig', () => {
       createGrouping: jest.fn(),
       deleteGrouping: jest.fn(),
       updateGrouping: jest.fn(),
+      persistLayouts: jest.fn(),
       selectOption: jest.fn(),
       isNewGroup: true,
       selected: '2',
@@ -111,6 +112,7 @@ describe('LayoutConfig', () => {
     output.find(SaveButton).simulate('press');
 
     expect(props.createGrouping).toHaveBeenCalled();
+    expect(props.persistLayouts).toHaveBeenCalled();
     expect(props.navigation.goBack).toHaveBeenCalled();
   });
 
@@ -120,6 +122,7 @@ describe('LayoutConfig', () => {
 
     expect(props.createGrouping).not.toHaveBeenCalled();
     expect(props.updateGrouping).toHaveBeenCalled();
+    expect(props.persistLayouts).toHaveBeenCalled();
     expect(props.navigation.goBack).toHaveBeenCalled();
   });
 
@@ -132,6 +135,7 @@ describe('LayoutConfig', () => {
     button.simulate('press');
 
     expect(props.deleteGrouping).toHaveBeenCalled();
+    expect(props.persistLayouts).toHaveBeenCalled();
     expect(props.navigation.goBack).toHaveBeenCalled();
   });
 

@@ -62,6 +62,7 @@ export class LayoutConfig extends React.Component {
   static propTypes = {
     createGrouping: PropTypes.func.isRequired,
     deleteGrouping: PropTypes.func.isRequired,
+    persistLayouts: PropTypes.func.isRequired,
     updateGrouping: PropTypes.func.isRequired,
     selectOption: PropTypes.func.isRequired,
     isNewGroup: PropTypes.bool,
@@ -143,12 +144,14 @@ export class LayoutConfig extends React.Component {
 
     const handler = isNewGroup ? createGrouping : updateGrouping;
     handler();
+    this.props.persistLayouts();
 
     this.props.navigation.goBack();
   };
 
   delete = () => {
     this.props.deleteGrouping();
+    this.props.persistLayouts();
     this.props.navigation.goBack();
   };
 }
@@ -190,6 +193,7 @@ export const mapStateToProps = selector({
 const mapDispatchToProps = {
   createGrouping: actions.createGrouping,
   deleteGrouping: actions.deleteGrouping,
+  persistLayouts: actions.persistLayouts,
   updateGrouping: actions.updateGrouping,
   selectOption: actions.selectGroup,
 };
