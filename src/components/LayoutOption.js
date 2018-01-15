@@ -1,21 +1,20 @@
-import { View, StyleSheet } from 'react-native';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import * as colors from '../constants/colors';
 
-export const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.groups.bg,
-    borderWidth: 0.5,
-    borderColor: colors.groups.divider,
-    position: 'absolute',
-  },
+export const Container = styled.View`
+  background-color: ${colors.groups.bg};
+  border: 0.5px solid ${colors.groups.divider};
+  position: absolute;
 
-  selected: {
-    backgroundColor: colors.groups.selected,
-  },
-});
+  ${props =>
+    props.active &&
+    `
+    background-color: ${colors.groups.selected};
+  `};
+`;
 
 export class LayoutOption extends React.Component {
   static propTypes = {
@@ -29,15 +28,9 @@ export class LayoutOption extends React.Component {
 
   render() {
     const { width, height, left, top, active, onLayout } = this.props;
-    const selectStyle = active && styles.selected;
     const inline = { width, height, left, top };
 
-    return (
-      <View
-        onLayout={onLayout}
-        style={[styles.container, selectStyle, inline]}
-      />
-    );
+    return <Container active={active} onLayout={onLayout} style={inline} />;
   }
 }
 

@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutOption, styles } from '../LayoutOption';
+import { LayoutOption } from '../LayoutOption';
 
 describe('LayoutOption', () => {
   const setup = merge => {
@@ -29,15 +29,14 @@ describe('LayoutOption', () => {
     const { output, props } = setup();
     const { height, width, left, top } = props;
 
-    // This test assumes the last style value is inline.
-    const [inline] = output.prop('style').slice(-1);
+    const inline = output.prop('style');
     expect(inline).toMatchObject({ height, width, left, top });
   });
 
   it('applies the active class when active', () => {
-    const { output } = setup({ active: true });
+    const { output, props } = setup({ active: true });
 
-    expect(output.prop('style')).toContain(styles.selected);
+    expect(output.prop('active')).toBe(props.active);
   });
 
   it('passes through onLayout', () => {
