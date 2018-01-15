@@ -1,4 +1,5 @@
-import { View, StyleSheet, PanResponder, Dimensions } from 'react-native';
+import { PanResponder, Dimensions } from 'react-native';
+import styled from 'styled-components/native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -10,11 +11,9 @@ import LayoutOption from './LayoutOption';
 import { selector } from '../utils/redux';
 import Layout, { EMPTY } from './Layout';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+const Container = styled.View`
+  flex: 1;
+`;
 
 export class LayoutManager extends React.Component {
   static propTypes = {
@@ -148,11 +147,7 @@ export class LayoutManager extends React.Component {
 
   render() {
     return (
-      <View
-        {...this.pan.panHandlers}
-        onLayout={this.setDimensions}
-        style={styles.container}
-      >
+      <Container {...this.pan.panHandlers} onLayout={this.setDimensions}>
         <Layout
           {...this.props}
           renderReservedSpace={LayoutSelection}
@@ -160,7 +155,7 @@ export class LayoutManager extends React.Component {
           renderEmptySpace={LayoutOption}
           onCellLayout={this.addLayout}
         />
-      </View>
+      </Container>
     );
   }
 

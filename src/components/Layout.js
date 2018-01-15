@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import styled from 'styled-components/native';
 import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -15,11 +15,9 @@ const extractDimensions = R.pick(['top', 'left', 'width', 'height']);
 export const RESERVED = 'reserved';
 export const EMPTY = 'empty';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+const Container = styled.View`
+  flex: 1;
+`;
 
 export class Layout extends React.Component {
   static propTypes = {
@@ -49,9 +47,7 @@ export class Layout extends React.Component {
 
   render() {
     const dimensions = this.getDimensions();
-    const props = {
-      style: styles.container,
-    };
+    const props = {};
 
     if (dimensions) {
       const options = this.findOpenCells(dimensions).map(
@@ -67,7 +63,7 @@ export class Layout extends React.Component {
       props.children = options.concat(reservations);
     }
 
-    return <View {...props} />;
+    return <Container {...props} />;
   }
 
   /**
