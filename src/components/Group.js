@@ -1,37 +1,34 @@
+import { TouchableWithoutFeedback } from 'react-native';
+import styled from 'styled-components/native';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import R from 'ramda';
-import { TouchableWithoutFeedback, StyleSheet, Text, View } from 'react-native';
 
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
 import { selector } from '../utils/redux';
 
-export const styles = StyleSheet.create({
-  container: {
-    borderColor: colors.groups.divider,
-    backgroundColor: colors.groups.bg,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    borderBottomWidth: 2,
-    borderWidth: 1,
-  },
+export const Container = styled.View`
+  border-color: ${colors.groups.divider};
+  background-color: ${colors.groups.bg};
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  border-width: 1px;
+  border-bottom-width: 2px;
 
-  title: {
-    color: colors.text,
-    fontSize: 20,
-    padding: 2,
-  },
+  border-bottom-color: ${props =>
+    props.on ? colors.groups.status.on : colors.groups.status.off};
+`;
 
-  smallTitle: {
-    fontSize: 12,
-  },
+export const Title = styled.Text`
+  color: ${colors.text};
+  font-size: 20px;
+  padding: 2px;
 
-  off: { borderBottomColor: colors.groups.status.off },
-  on: { borderBottomColor: colors.groups.status.on },
-});
+  ${props => props.small && 'font-size: 12px'};
+`;
 
 const extractLayout = R.pick(['top', 'left', 'width', 'height']);
 export class Group extends Component {
@@ -48,14 +45,14 @@ export class Group extends Component {
 
   render() {
     const { group, blockWidth } = this.props;
-    const online = group.anyOn ? styles.on : styles.off;
-    const style = [styles.title, blockWidth === 1 && styles.smallTitle];
+    const constrainWidth = blockWidth === 1;
+    const position = extractLayout(this.props);
 
     return (
       <TouchableWithoutFeedback onPress={this.toggleLights}>
-        <View style={[styles.container, online, extractLayout(this.props)]}>
-          <Text style={style}>{this.props.group.name}</Text>
-        </View>
+        <Container on={group.anyOn} style={position}>
+          <Title small={constrainWidth}>{this.props.group.name}</Title>
+        </Container>
       </TouchableWithoutFeedback>
     );
   }

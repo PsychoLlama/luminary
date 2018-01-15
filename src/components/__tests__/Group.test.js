@@ -3,20 +3,9 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import R from 'ramda';
 
-import { Group, styles, mapStateToProps } from '../Group';
+import { Group, Title, mapStateToProps, Container } from '../Group';
 
 describe('Group', () => {
-  const hasStyle = style => element => {
-    const styled = element.prop('style');
-    if (!styled) return false;
-    if (styled === style) return true;
-    if (Array.isArray(styled)) return R.any(R.equals(style), styled);
-    return false;
-  };
-
-  const isContainer = hasStyle(styles.container);
-  const isTitle = hasStyle(styles.title);
-
   const setup = merge => {
     const props = {
       serverUrl: 'http://filament/',
@@ -43,30 +32,30 @@ describe('Group', () => {
 
   it('shows the group name', () => {
     const { output, props } = setup();
-    const name = output.find('Text').prop('children');
+    const name = output.find(Title).prop('children');
 
     expect(name).toContain(props.group.name);
   });
 
-  it('shows when the group is online', () => {
+  it('shows when the group is on', () => {
     const { output } = setup();
-    const style = output.findWhere(isContainer).prop('style');
+    const container = output.find(Container);
 
-    expect(style).toContain(styles.on);
+    expect(container.prop('on')).toBe(true);
   });
 
-  it('shows when the group is offline', () => {
+  it('shows when the group is off', () => {
     const { output } = setup({
       group: {
-        anyOn: false,
         name: 'Hall',
+        anyOn: false,
         id: '3',
       },
     });
 
-    const style = output.findWhere(isContainer).prop('style');
+    const container = output.find(Container);
 
-    expect(style).toContain(styles.off);
+    expect(container.prop('on')).toBe(false);
   });
 
   it('toggles the group when tapped', () => {
@@ -79,10 +68,10 @@ describe('Group', () => {
     });
   });
 
-  it('shows inline styles', () => {
+  it('correctly positions the group', () => {
     const { output, props } = setup();
-    const container = output.findWhere(isContainer);
-    const inline = R.last(container.prop('style'));
+    const container = output.find(Container);
+    const inline = container.prop('style');
 
     expect(inline).toMatchObject({
       height: props.height,
@@ -94,16 +83,16 @@ describe('Group', () => {
 
   it('shows a smaller title for constrained blocks', () => {
     const { output } = setup({ blockWidth: 1 });
-    const title = output.findWhere(isTitle);
+    const title = output.find(Title);
 
-    expect(title.prop('style')).toContain(styles.smallTitle);
+    expect(title.prop('small')).toBe(true);
   });
 
   it('shows large title size for spaces that can fit', () => {
     const { output } = setup();
-    const title = output.findWhere(isTitle);
+    const title = output.find(Title);
 
-    expect(title.prop('style')).not.toContain(styles.smallTitle);
+    expect(title.prop('small')).toBe(false);
   });
 
   describe('mapStateToProps', () => {
