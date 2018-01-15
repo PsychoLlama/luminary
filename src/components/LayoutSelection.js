@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,27 +6,29 @@ import R from 'ramda';
 
 import * as colors from '../constants/colors';
 
-export const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.groups.bg,
-    borderWidth: 0.5,
-    borderColor: colors.groups.divider,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    color: colors.text,
-  },
-  smallTitle: {
-    fontSize: 12,
-  },
-  touchable: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+const Touchable = styled.TouchableOpacity`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Container = styled.View`
+  background-color: ${colors.groups.bg};
+  border: 0.5px solid ${colors.groups.divider};
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Title = styled.Text`
+  font-size: 20px;
+  color: ${colors.text};
+
+  ${props =>
+    props.small &&
+    `
+    font-size: 12px;
+  `};
+`;
 
 export class LayoutSelection extends React.Component {
   static propTypes = {
@@ -42,14 +44,14 @@ export class LayoutSelection extends React.Component {
   render() {
     const inline = R.pick(['height', 'width', 'left', 'top'], this.props);
     const { groupTitle, blockWidth } = this.props;
-    const titleSize = blockWidth === 1 && styles.smallTitle;
+    const useSmallTitle = blockWidth === 1;
 
     return (
-      <View style={[styles.container, inline]} onLayout={this.props.onLayout}>
-        <TouchableOpacity style={styles.touchable}>
-          <Text style={[styles.title, titleSize]}>{groupTitle}</Text>
-        </TouchableOpacity>
-      </View>
+      <Container style={inline} onLayout={this.props.onLayout}>
+        <Touchable>
+          <Title small={useSmallTitle}>{groupTitle}</Title>
+        </Touchable>
+      </Container>
     );
   }
 }

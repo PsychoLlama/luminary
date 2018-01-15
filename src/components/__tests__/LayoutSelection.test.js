@@ -1,10 +1,14 @@
-import { Text, View } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 import R from 'ramda';
 
-import { LayoutSelection, mapStateToProps, styles } from '../LayoutSelection';
+import {
+  LayoutSelection,
+  mapStateToProps,
+  Container,
+  Title,
+} from '../LayoutSelection';
 
 describe('LayoutSelection', () => {
   const setup = merge => {
@@ -31,8 +35,8 @@ describe('LayoutSelection', () => {
 
   it('uses the given coordinates', () => {
     const { output, props } = setup();
-    const container = output.find(View);
-    const inline = R.last(container.prop('style'));
+    const container = output.find(Container);
+    const inline = container.prop('style');
     const dimensions = R.pick(['top', 'left', 'width', 'height'], props);
 
     expect(inline).toMatchObject(dimensions);
@@ -40,30 +44,30 @@ describe('LayoutSelection', () => {
 
   it('passes through onLayout', () => {
     const { output, props } = setup();
-    const container = output.find(View);
+    const container = output.find(Container);
 
     expect(container.prop('onLayout')).toBe(props.onLayout);
   });
 
   it('shows the group name', () => {
     const { output, props } = setup();
-    const text = output.find(Text);
+    const title = output.find(Title);
 
-    expect(text.prop('children')).toBe(props.groupTitle);
+    expect(title.prop('children')).toBe(props.groupTitle);
   });
 
   it('shows a smaller group name when constrained', () => {
     const { output } = setup({ blockWidth: 1 });
-    const text = output.find(Text);
+    const title = output.find(Title);
 
-    expect(text.prop('style')).toContain(styles.smallTitle);
+    expect(title.prop('small')).toBe(true);
   });
 
   it('shows a large group name when possible', () => {
     const { output } = setup({ blockWidth: 2 });
-    const text = output.find(Text);
+    const title = output.find(Title);
 
-    expect(text.prop('style')).not.toContain(styles.smallTitle);
+    expect(title.prop('small')).toBe(false);
   });
 
   describe('mapStateToProps', () => {
