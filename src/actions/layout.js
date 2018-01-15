@@ -13,12 +13,20 @@ export const deleteGrouping = createAction('DELETE_GROUPING');
 export const updateGrouping = createAction('UPDATE_GROUPING');
 export const editCellGroup = createAction('EDIT_GROUPING');
 
-const LAYOUT_STORAGE_KEY = 'groups_layout';
+export const LAYOUT_STORAGE_KEY = 'groups_layout';
 export const persistLayouts = () => (dispatch, getState) => {
-  const layouts = getState().layout.reserved;
+  const layouts = JSON.stringify(getState().layout.reserved);
 
   const persist = () => AsyncStorage.setItem(LAYOUT_STORAGE_KEY, layouts);
   const action = createAction('PERSIST', persist);
 
   return dispatch(action());
 };
+
+export const getLayouts = createAction('GET_LAYOUTS', () =>
+  AsyncStorage.getItem(LAYOUT_STORAGE_KEY).then(layouts => {
+    if (!layouts) return layouts;
+
+    return JSON.parse(layouts);
+  }),
+);

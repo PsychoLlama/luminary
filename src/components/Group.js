@@ -15,11 +15,15 @@ export const Container = styled.View`
   justify-content: center;
   align-items: center;
   position: absolute;
-  border-width: 1px;
-  border-bottom-width: 2px;
+  border-width: 0.5px;
 
-  border-bottom-color: ${props =>
-    props.on ? colors.groups.status.on : colors.groups.status.off};
+  ${props =>
+    props.on &&
+    `
+    border-bottom-color: ${colors.groups.status.on};
+    border-bottom-width: 2px;
+    padding-top: 1.5px;
+  `};
 `;
 
 export const Title = styled.Text`
@@ -40,18 +44,19 @@ export class Group extends Component {
       name: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
       anyOn: PropTypes.bool,
-    }).isRequired,
+    }),
   };
 
   render() {
     const { group, blockWidth } = this.props;
     const constrainWidth = blockWidth === 1;
     const position = extractLayout(this.props);
+    const on = R.propOr(false, 'anyOn', group);
 
     return (
       <TouchableWithoutFeedback onPress={this.toggleLights}>
-        <Container on={group.anyOn} style={position}>
-          <Title small={constrainWidth}>{this.props.group.name}</Title>
+        <Container on={on} style={position}>
+          <Title small={constrainWidth}>{R.prop('name', group)}</Title>
         </Container>
       </TouchableWithoutFeedback>
     );

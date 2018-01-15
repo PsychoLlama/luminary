@@ -110,6 +110,14 @@ export default handleActions(
         reserved: { $unset: [state.cellGroup.id] },
         cellGroup: { $set: null },
       }),
+
+    [actions.getLayouts]: (state, { payload }) => {
+      if (!payload) return state;
+
+      return update(state, {
+        reserved: { $set: payload },
+      });
+    },
   },
   defaultState,
 );

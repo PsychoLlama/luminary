@@ -8,6 +8,7 @@ describe('Loading', () => {
   const setup = merge => {
     const props = {
       getServerUrl: jest.fn(() => Promise.resolve({})),
+      getLayouts: jest.fn(),
       navigation: {
         dispatch: jest.fn(),
       },
@@ -30,6 +31,12 @@ describe('Loading', () => {
     await output.instance().componentWillMount();
 
     expect(props.getServerUrl).toHaveBeenCalled();
+  });
+
+  it('fetches the layouts on mount', () => {
+    const { props } = setup();
+
+    expect(props.getLayouts).toHaveBeenCalled();
   });
 
   it('shows the groups on success', async () => {

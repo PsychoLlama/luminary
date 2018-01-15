@@ -3,17 +3,21 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import * as actions from '../actions/filament';
+import * as filamentActions from '../actions/filament';
+import * as layoutActions from '../actions/layout';
 
 export class Loading extends React.Component {
   static propTypes = {
     getServerUrl: PropTypes.func.isRequired,
+    getLayouts: PropTypes.func.isRequired,
     navigation: PropTypes.shape({
       dispatch: PropTypes.func.isRequired,
     }).isRequired,
   };
 
   async componentWillMount() {
+    this.props.getLayouts();
+
     const { payload: url } = await this.props.getServerUrl();
     const route = url ? 'Groups' : 'ServerLink';
 
@@ -32,7 +36,8 @@ export class Loading extends React.Component {
 }
 
 const mapDispatchToProps = {
-  getServerUrl: actions.getServerUrl,
+  getServerUrl: filamentActions.getServerUrl,
+  getLayouts: layoutActions.getLayouts,
 };
 
 export default connect(null, mapDispatchToProps)(Loading);

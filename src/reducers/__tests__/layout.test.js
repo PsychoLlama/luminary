@@ -190,4 +190,25 @@ describe('Layout', () => {
       });
     });
   });
+
+  describe('getLayouts', () => {
+    it('imports the layouts', () => {
+      const payload = {
+        '1:1': { x: 1, y: 1, width: 1, height: 1, group: '1' },
+      };
+
+      const action = { type: String(actions.getLayouts), payload };
+      const state = reducer(undefined, action);
+
+      expect(state.reserved).toBe(payload);
+    });
+
+    it('ignores the action if no data was found', () => {
+      const action = { type: String(actions.getLayouts), payload: null };
+      const initial = reducer(undefined, { type: 'UNKNOWN_TYPE' });
+      const state = reducer(initial, action);
+
+      expect(state.reserved).toBe(initial.reserved);
+    });
+  });
 });

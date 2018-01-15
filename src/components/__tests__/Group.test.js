@@ -37,6 +37,13 @@ describe('Group', () => {
     expect(name).toContain(props.group.name);
   });
 
+  // The group ID can be known before the group is loaded.
+  it('survives when the group is undefined', () => {
+    const { output } = setup({ group: null });
+
+    expect(output.exists()).toBe(true);
+  });
+
   it('shows when the group is on', () => {
     const { output } = setup();
     const container = output.find(Container);
