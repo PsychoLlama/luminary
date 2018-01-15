@@ -1,48 +1,49 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import styled from 'styled-components/native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
+import { Button, Keyboard } from 'react-native';
 
 import * as actions from '../actions/filament';
 import * as colors from '../constants/colors';
 import { STATES } from '../reducers/filament';
-import Groups from './Groups';
+import { selector } from '../utils/redux';
 
-const styles = StyleSheet.create({
-  container: {
-    padding: '20%',
-  },
-  urlInput: {
-    color: colors.text,
-    marginBottom: 8,
-    padding: 8,
-    paddingLeft: 4,
-    paddingRight: 4,
-    textAlign: 'center',
-  },
-  header: {
-    color: colors.text,
-    textAlign: 'center',
-    fontSize: 16,
-  },
-});
+const Container = styled.View`
+  padding: 20%;
+`;
+
+export const UrlInput = styled.TextInput`
+  color: ${colors.text};
+  margin-bottom: 8;
+  padding: 8px 4px;
+  text-align: center;
+`;
+
+const Header = styled.Text`
+  color: ${colors.text};
+  text-align: center;
+  font-size: 16px;
+`;
 
 export class ServerLink extends React.Component {
   static propTypes = {
     lookupState: PropTypes.oneOf(R.values(STATES)),
     updateServerUrl: PropTypes.func.isRequired,
-    getServerUrl: PropTypes.func.isRequired,
     pingServer: PropTypes.func.isRequired,
     testingConnection: PropTypes.bool,
     pingSuccessful: PropTypes.bool,
     urlLooksValid: PropTypes.bool,
     serverUrl: PropTypes.string,
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func.isRequired,
+    }).isRequired,
   };
 
-  componentDidMount() {
-    this.props.getServerUrl();
-  }
+  static navigationOptions = {
+    title: 'Connect to Filament',
+  };
 
   render() {
     const { pingSuccessful, lookupState } = this.props;
@@ -51,19 +52,14 @@ export class ServerLink extends React.Component {
       return null;
     }
 
-    if (lookupState === STATES.FOUND) {
-      return <Groups />;
-    }
-
     return (
-      <View style={styles.container}>
-        <Text style={styles.header}>{"What's your Filament URL?"}</Text>
+      <Container>
+        <Header>What&apos;s your Filament URL?</Header>
 
-        <TextInput
+        <UrlInput
           onChangeText={this.props.updateServerUrl}
           onSubmitEditing={this.pingServer}
           placeholder="http://..."
-          style={styles.urlInput}
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="go"
@@ -75,7 +71,7 @@ export class ServerLink extends React.Component {
           title={this.getButtonText()}
           onPress={this.pingServer}
         />
-      </View>
+      </Container>
     );
   }
 
@@ -99,30 +95,31 @@ export class ServerLink extends React.Component {
     return 'Connect';
   }
 
-  pingServer = () => {
+  pingServer = async () => {
     const { serverUrl } = this.props;
 
     if (!this.isDisabled()) {
-      this.props.pingServer(serverUrl);
+      const { payload } = await this.props.pingServer(serverUrl);
+
+      if (payload && payload.success) {
+        Keyboard.dismiss();
+        this.props.navigation.navigate('Groups');
+      }
     }
   };
 }
 
-export const mapStateToProps = state => {
-  const server = R.path(['server'], state);
-
-  return {
-    testingConnection: R.path(['testingConnection'], server),
-    pingSuccessful: R.path(['pingSuccessful'], server),
-    urlLooksValid: R.path(['urlLooksValid'], server),
-    lookupState: R.path(['state'], server),
-    serverUrl: R.path(['url'], server),
-  };
-};
+const withServerState = fn => R.pipe(R.prop('server'), fn);
+export const mapStateToProps = selector({
+  testingConnection: withServerState(R.prop('testingConnection')),
+  pingSuccessful: withServerState(R.prop('pingSuccessful')),
+  urlLooksValid: withServerState(R.prop('urlLooksValid')),
+  lookupState: withServerState(R.prop('state')),
+  serverUrl: withServerState(R.prop('url')),
+});
 
 const mapDispatchToProps = {
   updateServerUrl: actions.updateServerUrl,
-  getServerUrl: actions.getServerUrl,
   pingServer: actions.pingServer,
 };
 

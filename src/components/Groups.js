@@ -1,22 +1,31 @@
-import { View, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
 import { createSelector } from 'reselect';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import R from 'ramda';
 
+import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
+import { selector } from '../utils/redux';
+import Layout from './Layout';
 import Group from './Group';
 
-export const styles = StyleSheet.create({
-  container: {
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-  },
-});
+const Container = styled.View`
+  flex: 1;
+`;
+
+const EditButtonContainer = styled.View`
+  margin-right: 16px;
+`;
+
+const EditLayout = styled.Text`
+  color: ${colors.navbar.text};
+  font-size: 18px;
+`;
+
+const renderEmptySpace = R.always(null);
 
 export class Groups extends Component {
   static propTypes = {
@@ -25,38 +34,50 @@ export class Groups extends Component {
     serverUrl: PropTypes.string.isRequired,
   };
 
+  static navigationOptions = props => ({
+    title: 'Groups',
+    headerRight: (
+      <TouchableOpacity
+        title="Edit"
+        onPress={() => props.navigation.navigate('LayoutManager')}
+      >
+        <EditButtonContainer>
+          <EditLayout>Edit</EditLayout>
+        </EditButtonContainer>
+      </TouchableOpacity>
+    ),
+  });
+
+  state = { layout: null };
+
   componentDidMount() {
     this.props.fetchAllGroups(this.props.serverUrl);
   }
 
   render() {
-    return <View style={styles.container}>{this.renderContent()}</View>;
+    return (
+      <Container onLayout={this.setDimensions}>
+        <Layout
+          renderEmptySpace={renderEmptySpace}
+          container={this.state.layout}
+          renderReservedSpace={Group}
+        />
+      </Container>
+    );
   }
 
-  renderContent() {
-    const { groups } = this.props;
-
-    return groups.map(this.createGroup);
-  }
-
-  createGroup = (groupId, index) => (
-    <Group key={groupId} id={groupId} divide={index % 2 === 0} />
-  );
+  setDimensions = event => {
+    const { layout } = event.nativeEvent;
+    this.setState({ layout });
+  };
 }
 
-const isRoom = R.compose(R.equals('Room'), R.prop('type'));
-const getGroupIds = createSelector(
-  groups => groups,
-  groups =>
-    Object.keys(groups)
-      .map(key => groups[key])
-      .filter(isRoom)
-      .map(group => group.id),
-);
-
-export const mapStateToProps = state => ({
-  serverUrl: R.path(['server', 'url'], state),
-  groups: getGroupIds(state.groups),
+export const mapStateToProps = selector({
+  serverUrl: R.path(['server', 'url']),
+  groups: createSelector(
+    R.prop('groups'),
+    R.pipe(R.values, R.filter(R.propEq('type', 'Room')), R.map(R.prop('id'))),
+  ),
 });
 
 const mapDispatchToProps = {

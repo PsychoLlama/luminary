@@ -1,22 +1,23 @@
-import { TextInput, Button } from 'react-native';
+import { Button } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { ServerLink, mapStateToProps } from '../ServerLink';
+import { ServerLink, UrlInput, mapStateToProps } from '../ServerLink';
 import { STATES } from '../../reducers/filament';
 import { error } from '../../constants/colors';
-import Groups from '../Groups';
 
 describe('ServerLink', () => {
   const setup = merge => {
     const props = {
+      pingServer: jest.fn(() => Promise.resolve()),
       lookupState: STATES.NOT_FOUND,
       serverUrl: 'http://filament/',
       updateServerUrl: jest.fn(),
-      getServerUrl: jest.fn(),
-      pingServer: jest.fn(),
       urlLooksValid: true,
+      navigation: {
+        navigate: jest.fn(),
+      },
       ...merge,
     };
 
@@ -30,28 +31,37 @@ describe('ServerLink', () => {
     setup();
   });
 
-  it('fetches the address when mounting', async () => {
-    const { output, props } = setup();
-
-    await output.instance().componentDidMount();
-    expect(props.getServerUrl).toHaveBeenCalled();
-  });
-
   it('shows nothing while loading', () => {
     const { output } = setup({ lookupState: STATES.LOADING });
 
     expect(output.equals(null)).toBe(true);
   });
 
-  it('shows the groups if the server URL was found', () => {
-    const { output } = setup({ lookupState: STATES.FOUND });
+  it('shows the groups if the ping was successful', async () => {
+    const { output, props } = setup({
+      pingServer: jest.fn(() =>
+        Promise.resolve({ payload: { success: true } }),
+      ),
+    });
 
-    expect(output.find(Groups).exists()).toBe(true);
+    await output.find(Button).prop('onPress')();
+
+    expect(props.navigation.navigate).toHaveBeenCalledWith('Groups');
+  });
+
+  it('does not redirect to groups if unsuccessful', async () => {
+    const { output, props } = setup({
+      pingServer: jest.fn(() => Promise.resolve({ payload: null })),
+    });
+
+    await output.find(Button).prop('onPress')();
+
+    expect(props.navigation.navigate).not.toHaveBeenCalled();
   });
 
   it('shows an input element', () => {
     const { output } = setup();
-    const text = output.find(TextInput);
+    const text = output.find(UrlInput);
 
     expect(text.exists()).toBe(true);
   });
@@ -59,7 +69,7 @@ describe('ServerLink', () => {
   it('updates the server URL on input', () => {
     const { output, props } = setup();
     const url = 'http://';
-    output.find(TextInput).simulate('changeText', url);
+    output.find(UrlInput).simulate('changeText', url);
 
     expect(props.updateServerUrl).toHaveBeenCalledWith(url);
   });
@@ -88,21 +98,21 @@ describe('ServerLink', () => {
 
   it('pings the server when the submit button is pressed', () => {
     const { output, props } = setup();
-    output.find(TextInput).simulate('submitEditing');
+    output.find(UrlInput).simulate('submitEditing');
 
     expect(props.pingServer).toHaveBeenCalledWith(props.serverUrl);
   });
 
   it('does not ping the server if the url is invalid', () => {
     const { output, props } = setup({ urlLooksValid: false });
-    output.find(TextInput).simulate('submitEditing');
+    output.find(UrlInput).simulate('submitEditing');
 
     expect(props.pingServer).not.toHaveBeenCalled();
   });
 
   it('disables submit while pinging', () => {
     const { output, props } = setup({ testingConnection: true });
-    output.find(TextInput).simulate('submitEditing');
+    output.find(UrlInput).simulate('submitEditing');
     const button = output.find(Button);
 
     expect(props.pingServer).not.toHaveBeenCalled();

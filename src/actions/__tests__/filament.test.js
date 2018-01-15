@@ -86,5 +86,12 @@ describe('Filament', () => {
       const action = actions.pingServer('http://filament/')(dispatch);
       await expect(action.payload).rejects.toEqual(expect.any(Error));
     });
+
+    it('resolves truthy if the ping was a success', async () => {
+      const action = actions.pingServer('http://filament/')(dispatch);
+      const result = await action.payload;
+
+      expect(result).toEqual({ success: true });
+    });
   });
 });

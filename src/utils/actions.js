@@ -1,4 +1,5 @@
 import { createAction } from 'redux-actions';
+import assert from 'minimalistic-assert';
 
 export const optimistic = (type, api) => {
   const optimisticType = `optimistically(${type})`;
@@ -22,4 +23,10 @@ export const optimistic = (type, api) => {
   };
 
   return creator;
+};
+
+export const prefixActions = (prefix, factory = createAction) => {
+  assert(typeof prefix === 'string', 'The prefix is required.');
+
+  return (type, ...args) => factory(`${prefix}___${type}`, ...args);
 };

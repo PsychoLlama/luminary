@@ -1,68 +1,63 @@
+import { TouchableWithoutFeedback } from 'react-native';
+import styled from 'styled-components/native';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import R from 'ramda';
-import { TouchableWithoutFeedback, StyleSheet, Text, View } from 'react-native';
 
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
+import { selector } from '../utils/redux';
 
-export const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.groups.bg,
-    width: '50%',
-  },
+export const Container = styled.View`
+  border-color: ${colors.groups.divider};
+  background-color: ${colors.groups.bg};
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  border-width: 0.5px;
 
-  title: {
-    color: colors.text,
-    fontSize: 20,
-    padding: 30,
-    width: '100%',
-    textAlign: 'center',
-  },
+  ${props =>
+    props.on &&
+    `
+    border-bottom-color: ${colors.groups.status.on};
+    border-bottom-width: 2px;
+    padding-top: 1.5px;
+  `};
+`;
 
-  divide: {
-    borderRightWidth: 2,
-    borderColor: colors.groups.divider,
-  },
+export const Title = styled.Text`
+  color: ${colors.text};
+  font-size: 20px;
+  padding: 2px;
 
-  status: {
-    height: 2,
-    width: '100%',
-  },
+  ${props => props.small && 'font-size: 12px'};
+`;
 
-  off: { backgroundColor: colors.groups.status.off },
-  on: { backgroundColor: colors.groups.status.on },
-});
-
+const extractLayout = R.pick(['top', 'left', 'width', 'height']);
 export class Group extends Component {
   static propTypes = {
     toggleLights: PropTypes.func.isRequired,
+    blockWidth: PropTypes.number.isRequired,
     serverUrl: PropTypes.string.isRequired,
-    divide: PropTypes.bool,
     group: PropTypes.shape({
       name: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
       anyOn: PropTypes.bool,
-    }).isRequired,
+    }),
   };
 
   render() {
-    const { group, divide } = this.props;
-    const online = group.anyOn ? styles.on : styles.off;
-    const style = [styles.title];
-
-    if (divide) {
-      style.push(styles.divide);
-    }
+    const { group, blockWidth } = this.props;
+    const constrainWidth = blockWidth === 1;
+    const position = extractLayout(this.props);
+    const on = R.propOr(false, 'anyOn', group);
 
     return (
       <TouchableWithoutFeedback onPress={this.toggleLights}>
-        <View style={styles.container}>
-          <Text style={style}>{this.props.group.name}</Text>
-
-          <View style={[styles.status, online]} />
-        </View>
+        <Container on={on} style={position}>
+          <Title small={constrainWidth}>{R.prop('name', group)}</Title>
+        </Container>
       </TouchableWithoutFeedback>
     );
   }
@@ -77,9 +72,17 @@ export class Group extends Component {
   };
 }
 
-export const mapStateToProps = (state, props) => ({
-  serverUrl: R.path(['server', 'url'], state),
-  group: R.path(['groups', props.id], state),
+const withLayout = fn => (state, props) =>
+  R.pipe(R.path(['layout', 'reserved', props.id]), fn)(state);
+
+export const mapStateToProps = selector({
+  blockWidth: withLayout(R.prop('width')),
+  serverUrl: R.path(['server', 'url']),
+  group: (state, props) => {
+    const groupId = withLayout(R.prop('group'))(state, props);
+
+    return R.path(['groups', groupId], state);
+  },
 });
 
 const mapDispatchToProps = {

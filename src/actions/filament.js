@@ -20,6 +20,8 @@ export const pingServer = optimistic('PING_SERVER', async server => {
   assert(data && data.app === 'filament', 'Ping failed, bad server response.');
 
   await AsyncStorage.setItem(SERVER_URL_STORAGE_KEY, parsed.href);
+
+  return { success: true };
 });
 
 export const updateServerUrl = createAction('UPDATE_SERVER_URL');
