@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  PanResponder,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -45,26 +39,13 @@ export class LayoutSelection extends React.Component {
     onLayout: PropTypes.func,
   };
 
-  pan = PanResponder.create({
-    onStartShouldSetPanResponder: R.T,
-    onMoveShouldSetPanResponder: R.T,
-    onPanResponderTerminationRequest: R.F,
-    onPanResponderMove: this.onPanResponderMove,
-  });
-
-  onPanResponderMove = R.always(undefined);
-
   render() {
     const inline = R.pick(['height', 'width', 'left', 'top'], this.props);
     const { groupTitle, blockWidth } = this.props;
     const titleSize = blockWidth === 1 && styles.smallTitle;
 
     return (
-      <View
-        {...this.pan.panHandlers}
-        style={[styles.container, inline]}
-        onLayout={this.props.onLayout}
-      >
+      <View style={[styles.container, inline]} onLayout={this.props.onLayout}>
         <TouchableOpacity style={styles.touchable}>
           <Text style={[styles.title, titleSize]}>{groupTitle}</Text>
         </TouchableOpacity>

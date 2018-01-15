@@ -8,7 +8,7 @@ import LayoutSelection from './LayoutSelection';
 import * as actions from '../actions/layout';
 import LayoutOption from './LayoutOption';
 import { selector } from '../utils/redux';
-import Layout from './Layout';
+import Layout, { EMPTY } from './Layout';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,8 +20,11 @@ export class LayoutManager extends React.Component {
   static propTypes = {
     setDragActiveState: PropTypes.func.isRequired,
     createCellGroup: PropTypes.func.isRequired,
+    setGroupHover: PropTypes.func.isRequired,
+    editCellGroup: PropTypes.func.isRequired,
     navigation: PropTypes.object.isRequired,
     active: PropTypes.object.isRequired,
+    selected: PropTypes.string,
   };
 
   static navigationOptions = {
@@ -31,9 +34,38 @@ export class LayoutManager extends React.Component {
   state = { dimensions: null };
   layouts = {};
 
+  isEmptyLayout = ([, { type }]) => type === EMPTY;
+  isReservedLayout = layout => !this.isEmptyLayout(layout);
+
+  isValidSelection = (bounds, { top, left, right, bottom }) => {
+    const ybounded =
+      top >= bounds.top &&
+      top < bounds.bottom &&
+      bottom < bounds.bottom &&
+      bottom >= bounds.top;
+
+    const xbounded =
+      left >= bounds.left &&
+      left < bounds.right &&
+      right < bounds.right &&
+      right >= bounds.left;
+
+    return xbounded && ybounded;
+  };
+
+  getBounds = layout => ({
+    bottom: layout.y + layout.height,
+    right: layout.x + layout.width,
+    left: layout.x,
+    top: layout.y,
+  });
+
   onPanResponderRelease = () => {
-    const { active } = this.props;
-    if (!R.isEmpty(active)) {
+    const { active, selected } = this.props;
+
+    if (selected) {
+      this.props.editCellGroup(selected);
+    } else if (!R.isEmpty(active)) {
       this.props.createCellGroup(this.props.active);
       this.props.navigation.navigate('LayoutConfig');
     }
@@ -47,30 +79,47 @@ export class LayoutManager extends React.Component {
     const start = { x: x0, y: y0 - distanceFromTop };
     const end = { x: start.x + dx, y: start.y + dy };
 
+    // Calculate selection box.
     const left = Math.min(start.x, end.x);
     const right = Math.max(start.x, end.x);
     const top = Math.min(start.y, end.y);
     const bottom = Math.max(start.y, end.y);
 
+    const layouts = R.toPairs(this.layouts);
+    const empty = layouts.filter(this.isEmptyLayout);
+    const reserved = layouts.filter(this.isReservedLayout);
+
+    const selecting = reserved.find(([, { layout }]) => {
+      const bounds = this.getBounds(layout);
+
+      const ybounded = start.y >= bounds.top && start.y < bounds.bottom;
+      const xbounded = start.x >= bounds.left && start.x < bounds.right;
+
+      return xbounded && ybounded;
+    });
+
+    if (selecting) {
+      const [index, { layout }] = selecting;
+      const bounds = this.getBounds(layout);
+      const valid = this.isValidSelection(bounds, { left, right, top, bottom });
+      const focus = valid ? index : null;
+
+      this.props.setGroupHover(focus);
+      return;
+    }
+
     // Locate which cells intersect with the selection area.
-    const patches = R.toPairs(this.layouts).reduce(
-      (patches, [index, layout]) => {
-        const active = this.props.active.hasOwnProperty(index);
+    const patches = empty.reduce((patches, [index, { layout }]) => {
+      const xbounded = layout.x + layout.width >= left && layout.x <= right;
+      const ybounded = layout.y + layout.height > top && layout.y <= bottom;
+      const bounded = xbounded && ybounded;
 
-        const xbounded = layout.x + layout.width >= left && layout.x <= right;
-        const ybounded = layout.y + layout.height > top && layout.y <= bottom;
-        const bounded = xbounded && ybounded;
+      if (bounded) {
+        patches[index] = true;
+      }
 
-        if (bounded && !active) {
-          patches[index] = true;
-        } else if (!bounded && active) {
-          patches[index] = false;
-        }
-
-        return patches;
-      },
-      {},
-    );
+      return patches;
+    }, {});
 
     if (!R.isEmpty(patches)) {
       this.props.setDragActiveState(patches);
@@ -112,12 +161,15 @@ export class LayoutManager extends React.Component {
 }
 
 export const mapStateToProps = selector({
+  selected: R.path(['layout', 'selectedGroup']),
   active: R.path(['layout', 'active']),
 });
 
 const mapDispatchToProps = {
+  setGroupHover: actions.setGroupHover,
   setDragActiveState: actions.setDragActiveState,
   createCellGroup: actions.createCellGroup,
+  editCellGroup: actions.editCellGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutManager);

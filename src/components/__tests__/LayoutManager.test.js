@@ -6,7 +6,7 @@ import R from 'ramda';
 
 import { LayoutManager, mapStateToProps } from '../LayoutManager';
 import LayoutSelection from '../LayoutSelection';
-import Layout, { fmtIndex } from '../Layout';
+import Layout, { fmtIndex, EMPTY, RESERVED } from '../Layout';
 import LayoutOption from '../LayoutOption';
 
 jest.spyOn(Dimensions, 'get');
@@ -20,6 +20,9 @@ describe('LayoutManager', () => {
     const props = {
       setDragActiveState: jest.fn(),
       createCellGroup: jest.fn(),
+      setGroupHover: jest.fn(),
+      editCellGroup: jest.fn(),
+      selected: null,
       active: {},
       navigation: {
         navigate: jest.fn(),
@@ -86,30 +89,30 @@ describe('LayoutManager', () => {
 
       // Real layout data.
       R.pipe(R.toPairs, indexLayouts)({
-        '1:1': { height, width, y: 0, x: 0 },
-        '1:2': { height, width, y: 0, x: 90 },
-        '1:3': { height, width, y: 0, x: 180 },
-        '1:4': { height, width, y: 0, x: 270 },
-        '2:1': { height, width, y: 97.33, x: 0 },
-        '2:2': { height, width, y: 97.33, x: 90 },
-        '2:3': { height, width, y: 97.33, x: 180 },
-        '2:4': { height, width, y: 97.33, x: 270 },
-        '3:1': { height, width, y: 194.67, x: 0 },
-        '3:2': { height, width, y: 194.67, x: 90 },
-        '3:3': { height, width, y: 194.67, x: 180 },
-        '3:4': { height, width, y: 194.67, x: 270 },
-        '4:1': { height, width, y: 292, x: 0 },
-        '4:2': { height, width, y: 292, x: 90 },
-        '4:3': { height, width, y: 292, x: 180 },
-        '4:4': { height, width, y: 292, x: 270 },
-        '5:1': { height, width, y: 389.33, x: 0 },
-        '5:2': { height, width, y: 389.33, x: 90 },
-        '5:3': { height, width, y: 389.33, x: 180 },
-        '5:4': { height, width, y: 389.33, x: 270 },
-        '6:1': { height, width, y: 486.67, x: 0 },
-        '6:2': { height, width, y: 486.67, x: 90 },
-        '6:3': { height, width, y: 486.67, x: 180 },
-        '6:4': { height, width, y: 486.67, x: 270 },
+        '1:1': { type: EMPTY, layout: { height, width, y: 0, x: 0 } },
+        '1:2': { type: EMPTY, layout: { height, width, y: 0, x: 90 } },
+        '1:3': { type: EMPTY, layout: { height, width, y: 0, x: 180 } },
+        '1:4': { type: EMPTY, layout: { height, width, y: 0, x: 270 } },
+        '2:1': { type: EMPTY, layout: { height, width, y: 97.33, x: 0 } },
+        '2:2': { type: EMPTY, layout: { height, width, y: 97.33, x: 90 } },
+        '2:3': { type: EMPTY, layout: { height, width, y: 97.33, x: 180 } },
+        '2:4': { type: EMPTY, layout: { height, width, y: 97.33, x: 270 } },
+        '3:1': { type: EMPTY, layout: { height, width, y: 194.67, x: 0 } },
+        '3:2': { type: EMPTY, layout: { height, width, y: 194.67, x: 90 } },
+        '3:3': { type: EMPTY, layout: { height, width, y: 194.67, x: 180 } },
+        '3:4': { type: EMPTY, layout: { height, width, y: 194.67, x: 270 } },
+        '4:1': { type: EMPTY, layout: { height, width, y: 292, x: 0 } },
+        '4:2': { type: EMPTY, layout: { height, width, y: 292, x: 90 } },
+        '4:3': { type: EMPTY, layout: { height, width, y: 292, x: 180 } },
+        '4:4': { type: EMPTY, layout: { height, width, y: 292, x: 270 } },
+        '5:1': { type: EMPTY, layout: { height, width, y: 389.33, x: 0 } },
+        '5:2': { type: EMPTY, layout: { height, width, y: 389.33, x: 90 } },
+        '5:3': { type: EMPTY, layout: { height, width, y: 389.33, x: 180 } },
+        '5:4': { type: EMPTY, layout: { height, width, y: 389.33, x: 270 } },
+        '6:1': { type: RESERVED, layout: { height, width, y: 486.67, x: 0 } },
+        '6:2': { type: RESERVED, layout: { height, width, y: 486.67, x: 90 } },
+        '6:3': { type: RESERVED, layout: { height, width, y: 486.67, x: 180 } },
+        '6:4': { type: RESERVED, layout: { height, width, y: 486.67, x: 270 } },
       });
 
       const {
@@ -135,17 +138,6 @@ describe('LayoutManager', () => {
       expect(props.setDragActiveState).toHaveBeenCalledWith(payload);
     });
 
-    it('does not mark cells as active while already active', () => {
-      const { props, onMove } = gesture({
-        active: { [fmtIndex(1, 1)]: true },
-      });
-
-      const event = { x0: 1, y0: 1, dx: 1, dy: 1 };
-      onMove(null, event);
-
-      expect(props.setDragActiveState).not.toHaveBeenCalled();
-    });
-
     it('marks cells as selected if intersection exists', () => {
       const { props, dimensions, onMove } = gesture();
 
@@ -164,20 +156,6 @@ describe('LayoutManager', () => {
         [fmtIndex(1, 2)]: true,
         [fmtIndex(1, 3)]: true,
         [fmtIndex(1, 4)]: true,
-      });
-    });
-
-    it('marks cells inactive when drawn away', () => {
-      const { props, onMove } = gesture({
-        active: { '4:1': true },
-      });
-
-      const event = { y0: 1, dy: 1, x0: 1, dx: 1 };
-      onMove(null, event);
-
-      expect(props.setDragActiveState).toHaveBeenCalledWith({
-        [fmtIndex(4, 1)]: false,
-        [fmtIndex(1, 1)]: true,
       });
     });
 
@@ -201,12 +179,53 @@ describe('LayoutManager', () => {
       expect(props.createCellGroup).not.toHaveBeenCalled();
       expect(props.navigation.navigate).not.toHaveBeenCalled();
     });
+
+    it('selects existing cell groups on move', () => {
+      const { props, onMove } = gesture();
+      const event = { x0: 1, y0: 490, dx: 0, dy: 0 };
+      onMove(null, event);
+
+      expect(props.setGroupHover).toHaveBeenCalledWith('6:1');
+    });
+
+    it('unselects the group if drug out of bounds', () => {
+      const { props, onMove } = gesture({
+        selected: '6:1',
+      });
+
+      const event = { x0: 1, y0: 490, dx: 0, dy: -150 };
+      onMove(null, event);
+
+      expect(props.setGroupHover).toHaveBeenCalledWith(null);
+      expect(props.setDragActiveState).not.toHaveBeenCalled();
+    });
+
+    it('edits the cell group on press', () => {
+      const { props, onRelease } = gesture({
+        selected: '1:1',
+      });
+
+      onRelease();
+
+      expect(props.editCellGroup).toHaveBeenCalledWith(props.selected);
+    });
+
+    it('does not edit cell groups if unselected', () => {
+      const { props, onRelease } = gesture({
+        selected: null,
+      });
+
+      onRelease();
+
+      expect(props.editCellGroup).not.toHaveBeenCalled();
+    });
   });
 
   describe('mapStateToProps', () => {
     const select = (updates = {}) => {
       const defaultState = {
         layout: {
+          selectedGroup: '1:3',
           active: {
             '1:1': true,
             '2:1': true,
@@ -227,6 +246,12 @@ describe('LayoutManager', () => {
       const { props, state } = select();
 
       expect(props.active).toEqual(state.layout.active);
+    });
+
+    it('indicates what group is selected', () => {
+      const { props, state } = select();
+
+      expect(props.selected).toBe(state.layout.selectedGroup);
     });
   });
 });

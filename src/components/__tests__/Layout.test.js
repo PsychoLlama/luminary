@@ -160,10 +160,13 @@ describe('Layout', () => {
     options.forEach(invokeLayout);
     selections.forEach(invokeLayout);
 
-    expect(props.onCellLayout).toHaveBeenCalledWith(expect.any(String), layout);
-    expect(props.onCellLayout).toHaveBeenCalledTimes(
-      options.length + selections.length,
-    );
+    expect(props.onCellLayout).toHaveBeenCalledWith(expect.any(String), {
+      type: expect.any(String),
+      layout,
+    });
+
+    const calls = options.length + selections.length;
+    expect(props.onCellLayout).toHaveBeenCalledTimes(calls);
   });
 
   describe('mapStateToProps', () => {

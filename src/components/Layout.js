@@ -12,9 +12,12 @@ export const OPTIONS_PER_ROW = 4;
 export const fmtIndex = (x, y) => `${x}:${y}`;
 const extractDimensions = R.pick(['top', 'left', 'width', 'height']);
 
+export const RESERVED = 'reserved';
+export const EMPTY = 'empty';
+
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
   },
 });
 
@@ -169,7 +172,10 @@ export class Layout extends React.Component {
     const index = fmtIndex(layout.col - 1, layout.row - 1);
     const active = this.props.active.hasOwnProperty(index);
     const setLayout = event =>
-      this.props.onCellLayout(index, this.extractLayout(event));
+      this.props.onCellLayout(index, {
+        layout: this.extractLayout(event),
+        type: EMPTY,
+      });
 
     return (
       <EmptySpace
@@ -187,7 +193,10 @@ export class Layout extends React.Component {
     const values = extractDimensions(layout);
     const index = fmtIndex(reservation.x, reservation.y);
     const setLayout = event =>
-      this.props.onCellLayout(index, this.extractLayout(event));
+      this.props.onCellLayout(index, {
+        layout: this.extractLayout(event),
+        type: RESERVED,
+      });
 
     return (
       <Reservation onLayout={setLayout} key={index} id={index} {...values} />
