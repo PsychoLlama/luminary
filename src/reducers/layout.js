@@ -35,6 +35,11 @@ export default handleActions(
         },
       }),
 
+    [actions.setGroupHover]: (state, { payload }) =>
+      update(state, {
+        selectedGroup: { $set: payload },
+      }),
+
     [actions.createGrouping]: state => {
       const { selected, groupId } = state.newCellGroup;
 

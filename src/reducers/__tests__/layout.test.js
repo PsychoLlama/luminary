@@ -104,4 +104,21 @@ describe('Layout', () => {
       });
     });
   });
+
+  describe('setGroupHover', () => {
+    it('sets the group hover state', () => {
+      const id = '1:2';
+      const action = actions.setGroupHover(id);
+      const state = reducer(undefined, action);
+
+      expect(state.selectedGroup).toBe(id);
+    });
+
+    it('can unset the group hover state', () => {
+      const action = actions.setGroupHover(null);
+      const state = reducer(undefined, action);
+
+      expect(state.selectedGroup).toBe(null);
+    });
+  });
 });
