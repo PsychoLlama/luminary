@@ -34,12 +34,14 @@ describe('Layout', () => {
 
     // Hack: perfectly divisible. Avoids leftover height calculations.
     Dimensions.get.mockReturnValue(dimensions);
+    const size = dimensions.width / OPTIONS_PER_ROW;
 
     const output = shallow(<Layout {...props} />);
     return {
       dimensions,
       output,
       props,
+      size,
     };
   };
 
@@ -130,11 +132,10 @@ describe('Layout', () => {
       y: 1,
     };
 
-    const { output, dimensions } = setup({
+    const { output, size } = setup({
       reserved: [reserved],
     });
 
-    const size = dimensions.width / OPTIONS_PER_ROW;
     const selection = output.find(LayoutSelection);
 
     expect(selection.props()).toMatchObject({
@@ -143,6 +144,23 @@ describe('Layout', () => {
       left: reserved.x * size,
       top: reserved.y * size,
     });
+  });
+
+  it('does not bleed reserved data', () => {
+    const { output, size } = setup({
+      reserved: [
+        { x: 0, y: 0, width: 2, height: 1, group: '1' },
+        { x: 0, y: 1, width: 1, height: 1, group: '2' },
+      ],
+    });
+
+    const [one, two] = output.find(LayoutSelection).map(R.identity);
+
+    expect(one.prop('left')).toBe(0);
+    expect(two.prop('left')).toBe(0);
+
+    expect(one.prop('top')).toBe(0);
+    expect(two.prop('top')).toBe(size);
   });
 
   it('invokes the layout handler for each layout', () => {

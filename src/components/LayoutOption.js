@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 import React from 'react';
+import R from 'ramda';
 
 import * as colors from '../constants/colors';
 
@@ -27,8 +28,8 @@ export class LayoutOption extends React.Component {
   };
 
   render() {
-    const { width, height, left, top, active, onLayout } = this.props;
-    const inline = { width, height, left, top };
+    const { active, onLayout } = this.props;
+    const inline = R.pick(['top', 'left', 'width', 'height'], this.props);
 
     return <Container active={active} onLayout={onLayout} style={inline} />;
   }

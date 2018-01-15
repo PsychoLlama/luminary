@@ -17,17 +17,14 @@ export const Container = styled.View`
   border: 0.5px solid ${colors.groups.divider};
   justify-content: center;
   align-items: center;
+  position: absolute;
 `;
 
 export const Title = styled.Text`
   font-size: 20px;
   color: ${colors.text};
 
-  ${props =>
-    props.small &&
-    `
-    font-size: 12px;
-  `};
+  ${props => props.small && 'font-size: 12px'};
 `;
 
 export class LayoutSelection extends React.Component {
