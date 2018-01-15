@@ -1,6 +1,5 @@
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-import { createSelector } from 'reselect';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -25,13 +24,35 @@ const EditLayout = styled.Text`
   font-size: 18px;
 `;
 
+const SetupContainer = styled.View`
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+`;
+
+export const SetupTitle = styled.Text`
+  color: ${colors.text};
+  font-size: 20;
+`;
+
+const SetupButtonContainer = styled.View`
+  margin: 16px 0;
+`;
+
+export const SetupButton = styled.Button.attrs({
+  color: colors.button.default,
+})``;
+
 const renderEmptySpace = R.always(null);
 
 export class Groups extends Component {
   static propTypes = {
-    groups: PropTypes.arrayOf(PropTypes.string),
     fetchAllGroups: PropTypes.func.isRequired,
+    layoutsDefined: PropTypes.bool.isRequired,
     serverUrl: PropTypes.string.isRequired,
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func.isRequired,
+    }),
   };
 
   static navigationOptions = props => ({
@@ -55,16 +76,39 @@ export class Groups extends Component {
   }
 
   render() {
+    const { layoutsDefined } = this.props;
+
+    const contents = layoutsDefined ? this.renderLayout() : this.renderSetup();
+
+    return <Container onLayout={this.setDimensions}>{contents}</Container>;
+  }
+
+  renderLayout() {
     return (
-      <Container onLayout={this.setDimensions}>
-        <Layout
-          renderEmptySpace={renderEmptySpace}
-          container={this.state.layout}
-          renderReservedSpace={Group}
-        />
-      </Container>
+      <Layout
+        renderEmptySpace={renderEmptySpace}
+        container={this.state.layout}
+        renderReservedSpace={Group}
+      />
     );
   }
+
+  renderSetup() {
+    return (
+      <SetupContainer>
+        <SetupTitle>You don&apos;t have any layouts.</SetupTitle>
+        <SetupTitle>Create one?</SetupTitle>
+
+        <SetupButtonContainer>
+          <SetupButton title="Create layout" onPress={this.createLayout} />
+        </SetupButtonContainer>
+      </SetupContainer>
+    );
+  }
+
+  createLayout = () => {
+    this.props.navigation.navigate('LayoutManager');
+  };
 
   setDimensions = event => {
     const { layout } = event.nativeEvent;
@@ -73,11 +117,8 @@ export class Groups extends Component {
 }
 
 export const mapStateToProps = selector({
+  layoutsDefined: R.pipe(R.path(['layout', 'reserved']), R.isEmpty, R.not),
   serverUrl: R.path(['server', 'url']),
-  groups: createSelector(
-    R.prop('groups'),
-    R.pipe(R.values, R.filter(R.propEq('type', 'Room')), R.map(R.prop('id'))),
-  ),
 });
 
 const mapDispatchToProps = {

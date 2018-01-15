@@ -2,7 +2,7 @@ import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { Groups, mapStateToProps } from '../Groups';
+import { Groups, SetupTitle, SetupButton, mapStateToProps } from '../Groups';
 import Layout from '../Layout';
 import Group from '../Group';
 
@@ -18,9 +18,10 @@ const createGroup = (fields = {}) => ({
 describe('Groups', () => {
   const setup = merge => {
     const props = {
+      navigation: { navigate: jest.fn() },
       serverUrl: 'http://filament/',
       fetchAllGroups: jest.fn(),
-      groups: ['1', '2'],
+      layoutsDefined: true,
       ...merge,
     };
 
@@ -59,6 +60,22 @@ describe('Groups', () => {
     expect(layout.prop('container')).toBe(dimensions);
   });
 
+  it('shows a message when no layouts are defined', () => {
+    const { output } = setup({ layoutsDefined: false });
+    const layout = output.find(Layout);
+    const title = output.find(SetupTitle);
+
+    expect(layout.exists()).toBe(false);
+    expect(title.exists()).toBe(true);
+  });
+
+  it('navigates to layout on setup', () => {
+    const { output, props } = setup({ layoutsDefined: false });
+    output.find(SetupButton).simulate('press');
+
+    expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutManager');
+  });
+
   describe('edit button', () => {
     const setup = merge => {
       const props = {
@@ -92,6 +109,11 @@ describe('Groups', () => {
     const select = (updates = {}) => {
       const defaultState = {
         server: { url: 'http://filament/' },
+        layout: {
+          reserved: {
+            '1:1': { x: 1, y: 1, width: 1, height: 1, group: '5' },
+          },
+        },
         groups: {
           1: createGroup({ name: 'One', id: '1' }),
           2: createGroup({ name: 'Two', id: '2' }),
@@ -113,29 +135,26 @@ describe('Groups', () => {
       expect(props).toEqual(expect.any(Object));
     });
 
-    it('extracts a list of group IDs', () => {
-      const { props } = select();
-
-      expect(props.groups).toEqual(['1', '2', '3']);
-    });
-
-    // Excludes arbitrary light groupings made by 3rd-party apps.
-    it('only includes Room types', () => {
-      const { props } = select({
-        groups: {
-          3: {
-            type: { $set: 'LightGroup' },
-          },
-        },
-      });
-
-      expect(props.groups).toEqual(['1', '2']);
-    });
-
     it('grabs the filament server address', () => {
       const { props, state } = select();
 
       expect(props.serverUrl).toBe(state.server.url);
+    });
+
+    it('indicates if layouts exist', () => {
+      const { props } = select();
+
+      expect(props.layoutsDefined).toBe(true);
+    });
+
+    it('indicates if layouts are absent', () => {
+      const { props } = select({
+        layout: {
+          reserved: { $set: {} },
+        },
+      });
+
+      expect(props.layoutsDefined).toBe(false);
     });
   });
 });

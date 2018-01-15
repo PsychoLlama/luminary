@@ -29,7 +29,7 @@
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
     "test": "jest",
-    "lint": "eslint src/ App.js App.style.js"
+    "lint": "eslint src/ App.js"
   },
   "lint-staged": {
     "*.js": [
