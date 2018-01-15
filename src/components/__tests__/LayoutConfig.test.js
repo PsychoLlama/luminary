@@ -9,7 +9,9 @@ describe('LayoutConfig', () => {
   const setup = merge => {
     const props = {
       createGrouping: jest.fn(),
+      updateGrouping: jest.fn(),
       selectOption: jest.fn(),
+      isNewGroup: true,
       selected: '2',
       groups: [
         { id: '1', name: 'Hall' },
@@ -99,6 +101,15 @@ describe('LayoutConfig', () => {
     expect(props.navigation.goBack).toHaveBeenCalled();
   });
 
+  it('updates the group when in edit mode', () => {
+    const { output, props } = setup({ isNewGroup: false });
+    output.find(Button).simulate('press');
+
+    expect(props.createGrouping).not.toHaveBeenCalled();
+    expect(props.updateGrouping).toHaveBeenCalled();
+    expect(props.navigation.goBack).toHaveBeenCalled();
+  });
+
   describe('GroupOption', () => {
     const setup = merge => {
       const props = {
@@ -138,7 +149,8 @@ describe('LayoutConfig', () => {
         },
 
         layout: {
-          newCellGroup: {
+          cellGroup: {
+            isNewGroup: false,
             groupId: '18',
             selected: {},
           },
@@ -164,7 +176,7 @@ describe('LayoutConfig', () => {
     it('pulls the selected value from state', () => {
       const { props, state } = select();
 
-      expect(props.selected).toBe(state.layout.newCellGroup.groupId);
+      expect(props.selected).toBe(state.layout.cellGroup.groupId);
     });
 
     it('gets the list of groups', () => {
@@ -182,6 +194,12 @@ describe('LayoutConfig', () => {
       const updates = { $set: state };
 
       expect(select(updates).props.groups).toBe(select(updates).props.groups);
+    });
+
+    it('indicates whether the operation is create or edit', () => {
+      const { props, state } = select();
+
+      expect(props.isNewGroup).toBe(state.layout.cellGroup.isNewGroup);
     });
   });
 });

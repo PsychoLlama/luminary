@@ -55,7 +55,8 @@ describe('Layout', () => {
       const action = actions.createCellGroup(active);
       const state = reducer(undefined, action);
 
-      expect(state.newCellGroup).toMatchObject({
+      expect(state.cellGroup).toMatchObject({
+        isNewGroup: true,
         selected: active,
       });
     });
@@ -69,7 +70,7 @@ describe('Layout', () => {
       const action = actions.selectGroup(id);
       const state = reducer(initial, action);
 
-      expect(state.newCellGroup.groupId).toBe(id);
+      expect(state.cellGroup.groupId).toBe(id);
     });
   });
 
@@ -82,7 +83,7 @@ describe('Layout', () => {
       const cellGroupings = reducer(undefined, createCellGroup);
       const state = reducer(cellGroupings, done);
 
-      expect(state.newCellGroup).toBe(null);
+      expect(state.cellGroup).toBe(null);
     });
 
     it('adds a reserved slot', () => {
@@ -119,6 +120,32 @@ describe('Layout', () => {
       const state = reducer(undefined, action);
 
       expect(state.selectedGroup).toBe(null);
+    });
+  });
+
+  describe('editCellGroup', () => {
+    it('sets the group edit state', () => {
+      const initial = {
+        ...defaultState,
+        reserved: {
+          '1:1': {
+            group: '5',
+            height: 1,
+            width: 1,
+            x: 1,
+            y: 1,
+          },
+        },
+      };
+
+      const action = actions.editCellGroup('1:1');
+      const state = reducer(initial, action);
+
+      expect(state.cellGroup).toMatchObject({
+        isNewGroup: false,
+        selected: null,
+        groupId: '5',
+      });
     });
   });
 });

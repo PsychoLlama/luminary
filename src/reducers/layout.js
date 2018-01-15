@@ -5,7 +5,8 @@ import R from 'ramda';
 import * as actions from '../actions/layout';
 
 export const defaultState = {
-  newCellGroup: null,
+  selectedGroup: null,
+  cellGroup: null,
   reserved: {},
   active: {},
 };
@@ -20,9 +21,10 @@ export default handleActions(
     [actions.createCellGroup]: (state, { payload }) =>
       update(state, {
         active: { $set: {} },
-        newCellGroup: {
+        cellGroup: {
           $set: {
             selected: payload,
+            isNewGroup: true,
             groupId: null,
           },
         },
@@ -30,7 +32,7 @@ export default handleActions(
 
     [actions.selectGroup]: (state, { payload }) =>
       update(state, {
-        newCellGroup: {
+        cellGroup: {
           groupId: { $set: payload },
         },
       }),
@@ -40,8 +42,22 @@ export default handleActions(
         selectedGroup: { $set: payload },
       }),
 
+    [actions.editCellGroup]: (state, { payload }) => {
+      const reserved = state.reserved[payload];
+
+      return update(state, {
+        cellGroup: {
+          $set: {
+            groupId: reserved.group,
+            isNewGroup: false,
+            selected: null,
+          },
+        },
+      });
+    },
+
     [actions.createGrouping]: state => {
-      const { selected, groupId } = state.newCellGroup;
+      const { selected, groupId } = state.cellGroup;
 
       const fmt = (x, y) => `${x}:${y}`;
       const parse = index => index.split(':');
@@ -59,7 +75,7 @@ export default handleActions(
       const ys = new Set(selectedCells.map(R.prop(1)));
 
       return update(state, {
-        newCellGroup: { $set: null },
+        cellGroup: { $set: null },
         reserved: {
           [fmt(x, y)]: {
             $set: {

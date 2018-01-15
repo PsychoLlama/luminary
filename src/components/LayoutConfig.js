@@ -63,7 +63,9 @@ const styles = StyleSheet.create({
 export class LayoutConfig extends React.Component {
   static propTypes = {
     createGrouping: PropTypes.func.isRequired,
+    updateGrouping: PropTypes.func.isRequired,
     selectOption: PropTypes.func.isRequired,
+    isNewGroup: PropTypes.bool.isRequired,
     selected: PropTypes.string,
     groups: PropTypes.arrayOf(
       PropTypes.shape({
@@ -97,7 +99,7 @@ export class LayoutConfig extends React.Component {
           <Button
             disabled={!selected}
             title={confirmText}
-            onPress={this.create}
+            onPress={this.save}
           />
         </View>
       </View>
@@ -128,8 +130,12 @@ export class LayoutConfig extends React.Component {
     this.props.selectOption(groupId);
   };
 
-  create = () => {
-    this.props.createGrouping();
+  save = () => {
+    const { isNewGroup, createGrouping, updateGrouping } = this.props;
+
+    const handler = isNewGroup ? createGrouping : updateGrouping;
+    handler();
+
     this.props.navigation.goBack();
   };
 }
@@ -162,7 +168,8 @@ export class GroupOption extends React.Component {
 }
 
 export const mapStateToProps = selector({
-  selected: R.path(['layout', 'newCellGroup', 'groupId']),
+  isNewGroup: R.path(['layout', 'cellGroup', 'isNewGroup']),
+  selected: R.path(['layout', 'cellGroup', 'groupId']),
   groups: createSelector(
     R.prop('groups'),
     R.pipe(R.values, R.filter(R.propEq('type', 'Room'))),
@@ -171,6 +178,7 @@ export const mapStateToProps = selector({
 
 const mapDispatchToProps = {
   createGrouping: actions.createGrouping,
+  updateGrouping: actions.updateGrouping,
   selectOption: actions.selectGroup,
 };
 

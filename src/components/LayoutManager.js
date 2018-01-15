@@ -65,6 +65,7 @@ export class LayoutManager extends React.Component {
 
     if (selected) {
       this.props.editCellGroup(selected);
+      this.props.navigation.navigate('LayoutConfig');
     } else if (!R.isEmpty(active)) {
       this.props.createCellGroup(this.props.active);
       this.props.navigation.navigate('LayoutConfig');

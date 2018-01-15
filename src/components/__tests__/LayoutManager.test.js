@@ -219,6 +219,7 @@ describe('LayoutManager', () => {
       onRelease();
 
       expect(props.editCellGroup).toHaveBeenCalledWith(props.selected);
+      expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutConfig');
     });
 
     it('does not edit cell groups if unselected', () => {
@@ -229,6 +230,7 @@ describe('LayoutManager', () => {
       onRelease();
 
       expect(props.editCellGroup).not.toHaveBeenCalled();
+      expect(props.navigation.navigate).not.toHaveBeenCalled();
     });
   });
 
