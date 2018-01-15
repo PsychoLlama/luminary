@@ -124,6 +124,27 @@ describe('Layout', () => {
     });
   });
 
+  describe('deleteGrouping', () => {
+    it('does thigns', () => {
+      const initial = {
+        ...defaultState,
+        cellGroup: { id: '1:1' },
+        reserved: {
+          '1:1': {},
+          '1:2': {},
+        },
+      };
+
+      const action = actions.deleteGrouping();
+      const state = reducer(initial, action);
+
+      expect(state.cellGroup).toBe(null);
+      expect(state.reserved).toEqual({
+        '1:2': expect.anything(),
+      });
+    });
+  });
+
   describe('setGroupHover', () => {
     it('sets the group hover state', () => {
       const id = '1:2';
@@ -145,6 +166,7 @@ describe('Layout', () => {
     it('sets the group edit state', () => {
       const initial = {
         ...defaultState,
+        selectedGroup: '1:1',
         reserved: {
           '1:1': {
             group: '5',
@@ -159,6 +181,7 @@ describe('Layout', () => {
       const action = actions.editCellGroup('1:1');
       const state = reducer(initial, action);
 
+      expect(state.selectedGroup).toBe(null);
       expect(state.cellGroup).toMatchObject({
         isNewGroup: false,
         selected: null,

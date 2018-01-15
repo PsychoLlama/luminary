@@ -4,6 +4,7 @@ import React from 'react';
 
 import {
   mapStateToProps,
+  DeleteButton,
   LayoutConfig,
   GroupOption,
   SaveButton,
@@ -13,6 +14,7 @@ describe('LayoutConfig', () => {
   const setup = merge => {
     const props = {
       createGrouping: jest.fn(),
+      deleteGrouping: jest.fn(),
       updateGrouping: jest.fn(),
       selectOption: jest.fn(),
       isNewGroup: true,
@@ -79,6 +81,13 @@ describe('LayoutConfig', () => {
     expect(button.prop('title')).toMatch(/create/i);
   });
 
+  it('uses different wording when in edit mode', () => {
+    const { output } = setup({ isNewGroup: false });
+    const button = output.find(SaveButton);
+
+    expect(button.prop('title')).toMatch(/update/i);
+  });
+
   it('selects the option when clicked', () => {
     const { output, props } = setup();
     const option = output.find(GroupOption).first();
@@ -112,6 +121,25 @@ describe('LayoutConfig', () => {
     expect(props.createGrouping).not.toHaveBeenCalled();
     expect(props.updateGrouping).toHaveBeenCalled();
     expect(props.navigation.goBack).toHaveBeenCalled();
+  });
+
+  it('shows a delete button in edit mode', () => {
+    const { output, props } = setup({ isNewGroup: false });
+    const button = output.find(DeleteButton);
+
+    expect(button.exists()).toBe(true);
+
+    button.simulate('press');
+
+    expect(props.deleteGrouping).toHaveBeenCalled();
+    expect(props.navigation.goBack).toHaveBeenCalled();
+  });
+
+  it('does not show a delete button for new groups', () => {
+    const { output } = setup({ isNewGroup: true });
+    const button = output.find(DeleteButton);
+
+    expect(button.exists()).toBe(false);
   });
 
   describe('GroupOption', () => {

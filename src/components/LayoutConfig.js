@@ -32,7 +32,7 @@ const Option = styled.View`
 `;
 
 const Buttons = styled.View`
-  padding: 12px;
+  flex-direction: row;
 `;
 
 const Radio = styled.View`
@@ -50,11 +50,18 @@ const InnerRadio = styled.View`
   border-radius: 50;
 `;
 
+const ButtonWrapper = styled.View`
+  flex: 1;
+  padding: 12px;
+`;
+
 export const SaveButton = styled.Button``;
+export const DeleteButton = styled.Button.attrs({ color: colors.error })``;
 
 export class LayoutConfig extends React.Component {
   static propTypes = {
     createGrouping: PropTypes.func.isRequired,
+    deleteGrouping: PropTypes.func.isRequired,
     updateGrouping: PropTypes.func.isRequired,
     selectOption: PropTypes.func.isRequired,
     isNewGroup: PropTypes.bool,
@@ -79,20 +86,29 @@ export class LayoutConfig extends React.Component {
   };
 
   render() {
-    const { groups, selected } = this.props;
+    const { groups, selected, isNewGroup } = this.props;
     const options = groups.map(this.renderOption, this);
-    const confirmText = selected ? 'Create' : 'Select an option';
+    const newGroupConfirmText = selected ? 'Create' : 'Select an option';
+    const confirmText = isNewGroup ? newGroupConfirmText : 'Update';
 
     return (
       <Container>
         <ScrollView>{options}</ScrollView>
 
         <Buttons>
-          <SaveButton
-            disabled={!selected}
-            title={confirmText}
-            onPress={this.save}
-          />
+          {!isNewGroup && (
+            <ButtonWrapper>
+              <DeleteButton title="Delete" onPress={this.delete} />
+            </ButtonWrapper>
+          )}
+
+          <ButtonWrapper>
+            <SaveButton
+              disabled={!selected}
+              title={isNewGroup ? confirmText : 'update'}
+              onPress={this.save}
+            />
+          </ButtonWrapper>
         </Buttons>
       </Container>
     );
@@ -128,6 +144,11 @@ export class LayoutConfig extends React.Component {
     const handler = isNewGroup ? createGrouping : updateGrouping;
     handler();
 
+    this.props.navigation.goBack();
+  };
+
+  delete = () => {
+    this.props.deleteGrouping();
     this.props.navigation.goBack();
   };
 }
@@ -168,6 +189,7 @@ export const mapStateToProps = selector({
 
 const mapDispatchToProps = {
   createGrouping: actions.createGrouping,
+  deleteGrouping: actions.deleteGrouping,
   updateGrouping: actions.updateGrouping,
   selectOption: actions.selectGroup,
 };

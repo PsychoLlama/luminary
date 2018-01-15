@@ -46,6 +46,7 @@ export default handleActions(
       const reserved = state.reserved[payload];
 
       return update(state, {
+        selectedGroup: { $set: null },
         cellGroup: {
           $set: {
             groupId: reserved.group,
@@ -103,6 +104,12 @@ export default handleActions(
         },
       });
     },
+
+    [actions.deleteGrouping]: state =>
+      update(state, {
+        reserved: { $unset: [state.cellGroup.id] },
+        cellGroup: { $set: null },
+      }),
   },
   defaultState,
 );
