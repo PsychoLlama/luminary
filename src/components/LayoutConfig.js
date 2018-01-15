@@ -65,7 +65,7 @@ export class LayoutConfig extends React.Component {
     createGrouping: PropTypes.func.isRequired,
     updateGrouping: PropTypes.func.isRequired,
     selectOption: PropTypes.func.isRequired,
-    isNewGroup: PropTypes.bool.isRequired,
+    isNewGroup: PropTypes.bool,
     selected: PropTypes.string,
     groups: PropTypes.arrayOf(
       PropTypes.shape({

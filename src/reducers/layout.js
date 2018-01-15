@@ -51,6 +51,7 @@ export default handleActions(
             groupId: reserved.group,
             isNewGroup: false,
             selected: null,
+            id: payload,
           },
         },
       });
@@ -85,6 +86,19 @@ export default handleActions(
               x: Number(x),
               y: Number(y),
             },
+          },
+        },
+      });
+    },
+
+    [actions.updateGrouping]: state => {
+      const { id, groupId } = state.cellGroup;
+
+      return update(state, {
+        cellGroup: { $set: null },
+        reserved: {
+          [id]: {
+            $merge: { group: groupId },
           },
         },
       });

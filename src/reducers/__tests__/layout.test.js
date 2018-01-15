@@ -106,6 +106,24 @@ describe('Layout', () => {
     });
   });
 
+  describe('updateGrouping', () => {
+    it('updates the group state', () => {
+      const id = '1:1';
+      const initial = {
+        ...defaultState,
+        cellGroup: { groupId: '10', id },
+        reserved: {
+          [id]: { group: '5' },
+        },
+      };
+
+      const state = reducer(initial, actions.updateGrouping());
+
+      expect(state.cellGroup).toBe(null);
+      expect(state.reserved[id].group).toBe('10');
+    });
+  });
+
   describe('setGroupHover', () => {
     it('sets the group hover state', () => {
       const id = '1:2';
@@ -145,6 +163,7 @@ describe('Layout', () => {
         isNewGroup: false,
         selected: null,
         groupId: '5',
+        id: '1:1',
       });
     });
   });
