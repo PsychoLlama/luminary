@@ -1,9 +1,9 @@
-import { TextInput, Button } from 'react-native';
+import { Button } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { ServerLink, mapStateToProps } from '../ServerLink';
+import { ServerLink, UrlInput, mapStateToProps } from '../ServerLink';
 import { STATES } from '../../reducers/filament';
 import { error } from '../../constants/colors';
 
@@ -61,7 +61,7 @@ describe('ServerLink', () => {
 
   it('shows an input element', () => {
     const { output } = setup();
-    const text = output.find(TextInput);
+    const text = output.find(UrlInput);
 
     expect(text.exists()).toBe(true);
   });
@@ -69,7 +69,7 @@ describe('ServerLink', () => {
   it('updates the server URL on input', () => {
     const { output, props } = setup();
     const url = 'http://';
-    output.find(TextInput).simulate('changeText', url);
+    output.find(UrlInput).simulate('changeText', url);
 
     expect(props.updateServerUrl).toHaveBeenCalledWith(url);
   });
@@ -98,21 +98,21 @@ describe('ServerLink', () => {
 
   it('pings the server when the submit button is pressed', () => {
     const { output, props } = setup();
-    output.find(TextInput).simulate('submitEditing');
+    output.find(UrlInput).simulate('submitEditing');
 
     expect(props.pingServer).toHaveBeenCalledWith(props.serverUrl);
   });
 
   it('does not ping the server if the url is invalid', () => {
     const { output, props } = setup({ urlLooksValid: false });
-    output.find(TextInput).simulate('submitEditing');
+    output.find(UrlInput).simulate('submitEditing');
 
     expect(props.pingServer).not.toHaveBeenCalled();
   });
 
   it('disables submit while pinging', () => {
     const { output, props } = setup({ testingConnection: true });
-    output.find(TextInput).simulate('submitEditing');
+    output.find(UrlInput).simulate('submitEditing');
     const button = output.find(Button);
 
     expect(props.pingServer).not.toHaveBeenCalled();
