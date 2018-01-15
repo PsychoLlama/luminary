@@ -80,15 +80,21 @@ export class LayoutManager extends React.Component {
     const end = { x: start.x + dx, y: start.y + dy };
 
     // Calculate selection box.
-    const left = Math.min(start.x, end.x);
-    const right = Math.max(start.x, end.x);
-    const top = Math.min(start.y, end.y);
-    const bottom = Math.max(start.y, end.y);
+    const selection = {
+      bottom: Math.max(start.y, end.y),
+      right: Math.max(start.x, end.x),
+      left: Math.min(start.x, end.x),
+      top: Math.min(start.y, end.y),
+    };
 
     const layouts = R.toPairs(this.layouts);
-    const empty = layouts.filter(this.isEmptyLayout);
-    const reserved = layouts.filter(this.isReservedLayout);
+    if (!this.triggerReservedHover(layouts, start, selection)) {
+      this.triggerSelectionHover(layouts, selection);
+    }
+  };
 
+  triggerReservedHover = (layouts, start, selection) => {
+    const reserved = layouts.filter(this.isReservedLayout);
     const selecting = reserved.find(([, { layout }]) => {
       const bounds = this.getBounds(layout);
 
@@ -101,15 +107,19 @@ export class LayoutManager extends React.Component {
     if (selecting) {
       const [index, { layout }] = selecting;
       const bounds = this.getBounds(layout);
-      const valid = this.isValidSelection(bounds, { left, right, top, bottom });
+      const valid = this.isValidSelection(bounds, selection);
       const focus = valid ? index : null;
 
       if (this.props.selected !== focus) {
         this.props.setGroupHover(focus);
       }
-
-      return;
     }
+
+    return selecting;
+  };
+
+  triggerSelectionHover = (layouts, { left, right, top, bottom }) => {
+    const empty = layouts.filter(this.isEmptyLayout);
 
     // Locate which cells intersect with the selection area.
     const patches = empty.reduce((patches, [index, { layout }]) => {
