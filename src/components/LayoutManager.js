@@ -104,7 +104,10 @@ export class LayoutManager extends React.Component {
       const valid = this.isValidSelection(bounds, { left, right, top, bottom });
       const focus = valid ? index : null;
 
-      this.props.setGroupHover(focus);
+      if (this.props.selected !== focus) {
+        this.props.setGroupHover(focus);
+      }
+
       return;
     }
 

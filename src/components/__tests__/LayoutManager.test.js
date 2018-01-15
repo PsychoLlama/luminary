@@ -200,6 +200,17 @@ describe('LayoutManager', () => {
       expect(props.setDragActiveState).not.toHaveBeenCalled();
     });
 
+    it('does not set active state if already active', () => {
+      const { props, onMove } = gesture({
+        selected: '6:1',
+      });
+
+      const event = { x0: 1, y0: 490, dx: 0, dy: 0 };
+      onMove(null, event);
+
+      expect(props.setGroupHover).not.toHaveBeenCalled();
+    });
+
     it('edits the cell group on press', () => {
       const { props, onRelease } = gesture({
         selected: '1:1',
