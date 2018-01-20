@@ -1,4 +1,4 @@
-import { TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback, Vibration } from 'react-native';
 import styled from 'styled-components/native';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -54,13 +54,18 @@ export class Group extends Component {
     const on = R.propOr(false, 'anyOn', group);
 
     return (
-      <TouchableWithoutFeedback onPress={this.toggleLights}>
+      <TouchableWithoutFeedback
+        onPressIn={this.provideFeedback}
+        onPress={this.toggleLights}
+      >
         <Container on={on} style={position}>
           <Title small={constrainWidth}>{R.prop('name', group)}</Title>
         </Container>
       </TouchableWithoutFeedback>
     );
   }
+
+  provideFeedback = () => Vibration.vibrate(10);
 
   toggleLights = () => {
     const { serverUrl, group } = this.props;

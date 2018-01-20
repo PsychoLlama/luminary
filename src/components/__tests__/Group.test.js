@@ -1,9 +1,12 @@
+import { Vibration } from 'react-native';
 import update from 'immutability-helper';
 import { shallow } from 'enzyme';
 import React from 'react';
 import R from 'ramda';
 
 import { Group, Title, mapStateToProps, Container } from '../Group';
+
+jest.spyOn(Vibration, 'vibrate').mockImplementation(R.always(null));
 
 describe('Group', () => {
   const setup = merge => {
@@ -73,6 +76,15 @@ describe('Group', () => {
       on: !props.group.anyOn,
       id: props.group.id,
     });
+  });
+
+  it('vibrates when pressed', () => {
+    const { output } = setup();
+    expect(Vibration.vibrate).not.toHaveBeenCalled();
+
+    output.simulate('pressIn');
+
+    expect(Vibration.vibrate).toHaveBeenCalled();
   });
 
   it('correctly positions the group', () => {
