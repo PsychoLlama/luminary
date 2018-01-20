@@ -3,13 +3,8 @@ import update from 'immutability-helper';
 import url from 'url';
 import R from 'ramda';
 
+import { getAppState } from '../actions/startup';
 import * as actions from '../actions/filament';
-
-export const STATES = {
-  NOT_FOUND: 'not-found',
-  LOADING: 'loading',
-  FOUND: 'found',
-};
 
 export const defaultState = {
   state: null,
@@ -26,15 +21,9 @@ const setPingFinishedState = R.curry((error, state) =>
 
 export default handleActions(
   {
-    [actions.getServerUrl.optimistic]: state =>
+    [getAppState]: (state, { payload }) =>
       update(state, {
-        state: { $set: STATES.LOADING },
-      }),
-
-    [actions.getServerUrl]: (state, action) =>
-      update(state, {
-        state: { $set: action.payload ? STATES.FOUND : STATES.NOT_FOUND },
-        url: { $set: action.payload },
+        url: { $set: payload.serverUrl },
         isValid: { $set: true },
       }),
 
@@ -56,13 +45,7 @@ export default handleActions(
 
     [actions.pingServer]: {
       throw: setPingFinishedState(true),
-      next: state => {
-        const patched = setPingFinishedState(false, state);
-
-        return update(patched, {
-          state: { $set: STATES.FOUND },
-        });
-      },
+      next: setPingFinishedState(false),
     },
   },
   defaultState,

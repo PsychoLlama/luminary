@@ -26,23 +26,6 @@ describe('Filament', () => {
     axios.get.mockReturnValue(response);
   });
 
-  describe('getServerUrl', () => {
-    const dispatch = R.identity;
-
-    it('returns a promise', () => {
-      const result = actions.getServerUrl()(dispatch);
-
-      expect(result.payload).toEqual(expect.any(Promise));
-    });
-
-    it('resolves with the storage data', async () => {
-      const action = actions.getServerUrl()(dispatch);
-      const result = await action.payload;
-
-      expect(result).toBe(SERVER);
-    });
-  });
-
   describe('pingServer', () => {
     const dispatch = R.identity;
 

@@ -4,20 +4,16 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import { ServerLink, UrlInput, mapStateToProps } from '../ServerLink';
-import { STATES } from '../../reducers/filament';
 import { error } from '../../constants/colors';
 
 describe('ServerLink', () => {
   const setup = merge => {
     const props = {
       pingServer: jest.fn(() => Promise.resolve()),
-      lookupState: STATES.NOT_FOUND,
+      navigation: { navigate: jest.fn() },
       serverUrl: 'http://filament/',
       updateServerUrl: jest.fn(),
       urlLooksValid: true,
-      navigation: {
-        navigate: jest.fn(),
-      },
       ...merge,
     };
 
@@ -29,12 +25,6 @@ describe('ServerLink', () => {
 
   it('renders', () => {
     setup();
-  });
-
-  it('shows nothing while loading', () => {
-    const { output } = setup({ lookupState: STATES.LOADING });
-
-    expect(output.equals(null)).toBe(true);
   });
 
   it('shows the groups if the ping was successful', async () => {
@@ -142,7 +132,6 @@ describe('ServerLink', () => {
           url: 'http://some-url.tld',
           testingConnection: true,
           pingSuccessful: false,
-          state: STATES.LOADING,
           urlLooksValid: true,
         },
       };
@@ -165,12 +154,6 @@ describe('ServerLink', () => {
       const { props, state } = select();
 
       expect(props.serverUrl).toBe(state.server.url);
-    });
-
-    it('fetches the server URL lookup state', () => {
-      const { props, state } = select();
-
-      expect(props.lookupState).toBe(state.server.state);
     });
 
     it('indicates whether the url looks valid', () => {

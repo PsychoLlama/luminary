@@ -1,5 +1,6 @@
+import reducer, { defaultState } from '../filament';
+import { getAppState } from '../../actions/startup';
 import * as actions from '../../actions/filament';
-import reducer, { STATES, defaultState } from '../filament';
 
 describe('server', () => {
   it('returns state when the action type is unknown', () => {
@@ -11,36 +12,13 @@ describe('server', () => {
     });
   });
 
-  describe('getServerUrl', () => {
+  describe('getAppState', () => {
     it('updates the local server URL', () => {
-      const url = 'http://server.com';
-      const action = { payload: url, type: String(actions.getServerUrl) };
+      const payload = { serverUrl: 'http://server.com' };
+      const action = { payload, type: String(getAppState) };
       const state = reducer(undefined, action);
 
-      expect(state.url).toBe(url);
-    });
-
-    it('shows when the url was found', () => {
-      const payload = 'http://server.url';
-      const action = { payload, type: String(actions.getServerUrl) };
-      const state = reducer(undefined, action);
-
-      expect(state.state).toBe(STATES.FOUND);
-    });
-
-    it('shows when the url could not be found', () => {
-      const payload = null;
-      const action = { payload, type: String(actions.getServerUrl) };
-      const state = reducer(undefined, action);
-
-      expect(state.state).toBe(STATES.NOT_FOUND);
-    });
-
-    it('indicates when fetching from storage', () => {
-      const action = { type: String(actions.getServerUrl.optimistic) };
-      const state = reducer(undefined, action);
-
-      expect(state.state).toBe(STATES.LOADING);
+      expect(state.url).toBe(payload.serverUrl);
     });
   });
 
@@ -103,7 +81,7 @@ describe('server', () => {
       const action = { type: String(actions.pingServer) };
       const state = reducer(undefined, action);
 
-      expect(state.state).toBe(STATES.FOUND);
+      expect(state.pingSuccessful).toBe(true);
     });
   });
 });

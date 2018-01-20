@@ -7,8 +7,7 @@ import { Loading } from '../Loading';
 describe('Loading', () => {
   const setup = merge => {
     const props = {
-      getServerUrl: jest.fn(() => Promise.resolve({})),
-      getLayouts: jest.fn(),
+      getAppState: jest.fn(),
       navigation: {
         dispatch: jest.fn(),
       },
@@ -25,25 +24,17 @@ describe('Loading', () => {
     setup();
   });
 
-  it('fetches the server URL on mount', async () => {
-    const { props, output } = setup();
-
-    await output.instance().componentWillMount();
-
-    expect(props.getServerUrl).toHaveBeenCalled();
-  });
-
-  it('fetches the layouts on mount', () => {
+  it('fetches app state on mount from storage', () => {
     const { props } = setup();
 
-    expect(props.getLayouts).toHaveBeenCalled();
+    expect(props.getAppState).toHaveBeenCalled();
   });
 
   it('shows the groups on success', async () => {
     const { props, output } = setup({
-      getServerUrl: jest.fn(() =>
-        Promise.resolve({ payload: 'http://server/' }),
-      ),
+      getAppState: jest.fn(async () => ({
+        payload: { serverUrl: 'http://server/' },
+      })),
     });
 
     await output.instance().componentWillMount();
@@ -57,7 +48,9 @@ describe('Loading', () => {
 
   it('shows the server setup page on failure', async () => {
     const { props, output } = setup({
-      getServerUrl: jest.fn(() => Promise.resolve({ payload: null })),
+      getAppState: jest.fn(async () => ({
+        payload: { serverUrl: null },
+      })),
     });
 
     await output.instance().componentWillMount();

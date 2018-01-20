@@ -1,3 +1,4 @@
+import { getAppState } from '../../actions/startup';
 import reducer, { defaultState } from '../layout';
 import * as actions from '../../actions/layout';
 
@@ -191,20 +192,23 @@ describe('Layout', () => {
     });
   });
 
-  describe('getLayouts', () => {
+  describe('getAppState', () => {
     it('imports the layouts', () => {
       const payload = {
-        '1:1': { x: 1, y: 1, width: 1, height: 1, group: '1' },
+        layouts: {
+          '1:1': { x: 1, y: 1, width: 1, height: 1, group: '1' },
+        },
       };
 
-      const action = { type: String(actions.getLayouts), payload };
+      const action = { type: String(getAppState), payload };
       const state = reducer(undefined, action);
 
-      expect(state.reserved).toBe(payload);
+      expect(state.reserved).toBe(payload.layouts);
     });
 
     it('ignores the action if no data was found', () => {
-      const action = { type: String(actions.getLayouts), payload: null };
+      const payload = { layouts: null };
+      const action = { type: String(getAppState), payload };
       const initial = reducer(undefined, { type: 'UNKNOWN_TYPE' });
       const state = reducer(initial, action);
 

@@ -2,6 +2,7 @@ import { handleActions } from 'redux-actions';
 import update from 'immutability-helper';
 import R from 'ramda';
 
+import { getAppState } from '../actions/startup';
 import * as actions from '../actions/layout';
 
 export const defaultState = {
@@ -111,11 +112,12 @@ export default handleActions(
         cellGroup: { $set: null },
       }),
 
-    [actions.getLayouts]: (state, { payload }) => {
-      if (!payload) return state;
+    [getAppState]: (state, { payload }) => {
+      const { layouts } = payload;
+      if (!layouts) return state;
 
       return update(state, {
-        reserved: { $set: payload },
+        reserved: { $set: layouts },
       });
     },
   },

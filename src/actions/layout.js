@@ -22,11 +22,3 @@ export const persistLayouts = () => (dispatch, getState) => {
 
   return dispatch(action());
 };
-
-export const getLayouts = createAction('GET_LAYOUTS', () =>
-  AsyncStorage.getItem(LAYOUT_STORAGE_KEY).then(layouts => {
-    if (!layouts) return layouts;
-
-    return JSON.parse(layouts);
-  }),
-);

@@ -3,23 +3,19 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import * as filamentActions from '../actions/filament';
-import * as layoutActions from '../actions/layout';
+import * as startupActions from '../actions/startup';
 
 export class Loading extends React.Component {
   static propTypes = {
-    getServerUrl: PropTypes.func.isRequired,
-    getLayouts: PropTypes.func.isRequired,
+    getAppState: PropTypes.func.isRequired,
     navigation: PropTypes.shape({
       dispatch: PropTypes.func.isRequired,
     }).isRequired,
   };
 
   async componentWillMount() {
-    this.props.getLayouts();
-
-    const { payload: url } = await this.props.getServerUrl();
-    const route = url ? 'Groups' : 'ServerLink';
+    const { payload } = await this.props.getAppState();
+    const route = payload.serverUrl ? 'Groups' : 'ServerLink';
 
     // Navigate without adding a back button.
     const navigate = NavigationActions.reset({
@@ -36,8 +32,7 @@ export class Loading extends React.Component {
 }
 
 const mapDispatchToProps = {
-  getServerUrl: filamentActions.getServerUrl,
-  getLayouts: layoutActions.getLayouts,
+  getAppState: startupActions.getAppState,
 };
 
 export default connect(null, mapDispatchToProps)(Loading);

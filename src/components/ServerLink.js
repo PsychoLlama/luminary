@@ -7,7 +7,6 @@ import { Button, Keyboard } from 'react-native';
 
 import * as actions from '../actions/filament';
 import * as colors from '../constants/colors';
-import { STATES } from '../reducers/filament';
 import { selector } from '../utils/redux';
 
 const Container = styled.View`
@@ -29,7 +28,6 @@ const Header = styled.Text`
 
 export class ServerLink extends React.Component {
   static propTypes = {
-    lookupState: PropTypes.oneOf(R.values(STATES)),
     updateServerUrl: PropTypes.func.isRequired,
     pingServer: PropTypes.func.isRequired,
     testingConnection: PropTypes.bool,
@@ -46,11 +44,7 @@ export class ServerLink extends React.Component {
   };
 
   render() {
-    const { pingSuccessful, lookupState } = this.props;
-
-    if (lookupState === STATES.LOADING) {
-      return null;
-    }
+    const { pingSuccessful } = this.props;
 
     return (
       <Container>
@@ -114,7 +108,6 @@ export const mapStateToProps = selector({
   testingConnection: withServerState(R.prop('testingConnection')),
   pingSuccessful: withServerState(R.prop('pingSuccessful')),
   urlLooksValid: withServerState(R.prop('urlLooksValid')),
-  lookupState: withServerState(R.prop('state')),
   serverUrl: withServerState(R.prop('url')),
 });
 

@@ -7,9 +7,6 @@ import url from 'url';
 import { optimistic } from '../utils/actions';
 
 export const SERVER_URL_STORAGE_KEY = 'filament_server_url';
-export const getServerUrl = optimistic('GET_SERVER_URL', () =>
-  AsyncStorage.getItem(SERVER_URL_STORAGE_KEY),
-);
 
 export const pingServer = optimistic('PING_SERVER', async server => {
   const parsed = url.parse(server);

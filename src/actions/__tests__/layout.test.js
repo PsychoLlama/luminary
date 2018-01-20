@@ -49,32 +49,4 @@ describe('Layout', () => {
       await expect(result.payload).rejects.toBe(error);
     });
   });
-
-  describe('getLayouts', () => {
-    it('loads all layouts', async () => {
-      const action = actions.getLayouts();
-
-      expect(action.payload).toEqual(expect.any(Promise));
-      const result = await action.payload;
-
-      expect(result).toBe(null);
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(
-        actions.LAYOUT_STORAGE_KEY,
-      );
-    });
-
-    it('parses the result if it exists', async () => {
-      const reserved = {
-        '1:1': { x: 1, y: 1, width: 1, height: 1, group: '5' },
-      };
-
-      const response = Promise.resolve(JSON.stringify(reserved));
-      AsyncStorage.getItem.mockReturnValue(response);
-
-      const action = actions.getLayouts();
-      const result = await action.payload;
-
-      expect(result).toEqual(reserved);
-    });
-  });
 });
