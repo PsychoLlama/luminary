@@ -17,20 +17,23 @@ describe('groups', () => {
 
   describe('fetchAllGroups', () => {
     it('indexes groups by ID', () => {
-      const groups = [{ id: '5', name: 'five' }, { id: '10', name: 'ten' }];
-      const action = { type: actions.fetchAllGroups, payload: { groups } };
+      const groups = {
+        10: { id: '10', name: 'ten' },
+        5: { id: '5', name: 'five' },
+      };
+
+      const action = { type: actions.fetchAllGroups, payload: groups };
       const state = reducer(undefined, action);
 
       expect(state).toEqual({
-        5: groups[0],
-        10: groups[1],
+        10: groups[10],
+        5: groups[5],
       });
     });
 
     it('replaces existing group state entirely', () => {
       const initial = { 5: { id: '5', name: 'five' } };
-      const payload = { groups: [] };
-      const action = { type: actions.fetchAllGroups, payload };
+      const action = { type: actions.fetchAllGroups, payload: {} };
       const state = reducer(initial, action);
 
       expect(state).toEqual({});
