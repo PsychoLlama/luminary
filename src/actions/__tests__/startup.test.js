@@ -1,6 +1,7 @@
 import { AsyncStorage } from 'react-native';
 
 import { SERVER_URL_STORAGE_KEY } from '../filament';
+import { GROUPS_STORAGE_KEY } from '../groups';
 import { LAYOUT_STORAGE_KEY } from '../layout';
 import * as actions from '../startup';
 
@@ -17,6 +18,10 @@ describe('Startup', () => {
     beforeEach(() => {
       storage = {
         [SERVER_URL_STORAGE_KEY]: 'http://some.filament.url/',
+        [GROUPS_STORAGE_KEY]: JSON.stringify({
+          1: { id: '1', name: 'One', type: 'Room', anyOn: false },
+          2: { id: '2', name: 'Two', type: 'Room', anyOn: false },
+        }),
         [LAYOUT_STORAGE_KEY]: JSON.stringify({
           '1:1': {
             group: '18',
@@ -54,6 +59,7 @@ describe('Startup', () => {
       expect(result).toEqual({
         serverUrl: expect.any(String),
         layouts: expect.any(Object),
+        groups: expect.any(Object),
       });
     });
 
@@ -63,6 +69,14 @@ describe('Startup', () => {
       const result = await action.payload;
 
       expect(result.layouts).toBe(null);
+    });
+
+    it('does not splode if no group data exists', async () => {
+      storage[GROUPS_STORAGE_KEY] = null;
+      const action = actions.getAppState();
+      const result = await action.payload;
+
+      expect(result.groups).toBe(null);
     });
   });
 });

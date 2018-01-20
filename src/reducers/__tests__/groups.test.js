@@ -1,3 +1,4 @@
+import { getAppState } from '../../actions/startup';
 import * as actions from '../../actions/groups';
 import reducer from '../groups';
 
@@ -13,6 +14,20 @@ describe('groups', () => {
     const result = reducer(state, { type: 'unknown_type' });
 
     expect(result).toEqual(state);
+  });
+
+  describe('getAppState', () => {
+    it('replaces the current state', () => {
+      const payload = {
+        groups: {
+          1: { id: '1', name: 'One', type: 'Room', anyOn: false },
+        },
+      };
+
+      const state = reducer({}, { type: String(getAppState), payload });
+
+      expect(state).toEqual(payload.groups);
+    });
   });
 
   describe('fetchAllGroups', () => {
