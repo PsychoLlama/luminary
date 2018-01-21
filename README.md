@@ -19,7 +19,7 @@ This isn't a normal light switch. It's a light switch for your entire home. With
 
 for example: you could make your whole screen a giant toggle button for your living room, or you could take half your screen for the living room, and split the rest between the kitchen and stairwell. That's the level of control you're given.
 
-![Example screenshot](./images/layout-screenshot.png)
+<img src="./images/layout-screenshot.png" alt="Example screenshot" width="250" />
 
 ## Unique features
 Right now the focus is on speed, but here are some plans for the future:
