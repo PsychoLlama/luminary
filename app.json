@@ -2,9 +2,15 @@
   "expo": {
     "name": "Luminary",
     "description": "Front end for Filament, a server for Philips Hue",
+    "icon": "./luminary.png",
+    "platforms": ["android"],
     "sdkVersion": "24.0.0",
     "githubUrl": "https://github.com/PsychoLlama/luminary",
     "orientation": "portrait",
+    "primaryColor": "#11141A",
+    "splash": {
+      "backgroundColor": "#11141A"
+    },
     "android": {
       "package": "com.psychollama.luminary"
     }
