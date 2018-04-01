@@ -58,10 +58,11 @@ describe('Hue Group action', () => {
       expect(action.payload).toEqual(expect.any(Promise));
       await action.payload;
 
-      const expected = R.indexBy(R.prop('id'), groups);
+      const map = R.indexBy(R.prop('id'), groups);
+      const allOff = R.map(R.assoc('anyOn', false), map);
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         actions.GROUPS_STORAGE_KEY,
-        JSON.stringify(expected),
+        JSON.stringify(allOff),
       );
     });
 

@@ -19,8 +19,9 @@ export const fetchAllGroups = createAction('FETCH_ALL_GROUPS', async server => {
 
   const { groups } = await api(server);
   const normalized = R.indexBy(R.prop('id'), groups);
-  const data = JSON.stringify(normalized);
 
+  const persistable = R.map(R.assoc('anyOn', false), normalized);
+  const data = JSON.stringify(persistable);
   await AsyncStorage.setItem(GROUPS_STORAGE_KEY, data);
 
   return normalized;
