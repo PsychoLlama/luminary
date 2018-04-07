@@ -58,7 +58,7 @@ const ButtonWrapper = styled.View`
 export const SaveButton = styled.Button``;
 export const DeleteButton = styled.Button.attrs({ color: colors.error })``;
 
-export class LayoutConfig extends React.Component {
+export class Config extends React.Component {
   static propTypes = {
     createGrouping: PropTypes.func.isRequired,
     deleteGrouping: PropTypes.func.isRequired,
@@ -198,4 +198,4 @@ const mapDispatchToProps = {
   selectOption: actions.selectGroup,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LayoutConfig);
+export default connect(mapStateToProps, mapDispatchToProps)(Config);

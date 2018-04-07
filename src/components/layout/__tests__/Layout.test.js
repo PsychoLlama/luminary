@@ -4,8 +4,8 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import R from 'ramda';
 
-import LayoutSelection from '../LayoutSelection';
-import LayoutOption from '../LayoutOption';
+import Selection from '../Selection';
+import Option from '../Option';
 import { Layout, mapStateToProps, OPTIONS_PER_ROW } from '../Layout';
 
 jest.spyOn(Dimensions, 'get');
@@ -18,10 +18,10 @@ describe('Layout', () => {
   const setup = merge => {
     const dimensions = { height: 630, width: 360 };
     const props = {
-      renderReservedSpace: LayoutSelection,
-      renderEmptySpace: LayoutOption,
+      renderReservedSpace: Selection,
       setDragActiveState: jest.fn(),
       createCellGroup: jest.fn(),
+      renderEmptySpace: Option,
       onCellLayout: jest.fn(),
       container: dimensions,
       reserved: [],
@@ -51,14 +51,14 @@ describe('Layout', () => {
 
   it('shows no options if layout is unset', () => {
     const { output } = setup({ container: null });
-    const options = output.find(LayoutOption);
+    const options = output.find(Option);
 
     expect(options.length).toBe(0);
   });
 
   it('shows a screen of options', () => {
     const { output, dimensions } = setup();
-    const options = output.find(LayoutOption);
+    const options = output.find(Option);
 
     const rows = dimensions.height / (dimensions.width / OPTIONS_PER_ROW);
     const expected = Math.floor(rows * OPTIONS_PER_ROW);
@@ -68,7 +68,7 @@ describe('Layout', () => {
 
   it('sets the proper size', () => {
     const { output, dimensions } = setup();
-    const option = output.find(LayoutOption).first();
+    const option = output.find(Option).first();
 
     expect(option.prop('width')).toBe(dimensions.width / OPTIONS_PER_ROW);
     expect(option.prop('height')).toBe(dimensions.width / OPTIONS_PER_ROW);
@@ -83,7 +83,7 @@ describe('Layout', () => {
     // 3rd from the left.
     const left = width * 2;
 
-    const option = output.find(LayoutOption).at(14);
+    const option = output.find(Option).at(14);
 
     expect(option.prop('top')).toBe(top);
     expect(option.prop('left')).toBe(left);
@@ -94,8 +94,8 @@ describe('Layout', () => {
       active: { '1:0': true },
     });
 
-    const first = output.find(LayoutOption).at(0);
-    const second = output.find(LayoutOption).at(1);
+    const first = output.find(Option).at(0);
+    const second = output.find(Option).at(1);
 
     expect(first.prop('active')).toBe(false);
     expect(second.prop('active')).toBe(true);
@@ -114,8 +114,8 @@ describe('Layout', () => {
       ],
     });
 
-    const selection = output.find(LayoutSelection);
-    const options = output.find(LayoutOption);
+    const selection = output.find(Selection);
+    const options = output.find(Option);
 
     expect(selection.length).toBe(1);
 
@@ -136,7 +136,7 @@ describe('Layout', () => {
       reserved: [reserved],
     });
 
-    const selection = output.find(LayoutSelection);
+    const selection = output.find(Selection);
 
     expect(selection.props()).toMatchObject({
       height: reserved.height * size,
@@ -154,7 +154,7 @@ describe('Layout', () => {
       ],
     });
 
-    const [one, two] = output.find(LayoutSelection).map(R.identity);
+    const [one, two] = output.find(Selection).map(R.identity);
 
     expect(one.prop('left')).toBe(0);
     expect(two.prop('left')).toBe(0);
@@ -172,8 +172,8 @@ describe('Layout', () => {
         nativeEvent: { layout },
       });
 
-    const options = output.find(LayoutOption);
-    const selections = output.find(LayoutSelection);
+    const options = output.find(Option);
+    const selections = output.find(Selection);
 
     options.forEach(invokeLayout);
     selections.forEach(invokeLayout);
