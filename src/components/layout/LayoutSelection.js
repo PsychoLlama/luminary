@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
-import * as colors from '../constants/colors';
+import * as colors from '../../constants/colors';
 
 const Touchable = styled.TouchableOpacity`
   flex: 1;

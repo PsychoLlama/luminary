@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
-import * as actions from '../actions/layout';
-import { selector } from '../utils/redux';
+import * as actions from '../../actions/layout';
+import { selector } from '../../utils/redux';
 
 export const OPTIONS_PER_ROW = 4;
 export const fmtIndex = (x, y) => `${x}:${y}`;

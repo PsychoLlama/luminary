@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import { Groups, SetupTitle, SetupButton, mapStateToProps } from '../Groups';
-import Layout from '../Layout';
+import Layout from '../layout/Layout';
 import Group from '../Group';
 
 const createGroup = (fields = {}) => ({

@@ -8,7 +8,7 @@ import R from 'ramda';
 import * as colors from '../constants/colors';
 import * as actions from '../actions/groups';
 import { selector } from '../utils/redux';
-import Layout from './Layout';
+import Layout from './layout/Layout';
 import Group from './Group';
 
 const Container = styled.View`

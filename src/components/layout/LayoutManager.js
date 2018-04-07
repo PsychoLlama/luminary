@@ -6,9 +6,9 @@ import React from 'react';
 import R from 'ramda';
 
 import LayoutSelection from './LayoutSelection';
-import * as actions from '../actions/layout';
+import * as actions from '../../actions/layout';
+import { selector } from '../../utils/redux';
 import LayoutOption from './LayoutOption';
-import { selector } from '../utils/redux';
 import Layout, { EMPTY } from './Layout';
 
 const Container = styled.View`
