@@ -59,11 +59,10 @@ export class Groups extends Component {
     title: 'Groups',
     headerRight: (
       <TouchableOpacity
-        title="Edit"
-        onPress={() => props.navigation.navigate('LayoutManager')}
+        onPress={() => props.navigation.navigate('AppSettings')}
       >
         <EditButtonContainer>
-          <EditLayout>Edit</EditLayout>
+          <EditLayout>Settings</EditLayout>
         </EditButtonContainer>
       </TouchableOpacity>
     ),

@@ -6,6 +6,7 @@ import React from 'react';
 // eslint-disable-next-line import/default
 import Expo from 'expo';
 
+import AppSettings from './src/components/AppSettings';
 import Manager from './src/components/layout/Manager';
 import ServerLink from './src/components/ServerLink';
 import Config from './src/components/layout/Config';
@@ -35,6 +36,7 @@ const Routes = StackNavigator(
       navigationOptions,
       screen: Manager,
     },
+    AppSettings: { screen: AppSettings, navigationOptions },
     ServerLink: { screen: ServerLink, navigationOptions },
     LayoutConfig: { screen: Config, navigationOptions },
     Loading: { screen: Loading, navigationOptions },
