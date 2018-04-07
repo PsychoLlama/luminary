@@ -4,7 +4,7 @@
     "description": "Front end for Filament, a server for Philips Hue",
     "icon": "./images/luminary.png",
     "platforms": ["android"],
-    "sdkVersion": "24.0.0",
+    "sdkVersion": "26.0.0",
     "githubUrl": "https://github.com/PsychoLlama/luminary",
     "orientation": "portrait",
     "primaryColor": "#11141A",
