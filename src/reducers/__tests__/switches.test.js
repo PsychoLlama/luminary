@@ -1,16 +1,16 @@
+import reducer, { DEFAULT_STATE } from '../switches';
 import { getAppState } from '../../actions/startup';
 import * as actions from '../../actions/switches';
-import reducer from '../switches';
 
 describe('switches', () => {
   it('provides default state', () => {
     const state = reducer(undefined, { type: 'unknown' });
 
-    expect(state).toBeDefined();
+    expect(state).toEqual(DEFAULT_STATE);
   });
 
   it('can toggle switches', () => {
-    const action = actions.toggleSwitch('dashboard');
+    const action = actions.toggleSwitch({ name: 'dashboard', on: true });
     const state = reducer({ dashboard: false }, action);
 
     expect(state).toEqual({
@@ -20,7 +20,7 @@ describe('switches', () => {
 
   it('merges in other state', () => {
     const initial = { dashboard: false, dragons: true };
-    const action = actions.toggleSwitch('dashboard');
+    const action = actions.toggleSwitch({ name: 'dashboard', on: true });
     const state = reducer(initial, action);
 
     const { dashboard, ...untouched } = initial;
@@ -29,13 +29,13 @@ describe('switches', () => {
 
   // Protects against typos.
   it('throws if the switch is undefined', () => {
-    const key = 'no-such-key';
-    const action = actions.toggleSwitch(key);
+    const payload = { name: 'no-such-key', on: false };
+    const action = actions.toggleSwitch(payload);
     const fail = () => reducer({}, action);
 
     expect(fail).toThrow(
       expect.objectContaining({
-        message: expect.stringMatching(key),
+        message: expect.stringMatching(payload.name),
       }),
     );
   });
@@ -54,7 +54,7 @@ describe('switches', () => {
       const action = { type: String(getAppState), payload: { switches } };
       const state = reducer(undefined, action);
 
-      expect(state).toEqual({});
+      expect(state).toEqual(DEFAULT_STATE);
     });
   });
 });
