@@ -18,7 +18,7 @@ describe('switches', () => {
       await thunk(jest.fn(), getState);
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        actions.FEATURE_SWITCH_KEY,
+        actions.SWITCHES_STORAGE_KEY,
         JSON.stringify(switches),
       );
     });

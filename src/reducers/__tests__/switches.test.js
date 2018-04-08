@@ -1,3 +1,4 @@
+import { getAppState } from '../../actions/startup';
 import * as actions from '../../actions/switches';
 import reducer from '../switches';
 
@@ -37,5 +38,23 @@ describe('switches', () => {
         message: expect.stringMatching(key),
       }),
     );
+  });
+
+  describe('getAppState', () => {
+    it('hydrates the switches', () => {
+      const switches = { dashboard: true };
+      const action = { type: String(getAppState), payload: { switches } };
+      const state = reducer(undefined, action);
+
+      expect(state).toEqual(switches);
+    });
+
+    it('initializes the switches when none exist', () => {
+      const switches = null;
+      const action = { type: String(getAppState), payload: { switches } };
+      const state = reducer(undefined, action);
+
+      expect(state).toEqual({});
+    });
   });
 });
