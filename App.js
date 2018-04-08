@@ -6,6 +6,7 @@ import React from 'react';
 // eslint-disable-next-line import/default
 import Expo from 'expo';
 
+import DashboardDetector from './src/components/DashboardDetector';
 import AppSettings from './src/components/AppSettings';
 import Manager from './src/components/layout/Manager';
 import ServerLink from './src/components/ServerLink';
@@ -55,6 +56,7 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <View style={styles.container}>
+          <DashboardDetector />
           <StatusBar hidden />
           <Routes />
         </View>
