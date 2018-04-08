@@ -35,7 +35,14 @@ while [[ -n "$IN_PROGRESS" ]]; do
   fi
 done
 
-APK_URL="$(echo "$BUILD_STATUS" | awk '/APK/ { print $3 }')"
+extract_apk_url="""
+/APK/ {
+  url_start_index = match(\$0, /http/)
+  print substr(\$0, url_start_index)
+}
+"""
+
+APK_URL="$(awk "$extract_apk_url" <<< "$BUILD_STATUS")"
 
 echo "Compiled APK: $APK_URL"
 
