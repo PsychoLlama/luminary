@@ -6,14 +6,14 @@ import R from 'ramda';
 import * as colors from '../../constants/colors';
 
 export const Container = styled.View`
-  background-color: ${colors.groups.bg};
-  border: 0.5px solid ${colors.groups.divider};
+  background-color: ${colors.layout.option.bg};
+  border: 0.5px solid ${colors.layout.option.divider};
   position: absolute;
 
   ${props =>
     props.active &&
     `
-    background-color: ${colors.groups.selected};
+    background-color: ${colors.layout.option.selected};
   `};
 `;
 

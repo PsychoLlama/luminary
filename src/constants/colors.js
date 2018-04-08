@@ -28,6 +28,21 @@ groups.status = {
   on: palette.yellow,
 };
 
+export const layout = {
+  option: {
+    bg: groups.bg,
+    selected: groups.selected,
+    divider: groups.divider,
+  },
+};
+
+layout.selection = {
+  divider: layout.option.divider,
+  highlight: palette.blue,
+  bg: layout.option.bg,
+  text,
+};
+
 export const navbar = {
   text: '#AEB9C4',
   bg: '#101319',

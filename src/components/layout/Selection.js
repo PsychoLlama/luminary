@@ -13,16 +13,21 @@ const Touchable = styled.TouchableOpacity`
 `;
 
 export const Container = styled.View`
-  background-color: ${colors.groups.bg};
-  border: 0.5px solid ${colors.groups.divider};
+  background-color: ${colors.layout.selection.bg};
+  border: 1px solid ${colors.layout.selection.divider};
+  position: absolute;
+`;
+
+const Highlight = styled.View`
+  border: 0.5px solid ${colors.layout.selection.highlight};
+  flex: 1;
   justify-content: center;
   align-items: center;
-  position: absolute;
 `;
 
 export const Title = styled.Text`
   font-size: 20px;
-  color: ${colors.text};
+  color: ${colors.layout.selection.text};
 
   ${props => props.small && 'font-size: 12px'};
 `;
@@ -45,9 +50,11 @@ export class Selection extends React.Component {
 
     return (
       <Container style={inline} onLayout={this.props.onLayout}>
-        <Touchable>
-          <Title small={useSmallTitle}>{groupTitle}</Title>
-        </Touchable>
+        <Highlight>
+          <Touchable>
+            <Title small={useSmallTitle}>{groupTitle}</Title>
+          </Touchable>
+        </Highlight>
       </Container>
     );
   }
