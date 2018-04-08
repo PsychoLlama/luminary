@@ -9,8 +9,8 @@ import { error } from '../../constants/colors';
 describe('ServerLink', () => {
   const setup = merge => {
     const props = {
+      navigation: { navigate: jest.fn(), goBack: jest.fn() },
       pingServer: jest.fn(() => Promise.resolve()),
-      navigation: { navigate: jest.fn() },
       serverUrl: 'http://filament/',
       updateServerUrl: jest.fn(),
       urlLooksValid: true,
@@ -123,6 +123,22 @@ describe('ServerLink', () => {
     const button = output.find(Button);
 
     expect(button.prop('color')).not.toBe(error);
+  });
+
+  it('unwinds navigation history if requested', async () => {
+    const { output, props } = setup({
+      pingServer: () => Promise.resolve({ payload: { success: true } }),
+      navigation: {
+        state: { params: { goBack: true } },
+        navigate: jest.fn(),
+        goBack: jest.fn(),
+      },
+    });
+
+    await output.find(Button).prop('onPress')();
+
+    expect(props.navigation.navigate).not.toHaveBeenCalled();
+    expect(props.navigation.goBack).toHaveBeenCalled();
   });
 
   describe('mapStateToProps', () => {

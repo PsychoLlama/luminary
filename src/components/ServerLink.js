@@ -1,21 +1,21 @@
+import { Button, Keyboard } from 'react-native';
 import styled from 'styled-components/native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
-import { Button, Keyboard } from 'react-native';
 
 import * as actions from '../actions/filament';
 import * as colors from '../constants/colors';
 import { selector } from '../utils/redux';
 
 const Container = styled.View`
-  padding: 20%;
+  padding: 35px;
 `;
 
 export const UrlInput = styled.TextInput`
   color: ${colors.text};
-  margin-bottom: 8;
+  margin-bottom: 8px;
   padding: 8px 4px;
   text-align: center;
 `;
@@ -36,6 +36,12 @@ export class ServerLink extends React.Component {
     serverUrl: PropTypes.string,
     navigation: PropTypes.shape({
       navigate: PropTypes.func.isRequired,
+      goBack: PropTypes.func.isRequired,
+      state: PropTypes.shape({
+        params: PropTypes.shape({
+          goBack: PropTypes.bool.isRequired,
+        }),
+      }),
     }).isRequired,
   };
 
@@ -97,7 +103,11 @@ export class ServerLink extends React.Component {
 
       if (payload && payload.success) {
         Keyboard.dismiss();
-        this.props.navigation.navigate('Groups');
+        if (R.path(['state', 'params', 'goBack'], this.props.navigation)) {
+          this.props.navigation.goBack();
+        } else {
+          this.props.navigation.navigate('Groups');
+        }
       }
     }
   };

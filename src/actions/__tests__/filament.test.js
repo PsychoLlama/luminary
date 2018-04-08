@@ -9,6 +9,9 @@ jest.mock('axios');
 
 jest.spyOn(AsyncStorage, 'getItem');
 jest.spyOn(AsyncStorage, 'setItem');
+
+jest.useFakeTimers();
+
 const SERVER = 'http://server-url.tld';
 
 describe('Filament', () => {
@@ -75,6 +78,16 @@ describe('Filament', () => {
       const result = await action.payload;
 
       expect(result).toEqual({ success: true });
+    });
+
+    it('fails after a timeout', async () => {
+      const promise = new Promise(R.always(undefined));
+      axios.get.mockReturnValue(promise);
+
+      const action = actions.pingServer('http://filament/')(dispatch);
+      jest.runOnlyPendingTimers();
+
+      await expect(action.payload).rejects.toBeDefined();
     });
   });
 });

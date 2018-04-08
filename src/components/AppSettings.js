@@ -51,6 +51,10 @@ export class AppSettings extends React.Component {
   };
 
   openLayoutManager = () => this.props.navigation.navigate('LayoutManager');
+  openServerConfig = () =>
+    this.props.navigation.navigate('ServerLink', {
+      goBack: true,
+    });
 
   setDashboardMode = enabled => {
     const { switches } = this.props;
@@ -72,6 +76,15 @@ export class AppSettings extends React.Component {
             <Description>
               <SettingsIcon name="th" />
               <OptionText>Change layout</OptionText>
+            </Description>
+          </ListItem>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.openServerConfig}>
+          <ListItem>
+            <Description>
+              <SettingsIcon name="wifi" />
+              <OptionText>Change server URL</OptionText>
             </Description>
           </ListItem>
         </TouchableOpacity>

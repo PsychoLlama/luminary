@@ -39,6 +39,17 @@ describe('AppSettings', () => {
     expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutManager');
   });
 
+  it('opens server config when chosen', () => {
+    const { output, props } = setup();
+
+    output
+      .find(TouchableOpacity)
+      .at(1)
+      .simulate('press');
+
+    expect(props.navigation.navigate).toHaveBeenCalledWith('ServerLink');
+  });
+
   it('enables dashboard mode when the toggle is set', () => {
     const { output, props } = setup();
     output.find(Switch).simulate('valueChange', false);
