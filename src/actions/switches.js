@@ -4,16 +4,10 @@ import { prefixActions } from '../utils/actions';
 
 const createAction = prefixActions('SWITCHES');
 
-export const toggleSwitch = createAction('TOGGLE_SWITCH');
-
 export const SWITCHES_STORAGE_KEY = 'feature_switches';
-export const persistSwitches = () => async (dispatch, getState) => {
-  const action = createAction('PERSIST_SWITCHES');
-
-  const { switches } = getState();
+export const toggleSwitch = createAction('TOGGLE_SWITCH');
+export const persistSwitches = createAction('PERSIST_SWITCHES', switches => {
   const persistable = JSON.stringify(switches);
 
-  await AsyncStorage.setItem(SWITCHES_STORAGE_KEY, persistable);
-
-  return action();
-};
+  return AsyncStorage.setItem(SWITCHES_STORAGE_KEY, persistable);
+});

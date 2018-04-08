@@ -11,26 +11,14 @@ describe('switches', () => {
     });
 
     it('writes feature switches to disk', async () => {
-      const thunk = actions.persistSwitches();
       const switches = { dashboard: true, dragons: false };
-      const getState = () => ({ switches });
-
-      await thunk(jest.fn(), getState);
+      const action = actions.persistSwitches(switches);
+      await action.payload;
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         actions.SWITCHES_STORAGE_KEY,
         JSON.stringify(switches),
       );
-    });
-
-    it('resolves with an action', async () => {
-      const thunk = actions.persistSwitches();
-      const switches = { dashboard: true };
-      const getState = () => ({ switches });
-
-      const action = await thunk(jest.fn(), getState);
-
-      expect(action).toEqual({ type: expect.any(String) });
     });
   });
 });
