@@ -5,12 +5,12 @@ import React from 'react';
 import {
   mapStateToProps,
   DeleteButton,
-  LayoutConfig,
   GroupOption,
   SaveButton,
-} from '../LayoutConfig';
+  Config,
+} from '../Config';
 
-describe('LayoutConfig', () => {
+describe('Config', () => {
   const setup = merge => {
     const props = {
       createGrouping: jest.fn(),
@@ -32,7 +32,7 @@ describe('LayoutConfig', () => {
     };
 
     return {
-      output: shallow(<LayoutConfig {...props} />),
+      output: shallow(<Config {...props} />),
       props,
     };
   };

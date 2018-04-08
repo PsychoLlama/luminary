@@ -3,9 +3,14 @@ import { StackNavigator } from 'react-navigation';
 import { Provider } from 'react-redux';
 import React from 'react';
 
-import LayoutManager from './src/components/LayoutManager';
-import LayoutConfig from './src/components/LayoutConfig';
+// eslint-disable-next-line import/default
+import Expo from 'expo';
+
+import DashboardDetector from './src/components/DashboardDetector';
+import AppSettings from './src/components/AppSettings';
+import Manager from './src/components/layout/Manager';
 import ServerLink from './src/components/ServerLink';
+import Config from './src/components/layout/Config';
 import * as colors from './src/constants/colors';
 import Loading from './src/components/Loading';
 import Groups from './src/components/Groups';
@@ -18,16 +23,23 @@ const styles = StyleSheet.create({
 });
 
 const navigationOptions = {
-  headerStyle: { backgroundColor: colors.navbar.bg },
   headerTitleStyle: { color: colors.navbar.text },
   headerTintColor: colors.navbar.text,
+  headerStyle: {
+    marginTop: -Expo.Constants.statusBarHeight,
+    backgroundColor: colors.navbar.bg,
+  },
 };
 
 const Routes = StackNavigator(
   {
-    LayoutManager: { screen: LayoutManager, navigationOptions },
-    LayoutConfig: { screen: LayoutConfig, navigationOptions },
+    LayoutManager: {
+      navigationOptions,
+      screen: Manager,
+    },
+    AppSettings: { screen: AppSettings, navigationOptions },
     ServerLink: { screen: ServerLink, navigationOptions },
+    LayoutConfig: { screen: Config, navigationOptions },
     Loading: { screen: Loading, navigationOptions },
     Groups: { screen: Groups, navigationOptions },
   },
@@ -44,6 +56,7 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <View style={styles.container}>
+          <DashboardDetector />
           <StatusBar hidden />
           <Routes />
         </View>

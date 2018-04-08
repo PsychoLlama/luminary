@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
-import * as colors from '../constants/colors';
+import * as colors from '../../constants/colors';
 
 export const Container = styled.View`
   background-color: ${colors.groups.bg};
@@ -17,7 +17,7 @@ export const Container = styled.View`
   `};
 `;
 
-export class LayoutOption extends React.Component {
+export class Option extends React.Component {
   static propTypes = {
     height: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
@@ -35,4 +35,4 @@ export class LayoutOption extends React.Component {
   }
 }
 
-export default LayoutOption;
+export default Option;

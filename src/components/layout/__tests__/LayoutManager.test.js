@@ -4,14 +4,14 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import R from 'ramda';
 
-import { LayoutManager, mapStateToProps } from '../LayoutManager';
-import LayoutSelection from '../LayoutSelection';
 import Layout, { fmtIndex, EMPTY, RESERVED } from '../Layout';
-import LayoutOption from '../LayoutOption';
+import { Manager, mapStateToProps } from '../Manager';
+import Selection from '../Selection';
+import Option from '../Option';
 
 jest.spyOn(Dimensions, 'get');
 
-describe('LayoutManager', () => {
+describe('Manager', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -30,7 +30,7 @@ describe('LayoutManager', () => {
       ...merge,
     };
 
-    const output = shallow(<LayoutManager {...props} />);
+    const output = shallow(<Manager {...props} />);
     const dimensions = { top: 0, left: 0, height: 630, width: 360 };
     const event = { nativeEvent: { layout: dimensions } };
     output.simulate('layout', event);
@@ -68,14 +68,14 @@ describe('LayoutManager', () => {
     const { output } = setup();
     const layout = output.find(Layout);
 
-    expect(layout.prop('renderEmptySpace')).toBe(LayoutOption);
+    expect(layout.prop('renderEmptySpace')).toBe(Option);
   });
 
   it('shows group slots in reserved spaces', () => {
     const { output } = setup();
     const layout = output.find(Layout);
 
-    expect(layout.prop('renderReservedSpace')).toBe(LayoutSelection);
+    expect(layout.prop('renderReservedSpace')).toBe(Selection);
   });
 
   describe('gesture', () => {

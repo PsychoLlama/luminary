@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import { Groups, SetupTitle, SetupButton, mapStateToProps } from '../Groups';
-import Layout from '../Layout';
+import Layout from '../layout/Layout';
 import Group from '../Group';
 
 const createGroup = (fields = {}) => ({
@@ -76,7 +76,7 @@ describe('Groups', () => {
     expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutManager');
   });
 
-  describe('edit button', () => {
+  describe('settings button', () => {
     const setup = merge => {
       const props = {
         navigation: {
@@ -101,7 +101,7 @@ describe('Groups', () => {
       const { node, props } = setup();
       node.props.onPress();
 
-      expect(props.navigation.navigate).toHaveBeenCalledWith('LayoutManager');
+      expect(props.navigation.navigate).toHaveBeenCalledWith('AppSettings');
     });
   });
 

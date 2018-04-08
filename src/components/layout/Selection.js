@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
-import * as colors from '../constants/colors';
+import * as colors from '../../constants/colors';
 
 const Touchable = styled.TouchableOpacity`
   flex: 1;
@@ -27,7 +27,7 @@ export const Title = styled.Text`
   ${props => props.small && 'font-size: 12px'};
 `;
 
-export class LayoutSelection extends React.Component {
+export class Selection extends React.Component {
   static propTypes = {
     blockWidth: PropTypes.number.isRequired,
     groupTitle: PropTypes.string.isRequired,
@@ -63,4 +63,4 @@ export const mapStateToProps = (state, props) => {
   };
 };
 
-export default connect(mapStateToProps)(LayoutSelection);
+export default connect(mapStateToProps)(Selection);

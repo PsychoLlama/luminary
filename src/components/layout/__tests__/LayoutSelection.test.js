@@ -3,14 +3,9 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import R from 'ramda';
 
-import {
-  LayoutSelection,
-  mapStateToProps,
-  Container,
-  Title,
-} from '../LayoutSelection';
+import { mapStateToProps, Container, Selection, Title } from '../Selection';
 
-describe('LayoutSelection', () => {
+describe('Selection', () => {
   const setup = merge => {
     const props = {
       groupTitle: 'Living Room',
@@ -24,7 +19,7 @@ describe('LayoutSelection', () => {
     };
 
     return {
-      output: shallow(<LayoutSelection {...props} />),
+      output: shallow(<Selection {...props} />),
       props,
     };
   };

@@ -28,6 +28,10 @@ env:
 rules:
   require-jsdoc: off
   import/no-named-as-default: off
+  no-unused-vars:
+    - error
+    - ignoreRestSiblings: true
+
   id-length:
     - error
     - min: 2

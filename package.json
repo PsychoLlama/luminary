@@ -28,7 +28,7 @@
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
-    "test": "jest",
+    "test": "jest --colors",
     "lint": "eslint src/ App.js"
   },
   "lint-staged": {

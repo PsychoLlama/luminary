@@ -5,17 +5,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import R from 'ramda';
 
-import LayoutSelection from './LayoutSelection';
-import * as actions from '../actions/layout';
-import LayoutOption from './LayoutOption';
-import { selector } from '../utils/redux';
+import * as actions from '../../actions/layout';
+import { selector } from '../../utils/redux';
 import Layout, { EMPTY } from './Layout';
+import Selection from './Selection';
+import Option from './Option';
 
 const Container = styled.View`
   flex: 1;
 `;
 
-export class LayoutManager extends React.Component {
+export class Manager extends React.Component {
   static propTypes = {
     setDragActiveState: PropTypes.func.isRequired,
     createCellGroup: PropTypes.func.isRequired,
@@ -150,10 +150,10 @@ export class LayoutManager extends React.Component {
       <Container {...this.pan.panHandlers} onLayout={this.setDimensions}>
         <Layout
           {...this.props}
-          renderReservedSpace={LayoutSelection}
           container={this.state.dimensions}
-          renderEmptySpace={LayoutOption}
+          renderReservedSpace={Selection}
           onCellLayout={this.addLayout}
+          renderEmptySpace={Option}
         />
       </Container>
     );
@@ -181,4 +181,4 @@ const mapDispatchToProps = {
   editCellGroup: actions.editCellGroup,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LayoutManager);
+export default connect(mapStateToProps, mapDispatchToProps)(Manager);

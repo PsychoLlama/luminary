@@ -1,6 +1,7 @@
 import { AsyncStorage } from 'react-native';
 
 import { SERVER_URL_STORAGE_KEY } from '../filament';
+import { SWITCHES_STORAGE_KEY } from '../switches';
 import { GROUPS_STORAGE_KEY } from '../groups';
 import { LAYOUT_STORAGE_KEY } from '../layout';
 import * as actions from '../startup';
@@ -21,6 +22,9 @@ describe('Startup', () => {
         [GROUPS_STORAGE_KEY]: JSON.stringify({
           1: { id: '1', name: 'One', type: 'Room', anyOn: false },
           2: { id: '2', name: 'Two', type: 'Room', anyOn: false },
+        }),
+        [SWITCHES_STORAGE_KEY]: JSON.stringify({
+          dashboard: true,
         }),
         [LAYOUT_STORAGE_KEY]: JSON.stringify({
           '1:1': {
@@ -58,6 +62,7 @@ describe('Startup', () => {
 
       expect(result).toEqual({
         serverUrl: expect.any(String),
+        switches: expect.any(Object),
         layouts: expect.any(Object),
         groups: expect.any(Object),
       });
@@ -77,6 +82,14 @@ describe('Startup', () => {
       const result = await action.payload;
 
       expect(result.groups).toBe(null);
+    });
+
+    it('does not splode if no switch data exists', async () => {
+      storage[SWITCHES_STORAGE_KEY] = null;
+      const action = actions.getAppState();
+      const result = await action.payload;
+
+      expect(result.switches).toBe(null);
     });
   });
 });

@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import { LayoutOption } from '../LayoutOption';
+import { Option } from '../Option';
 
-describe('LayoutOption', () => {
+describe('Option', () => {
   const setup = merge => {
     const props = {
       onLayout: jest.fn(),
@@ -16,7 +16,7 @@ describe('LayoutOption', () => {
     };
 
     return {
-      output: shallow(<LayoutOption {...props} />),
+      output: shallow(<Option {...props} />),
       props,
     };
   };
