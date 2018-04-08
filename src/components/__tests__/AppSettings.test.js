@@ -47,7 +47,9 @@ describe('AppSettings', () => {
       .at(1)
       .simulate('press');
 
-    expect(props.navigation.navigate).toHaveBeenCalledWith('ServerLink');
+    expect(props.navigation.navigate).toHaveBeenCalledWith('ServerLink', {
+      goBack: true,
+    });
   });
 
   it('enables dashboard mode when the toggle is set', () => {
