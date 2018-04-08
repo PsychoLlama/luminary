@@ -2,6 +2,7 @@ const palette = {
   lightgray: '#B6C1CD',
   darkgray: '#11141A',
   yellow: '#FFBC42',
+  green: '#218380',
   blue: '#2196F3',
   red: '#D90368',
 };
@@ -30,4 +31,8 @@ groups.status = {
 export const navbar = {
   text: '#AEB9C4',
   bg: '#101319',
+};
+
+export const settings = {
+  icon: palette.green,
 };

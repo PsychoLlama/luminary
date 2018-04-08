@@ -9,6 +9,7 @@ import { DASHBOARD_MODE } from '../reducers/switches';
 import * as actions from '../actions/switches';
 import * as colors from '../constants/colors';
 import { selector } from '../utils/redux';
+import Icon from './common/Icon';
 
 const ListItem = styled.View`
   flex-direction: row;
@@ -19,9 +20,20 @@ const ListItem = styled.View`
   justify-content: space-between;
 `;
 
+const FONT_SIZE = 20;
 const OptionText = styled.Text`
   color: ${colors.text};
-  font-size: 20px;
+  font-size: ${FONT_SIZE}px;
+`;
+
+const SettingsIcon = styled(Icon).attrs({
+  color: colors.settings.icon,
+  size: FONT_SIZE,
+})``;
+
+const Description = styled.View`
+  flex-direction: row;
+  align-items: center;
 `;
 
 export class AppSettings extends React.Component {
@@ -57,12 +69,18 @@ export class AppSettings extends React.Component {
       <ScrollView>
         <TouchableOpacity onPress={this.openLayoutManager}>
           <ListItem>
-            <OptionText>Change layout</OptionText>
+            <Description>
+              <SettingsIcon name="th" />
+              <OptionText>Change layout</OptionText>
+            </Description>
           </ListItem>
         </TouchableOpacity>
 
         <ListItem>
-          <OptionText>Dashboard mode</OptionText>
+          <Description>
+            <SettingsIcon name="dashboard" />
+            <OptionText>Dashboard mode</OptionText>
+          </Description>
           <Switch
             onValueChange={this.setDashboardMode}
             value={switches[DASHBOARD_MODE]}
