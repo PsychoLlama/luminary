@@ -1,5 +1,6 @@
 import assert from 'minimalistic-assert';
 import axios from 'axios';
+import R from 'ramda';
 
 /**
  * Sends a GraphQL request, and formats the response into a
@@ -16,11 +17,12 @@ export default parts => {
     assert(address, 'GQL server address is required for this action.');
     const body = { query, variables };
 
-    const response = await axios.post(address, body).catch(response => {
-      const { errors } = response.response.data;
+    // Send! Try to extract any GQL errors.
+    const { data } = await axios.post(address, body).catch(error => {
+      const errors = R.pathOr(error, ['response', 'data', 'errors'], error);
       return Promise.reject(errors);
     });
 
-    return response.data.data;
+    return data.data;
   };
 };

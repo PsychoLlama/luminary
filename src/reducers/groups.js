@@ -6,8 +6,10 @@ import * as actions from '../actions/groups';
 
 export default handleActions(
   {
-    [actions.fetchAllGroups]: (state, action) => action.payload,
     [getAppState]: (state, action) => action.payload.groups,
+    [actions.fetchAllGroups]: {
+      next: (state, action) => action.payload,
+    },
     [actions.toggleLights]: (state, action) => {
       const { id, on } = action.payload;
 

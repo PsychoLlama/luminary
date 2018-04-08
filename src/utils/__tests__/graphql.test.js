@@ -82,12 +82,22 @@ describe('GraphQL', () => {
   it('returns the error data if rejected', async () => {
     const query = graphql`stuff`;
     const errors = ['Your query is syntactically inaccurate.'];
-    const response = Promise.reject({
-      response: { data: { errors } },
-    });
+    const error = new Error('Testing graphql error handling');
+    error.response = { data: { errors } };
+    const response = Promise.reject(error);
 
     axios.post.mockReturnValue(response);
 
     await expect(query('http://ultron/')).rejects.toEqual(errors);
+  });
+
+  it('rejects with the error for generic failures', async () => {
+    const query = graphql`stuff`;
+    const error = new Error('Testing graphql generic error handling');
+    const response = Promise.reject(error);
+
+    axios.post.mockReturnValue(response);
+
+    await expect(query('http://ultron/')).rejects.toBe(error);
   });
 });

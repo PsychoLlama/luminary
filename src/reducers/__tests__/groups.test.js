@@ -53,6 +53,14 @@ describe('groups', () => {
 
       expect(state).toEqual({});
     });
+
+    it('ignores errored requests', () => {
+      const initial = { 5: { id: '5', name: 'five' } };
+      const action = { type: actions.fetchAllGroups, error: true };
+      const state = reducer(initial, action);
+
+      expect(state).toEqual(initial);
+    });
   });
 
   describe('toggleLights', () => {
