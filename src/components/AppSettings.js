@@ -57,7 +57,7 @@ export class AppSettings extends React.Component {
       <ScrollView>
         <TouchableOpacity onPress={this.openLayoutManager}>
           <ListItem>
-            <OptionText>Set group layout</OptionText>
+            <OptionText>Change layout</OptionText>
           </ListItem>
         </TouchableOpacity>
 
