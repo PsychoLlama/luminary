@@ -71,7 +71,7 @@ export class Manager extends React.Component {
     } else if (hasSelection && allSelectionsValid) {
       this.props.createCellGroup(this.props.active);
       this.props.navigation.navigate('LayoutConfig');
-    } else {
+    } else if (hasSelection) {
       this.props.reportInvalidSelection();
     }
   };
