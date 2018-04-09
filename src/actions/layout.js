@@ -1,4 +1,5 @@
-import { AsyncStorage } from 'react-native';
+// eslint-disable-next-line react-native/split-platform-components
+import { ToastAndroid, AsyncStorage } from 'react-native';
 
 import { prefixActions } from '../utils/actions';
 
@@ -12,6 +13,13 @@ export const createGrouping = createAction('CREATE_GROUPING');
 export const deleteGrouping = createAction('DELETE_GROUPING');
 export const updateGrouping = createAction('UPDATE_GROUPING');
 export const editCellGroup = createAction('EDIT_GROUPING');
+
+export const reportInvalidSelection = createAction(
+  'REPORT_INVALID_SELECTION',
+  () => {
+    ToastAndroid.show(`Groups can't overlap.`, ToastAndroid.SHORT);
+  },
+);
 
 export const LAYOUT_STORAGE_KEY = 'groups_layout';
 export const persistLayouts = () => (dispatch, getState) => {

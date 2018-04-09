@@ -18,6 +18,7 @@ describe('Manager', () => {
 
   const setup = merge => {
     const props = {
+      reportInvalidSelection: jest.fn(),
       setDragActiveState: jest.fn(),
       createCellGroup: jest.fn(),
       setGroupHover: jest.fn(),
@@ -231,6 +232,31 @@ describe('Manager', () => {
 
       expect(props.editCellGroup).not.toHaveBeenCalled();
       expect(props.navigation.navigate).not.toHaveBeenCalled();
+    });
+
+    it('marks invalid overlap', () => {
+      const { props, onMove } = gesture();
+
+      const event = { x0: 1, y0: 450, dx: 0, dy: 50 };
+      onMove(null, event);
+
+      expect(props.setDragActiveState).toHaveBeenCalledWith({
+        '5:1': true,
+        '6:1': false,
+      });
+    });
+
+    it('ignores invalid gestures', () => {
+      const { props, onRelease } = gesture({
+        active: {
+          '5:1': true,
+          '6:1': false,
+        },
+      });
+
+      onRelease();
+
+      expect(props.reportInvalidSelection).toHaveBeenCalled();
     });
   });
 

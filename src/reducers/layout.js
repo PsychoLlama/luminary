@@ -59,6 +59,11 @@ export default handleActions(
       });
     },
 
+    [actions.reportInvalidSelection]: state =>
+      update(state, {
+        active: { $set: {} },
+      }),
+
     [actions.createGrouping]: state => {
       const { selected, groupId } = state.cellGroup;
 

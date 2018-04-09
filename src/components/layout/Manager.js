@@ -17,6 +17,7 @@ const Container = styled.View`
 
 export class Manager extends React.Component {
   static propTypes = {
+    reportInvalidSelection: PropTypes.func.isRequired,
     setDragActiveState: PropTypes.func.isRequired,
     createCellGroup: PropTypes.func.isRequired,
     setGroupHover: PropTypes.func.isRequired,
@@ -61,13 +62,17 @@ export class Manager extends React.Component {
 
   onPanResponderRelease = () => {
     const { active, selected } = this.props;
+    const hasSelection = !R.isEmpty(active);
+    const allSelectionsValid = R.all(R.identity, R.values(active));
 
     if (selected) {
       this.props.editCellGroup(selected);
       this.props.navigation.navigate('LayoutConfig');
-    } else if (!R.isEmpty(active)) {
+    } else if (hasSelection && allSelectionsValid) {
       this.props.createCellGroup(this.props.active);
       this.props.navigation.navigate('LayoutConfig');
+    } else {
+      this.props.reportInvalidSelection();
     }
   };
 
@@ -88,13 +93,14 @@ export class Manager extends React.Component {
     };
 
     const layouts = R.toPairs(this.layouts);
-    if (!this.triggerReservedHover(layouts, start, selection)) {
-      this.triggerSelectionHover(layouts, selection);
+    const reserved = layouts.filter(this.isReservedLayout);
+    if (!this.triggerReservedHover(reserved, start, selection)) {
+      this.triggerSelectionHover(layouts, reserved, selection);
     }
   };
 
-  triggerReservedHover = (layouts, start, selection) => {
-    const reserved = layouts.filter(this.isReservedLayout);
+  // Simulate touchable press events.
+  triggerReservedHover = (reserved, start, selection) => {
     const selecting = reserved.find(([, { layout }]) => {
       const bounds = this.getBounds(layout);
 
@@ -118,23 +124,22 @@ export class Manager extends React.Component {
     return selecting;
   };
 
-  triggerSelectionHover = (layouts, { left, right, top, bottom }) => {
-    const empty = layouts.filter(this.isEmptyLayout);
-
-    // Locate which cells intersect with the selection area.
-    const patches = empty.reduce((patches, [index, { layout }]) => {
+  // Perform drag selection detection.
+  triggerSelectionHover = (layouts, reserved, { left, right, top, bottom }) => {
+    // Locate cells which intersect with the selection area.
+    const patches = layouts.reduce((patches, [index, { type, layout }]) => {
       const xbounded = layout.x + layout.width >= left && layout.x <= right;
       const ybounded = layout.y + layout.height > top && layout.y <= bottom;
       const bounded = xbounded && ybounded;
 
       if (bounded) {
-        patches[index] = true;
+        patches[index] = type === EMPTY;
       }
 
       return patches;
     }, {});
 
-    if (!R.isEmpty(patches)) {
+    if (!R.isEmpty(patches) && !R.equals(patches, this.props.active)) {
       this.props.setDragActiveState(patches);
     }
   };
@@ -175,10 +180,11 @@ export const mapStateToProps = selector({
 });
 
 const mapDispatchToProps = {
-  setGroupHover: actions.setGroupHover,
+  reportInvalidSelection: actions.reportInvalidSelection,
   setDragActiveState: actions.setDragActiveState,
   createCellGroup: actions.createCellGroup,
   editCellGroup: actions.editCellGroup,
+  setGroupHover: actions.setGroupHover,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Manager);

@@ -75,6 +75,20 @@ describe('Layout', () => {
     });
   });
 
+  describe('reportInvalidSelection', () => {
+    it('clears active items', () => {
+      const action = { type: String(actions.reportInvalidSelection) };
+      const initial = {
+        ...defaultState,
+        active: { '1:1': true, '2:1': false },
+      };
+
+      const state = reducer(initial, action);
+
+      expect(state.active).toEqual(defaultState.active);
+    });
+  });
+
   describe('createGrouping', () => {
     it('removes intermediate grouping state', () => {
       const selected = { '0:0': true };

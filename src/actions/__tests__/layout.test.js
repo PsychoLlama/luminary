@@ -1,10 +1,12 @@
-import { AsyncStorage } from 'react-native';
+// eslint-disable-next-line react-native/split-platform-components
+import { ToastAndroid, AsyncStorage } from 'react-native';
 import R from 'ramda';
 
 import * as actions from '../layout';
 
 jest.spyOn(AsyncStorage, 'getItem');
 jest.spyOn(AsyncStorage, 'setItem');
+jest.spyOn(ToastAndroid, 'show');
 
 describe('Layout', () => {
   beforeEach(() => {
@@ -14,6 +16,20 @@ describe('Layout', () => {
 
     AsyncStorage.getItem.mockReturnValue(response);
     AsyncStorage.setItem.mockReturnValue(response);
+
+    ToastAndroid.show.mockReturnValue(undefined);
+    ToastAndroid.SHORT = 500;
+  });
+
+  describe('reportInvalidSelection', () => {
+    it('shows a message', () => {
+      actions.reportInvalidSelection();
+
+      expect(ToastAndroid.show).toHaveBeenCalledWith(
+        expect.any(String),
+        ToastAndroid.SHORT,
+      );
+    });
   });
 
   describe('persistLayouts', () => {
