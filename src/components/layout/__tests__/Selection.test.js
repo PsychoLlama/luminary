@@ -8,6 +8,7 @@ import { mapStateToProps, Container, Selection, Title } from '../Selection';
 describe('Selection', () => {
   const setup = merge => {
     const props = {
+      isPartOfInvalidSelection: false,
       groupTitle: 'Living Room',
       onLayout: jest.fn(),
       blockWidth: 2,

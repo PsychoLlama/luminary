@@ -194,8 +194,16 @@ export class Layout extends React.Component {
         type: RESERVED,
       });
 
+    const invalid = this.props.active[index] === false;
+
     return (
-      <Reservation onLayout={setLayout} key={index} id={index} {...values} />
+      <Reservation
+        isPartOfInvalidSelection={invalid}
+        onLayout={setLayout}
+        key={index}
+        id={index}
+        {...values}
+      />
     );
   }
 }

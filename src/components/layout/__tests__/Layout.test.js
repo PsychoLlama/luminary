@@ -101,6 +101,21 @@ describe('Layout', () => {
     expect(second.prop('active')).toBe(true);
   });
 
+  it('indicates which groups are invalid', () => {
+    const { output } = setup({
+      active: { '0:0': true, '0:1': false },
+      reserved: [
+        { group: '1', height: 90, width: 90, x: 0, y: 0 },
+        { group: '2', height: 90, width: 90, x: 0, y: 1 },
+      ],
+    });
+
+    const [group1, group2] = output.find(Selection).map(R.identity);
+
+    expect(group1.prop('isPartOfInvalidSelection')).toBe(false);
+    expect(group2.prop('isPartOfInvalidSelection')).toBe(true);
+  });
+
   it('shows reserved spaces', () => {
     const { output } = setup({
       reserved: [

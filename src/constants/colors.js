@@ -38,6 +38,7 @@ export const layout = {
 
 layout.selection = {
   divider: layout.option.divider,
+  invalidHighlight: palette.red,
   highlight: palette.blue,
   bg: layout.option.bg,
   text,

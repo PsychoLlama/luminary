@@ -23,6 +23,12 @@ const Highlight = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
+
+  ${props =>
+    props.invalid &&
+    `
+    border-color: ${colors.layout.selection.invalidHighlight};
+  `};
 `;
 
 export const Title = styled.Text`
@@ -34,6 +40,7 @@ export const Title = styled.Text`
 
 export class Selection extends React.Component {
   static propTypes = {
+    isPartOfInvalidSelection: PropTypes.bool.isRequired,
     blockWidth: PropTypes.number.isRequired,
     groupTitle: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
@@ -50,7 +57,7 @@ export class Selection extends React.Component {
 
     return (
       <Container style={inline} onLayout={this.props.onLayout}>
-        <Highlight>
+        <Highlight invalid={this.props.isPartOfInvalidSelection}>
           <Touchable>
             <Title small={useSmallTitle}>{groupTitle}</Title>
           </Touchable>
